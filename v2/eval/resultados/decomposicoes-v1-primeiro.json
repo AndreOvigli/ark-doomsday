@@ -1,0 +1,290 @@
+{
+  "D01": {
+    "situacao": "A pessoa está sem água potável e tem acesso a água de um rio barrento e água da chuva coletada do telhado. Precisa decidir qual é a melhor opção para consumo.",
+    "consultas": [
+      "como tratar água de rio para beber",
+      "como armazenar água da chuva",
+      "como verificar se a água da chuva é potável",
+      "como descartar água contaminada"
+    ],
+    "mensagens": [
+      "Faltou água aqui. Tenho um rio perto de casa com a água meio barrenta e também consigo pegar a água da chuva que cai do telhado. Qual das duas é melhor pra beber?"
+    ]
+  },
+  "D02": {
+    "situacao": "A pessoa encontrou um galão grande no galpão e quer usá-lo para pegar água do poço para beber. Ainda não foi verificado se a água do poço é potável ou se o galão é adequado para armazenamento.",
+    "consultas": [
+      "Como verificar se a água do poço é potável?",
+      "Como armazenar água em um galão para consumo humano?",
+      "Como limpar e manter um galão para evitar contaminação?",
+      "Por quanto tempo a água armazenada em um galão é segura para consumo?"
+    ],
+    "mensagens": [
+      "Achei um galão grande no galpão. Dá pra usar pra pegar água no poço pra gente beber?"
+    ]
+  },
+  "D03": {
+    "situacao": "A pessoa tem garrafas de água mineral e quer usá-las para beber. Ainda não foi especificado se há outras fontes de água ou se as garrafas estão em condições adequadas.",
+    "consultas": [
+      "Como armazenar água mineral para consumo prolongado",
+      "Quantos dias uma garrafa de água mineral pode ficar armazenada",
+      "Como identificar se a água mineral está contaminada",
+      "Como conservar a qualidade da água mineral"
+    ],
+    "mensagens": [
+      "Tenho umas garrafas de água mineral guardadas, vou usar essas pra beber, né?"
+    ]
+  },
+  "D04": {
+    "situacao": "A pessoa tem água de poço, pano de prato limpo, panela e fogão a gás funcionando e quer deixar a água potável.",
+    "consultas": [
+      "Como purificar água de poço em casa",
+      "Como cozinhar água para torná-la potável",
+      "Como armazenar água potável em casa",
+      "Como verificar se a água está limpa para beber"
+    ],
+    "mensagens": [
+      "Tenho água de poço, um pano de prato limpo, panela e o fogão a gás funcionando. Como deixo essa água boa pra beber?"
+    ]
+  },
+  "D05": {
+    "situacao": "A pessoa quer saber como tratar água. Ela tem água potável, mas quer garantir que está segura para consumo.",
+    "consultas": [
+      "Tratamento de água por fervura",
+      "Tratamento de água com cloro",
+      "Tratamento de água com filtros",
+      "Armazenamento seguro de água tratada"
+    ],
+    "mensagens": [
+      "Como eu trato água?"
+    ]
+  },
+  "D06": {
+    "situacao": "A pessoa vai ferver a água do rio para beber e já coei num pano. Ainda não filtrou a água antes de ferver.",
+    "consultas": [
+      "como filtrar água de rio antes de ferver",
+      "como ferver água para consumo humano",
+      "como coar água antes de ferver",
+      "como armazenar água fervida"
+    ],
+    "mensagens": [
+      "Vou ferver a água do rio pra beber, já coei num pano."
+    ]
+  },
+  "D07": {
+    "situacao": "A pessoa tratou 20 litros de água com hipoclorito e quer saber como guardar e por quanto tempo a água tratada dura.",
+    "consultas": [
+      "Como armazenar água tratada com hipoclorito de sódio em recipientes fechados",
+      "Prazo de validade da água tratada com hipoclorito de sódio",
+      "Como verificar a eficácia do tratamento da água com hipoclorito de sódio",
+      "Como descartar água tratada com hipoclorito de sódio após o prazo de validade"
+    ],
+    "mensagens": [
+      "Já tratei 20 litros de água com hipoclorito. Como guardo e por quanto tempo ela dura?"
+    ]
+  },
+  "D08": {
+    "situacao": "A pessoa tem um balde e quer saber se pode guardá-lo água tratada nele. Faltam informações sobre o material do balde e condições de armazenamento.",
+    "consultas": [
+      "Como armazenar água tratada em recipientes",
+      "Condições para armazenamento de água tratada",
+      "Materiais adequados para armazenamento de água",
+      "Tempo de validade da água tratada em recipientes"
+    ],
+    "mensagens": [
+      "Tenho um balde que achei aqui. Posso guardar a água tratada nele?"
+    ]
+  },
+  "D09": {
+    "situacao": "A pessoa deixou água fervida em um pote tampado ontem à tarde para beber hoje. A água está em condições de ser consumida, mas há risco de contaminação por bactérias se não for mantida em temperatura adequada.",
+    "consultas": [
+      "Como armazenar água fervida para consumo posterior",
+      "Prazo de validade da água fervida em temperatura ambiente",
+      "Riscos de contaminação da água fervida após fervura",
+      "Como verificar se a água fervida ainda é segura para consumo"
+    ],
+    "mensagens": [
+      "Deixei a água fervida num pote tampado ontem à tarde pra beber hoje."
+    ]
+  },
+  "D10": {
+    "situacao": "A pessoa está sem luz há 2 dias e tem alimentos em conserva, mas pouca água tratada. Precisa priorizar o que comer com base na durabilidade, nutrição e uso da água.",
+    "consultas": [
+      "Como armazenar alimentos em conserva por mais tempo",
+      "Qual é a ordem de prioridade para consumo de alimentos em emergência",
+      "Como preparar sardinha em lata sem água tratada",
+      "Como prolongar a vida da água tratada em condições de emergência"
+    ],
+    "mensagens": [
+      "Estamos sem luz faz 2 dias. Na despensa tem arroz, feijão cru, macarrão, sardinha em lata, biscoito e leite em pó. Água tratada é pouca. O que eu priorizo comer?"
+    ]
+  },
+  "D11": {
+    "situacao": "A pessoa encontrou latas sem rótulo no fundo do armário e quer saber se são comestíveis. Ela não sabe a data de validade, o conteúdo ou se há risco de contaminação.",
+    "consultas": [
+      "Como identificar se uma lata sem rótulo ainda é comestível?",
+      "Como verificar a data de validade de uma lata sem rótulo?",
+      "Riscos de consumir alimentos em latas sem rótulo?",
+      "Como armazenar latas para preservar sua segurança alimentar?"
+    ],
+    "mensagens": [
+      "Achei umas latas sem rótulo no fundo do armário. Dá pra comer?"
+    ]
+  },
+  "D12": {
+    "situacao": "A pessoa tem três latas de conserva (milho, ervilha e atum) e quer saber se pode consumi-las.",
+    "consultas": [
+      "Como armazenar latas de conserva para preservar seu conteúdo?",
+      "Qual é o prazo de validade das latas de conserva?",
+      "Como identificar se uma lata de conserva está aberta ou danificada?",
+      "Quais são os riscos de consumir latas de conserva com danos na embalagem?"
+    ],
+    "mensagens": [
+      "Tenho três latas: milho, ervilha e atum. Posso comer?"
+    ]
+  },
+  "D13": {
+    "situacao": "A pessoa tem arroz, água tratada e fogão a gás e quer saber como cozinhar o arroz.",
+    "consultas": [
+      "Como cozinhar arroz com fogão a gás",
+      "Quantidade de água para cozinhar arroz",
+      "Como armazenar arroz após cozimento",
+      "Como descartar arroz vencido ou com impurezas"
+    ],
+    "mensagens": [
+      "Tenho arroz, água tratada e fogão a gás. Como faço o arroz?"
+    ]
+  },
+  "D14": {
+    "situacao": "A pessoa quer preparar arroz e feijão, mas tem pouca água e gás. Precisa economizar recursos e garantir que a comida fique pronta.",
+    "consultas": [
+      "Como cozinhar arroz e feijão com pouca água?",
+      "Como economizar gás ao cozinhar?",
+      "Como armazenar arroz e feijão para uso futuro?",
+      "Como saber quando o arroz e o feijão estão prontos com pouco gás?"
+    ],
+    "mensagens": [
+      "Quero fazer arroz e feijão mas tenho pouco gás e pouca água."
+    ]
+  },
+  "D15": {
+    "situacao": "A pessoa estava cozinhando feijão, mas o gás acabou, resultando em feijão meio cozido. Falta saber como proceder com o feijão restante e como evitar que ele se degrade.",
+    "consultas": [
+      "Como armazenar feijão cozido para preservar sua qualidade?",
+      "Como verificar se o feijão cozido ainda é seguro para consumo?",
+      "Como reutilizar feijão que ficou meio cozido?",
+      "Como evitar que o feijão se degrade após o cozimento interrompido?"
+    ],
+    "mensagens": [
+      "Estava cozinhando feijão e o gás acabou. Ficou meio cozido."
+    ]
+  },
+  "D16": {
+    "situacao": "A pessoa quer armazenar arroz, feijão e farinha de forma segura, evitando que estraguem e sejam atacados por bichos ou ratos. Ela tem esses alimentos, mas não sabe como guardá-los corretamente.",
+    "consultas": [
+      "Como armazenar arroz em casa para preservar sua qualidade e evitar pragas?",
+      "Como guardar feijão em recipientes adequados para evitar infestação de insetos?",
+      "Qual é a melhor forma de armazenar farinha para evitar a atração de ratos?",
+      "Como identificar e descartar alimentos que já estragaram ou foram contaminados?"
+    ],
+    "mensagens": [
+      "Como eu guardo arroz, feijão e farinha pra não estragar e não dar bicho nem rato?"
+    ]
+  },
+  "D17": {
+    "situacao": "A pessoa tem bananas que estão prestes a estragar e busca formas de conservá-las. Precisa de métodos eficazes para prolongar a vida útil das bananas.",
+    "consultas": [
+      "Como conservar bananas para evitar que estraguem",
+      "Métodos de armazenamento de frutas maduras",
+      "Como identificar quando uma banana já estragou",
+      "Por quanto tempo é possível conservar bananas em diferentes condições"
+    ],
+    "mensagens": [
+      "Tenho muitas bananas que vão estragar. Como eu conservo?"
+    ]
+  },
+  "D18": {
+    "situacao": "A pessoa tem tomates maduros, uma abóbora inteira e batatas, mas está sem geladeira. Precisa decidir qual comida usar primeiro, considerando a conservação e a qualidade.",
+    "consultas": [
+      "Como conservar tomates maduros sem geladeira",
+      "Como armazenar abóbora inteira sem refrigeração",
+      "Como guardar batatas sem geladeira",
+      "Por quanto tempo alimentos podem ficar fora da geladeira"
+    ],
+    "mensagens": [
+      "Tenho tomates maduros, uma abóbora inteira e batatas. Estou sem geladeira. O que uso primeiro?"
+    ]
+  },
+  "D19": {
+    "situacao": "A pessoa quer reutilizar garrafas PET e um galão de água mineral para armazenar água tratada. Ela tem garrafas PET e um galão, mas precisa saber como limpar antes de usar.",
+    "consultas": [
+      "como limpar garrafas PET antes de reutilizá-las",
+      "procedimento para higienizar galões de água mineral",
+      "como armazenar água tratada em garrafas reutilizadas",
+      "tempo de validade da água armazenada em recipientes reutilizados"
+    ],
+    "mensagens": [
+      "Vou reaproveitar umas garrafas PET de refrigerante e um galão de água mineral pra guardar a água tratada. Como eu limpo antes?"
+    ]
+  },
+  "D20": {
+    "situacao": "A pessoa quer lavar as mãos para cozinhar, mas não tem água na torneira. Ela tem acesso a outros recursos, mas não especificou quais.",
+    "consultas": [
+      "Como lavar as mãos sem água corrente",
+      "Alternativas para higienização das mãos quando não há água",
+      "Como garantir a higiene ao manipular alimentos sem água",
+      "Como descartar resíduos de higienização de forma segura"
+    ],
+    "mensagens": [
+      "Como lavo as mãos pra cozinhar se não tem água na torneira?"
+    ]
+  },
+  "D21": {
+    "situacao": "A pessoa colheu alface e couve e quer higienizá-los para comer cru. Possui água sanitária, mas não mencionou outros recursos.",
+    "consultas": [
+      "higienizacao de alface para consumo crudo",
+      "higienizacao de couve para consumo crudo",
+      "como diluir agua sanitaria para higienizacao de alimentos",
+      "tempo de contato da agua sanitaria com alimentos"
+    ],
+    "mensagens": [
+      "Colhi alface e couve da horta. Como eu higienizo pra comer cru? Tenho água sanitária."
+    ]
+  },
+  "D22": {
+    "situacao": "A pessoa tem água de poço turva e 20 litros, precisa beber, cozinhar macarrão e guardar o resto. Possui hipoclorito 2,5% e um pano limpo. Faltam métodos para tratar a água e garantir segurança higiênica.",
+    "consultas": [
+      "como tratar água de poço turva para consumo",
+      "como cozinhar macarrão com água de poço",
+      "como armazenar água tratada por longo tempo",
+      "como limpar e manter utensílios para cozinhar"
+    ],
+    "mensagens": [
+      "Só tenho água de poço, meio turva, uns 20 litros. Hoje preciso beber, fazer um macarrão e guardar o resto pra amanhã. Tenho hipoclorito 2,5% e um pano limpo. Como organizo isso?"
+    ]
+  },
+  "D23": {
+    "situacao": "A pessoa está sem luz e água, precisa resolver a água para beber, lidar com a comida da geladeira e cozinhar. Faltam recursos como água potável e energia elétrica.",
+    "consultas": [
+      "Como obter água potável em situação de emergência",
+      "Como identificar alimentos ainda comestíveis na geladeira sem eletricidade",
+      "Como cozinhar alimentos sem gás ou eletricidade",
+      "Como armazenar alimentos para consumo futuro"
+    ],
+    "mensagens": [
+      "Faltou luz e água. Preciso resolver a água pra beber, o que fazer com a comida da geladeira e como cozinhar."
+    ]
+  },
+  "D24": {
+    "situacao": "A pessoa está sem luz e sem gás, mas quer usar a churrasqueira a carvão para a janta. Faltam recursos como luz e gás, mas há carvão disponível.",
+    "consultas": [
+      "Como preparar um churrasco com carvão sem gás",
+      "Como garantir segurança ao usar churrasqueira a carvão",
+      "Como conservar alimentos após a janta",
+      "Como evitar incêndios ao usar carvão em ambiente fechado"
+    ],
+    "mensagens": [
+      "Estamos sem luz desde ontem e o gás acabou. Pensei em fazer a janta na churrasqueira a carvão."
+    ]
+  }
+}

@@ -1,0 +1,546 @@
+ARK v2 - fase 5c: verificação por frase (verificar.py, --verificar/--estrito) e prompt v3 da resposta
+Data: 2026-10-25 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB (8188 MiB). Branch v2/fase-1-gabarito, base fe4afef.
+Qwen: qwen3:8b no Ollama da v1 (127.0.0.1:11434), só leitura, num_ctx 8192 na resposta, no juiz e na verificação.
+  Evidências do cache. Ollama 11435 de pé por precaução, encerrado ao fim.
+
+Resumo                          modo   cobertura    cit.     erro proib.  checagem  sem evid. sust.  lacunas  verificação (removidas; nao_diz)       s/resp  tokens
+a) busca k8 v2 + verificar      23/24  37/71 52%    119/119  6/24         1/1       2/12             0/3      12 em 9 casos; 0/85; +6,4 s/caso        6,2     3831
+b) = a, --estrito               23/24  37/71 52%    119/119  6/24         1/1       2/12             0/3      igual a (a): nenhum nao_diz              6,2     3831
+c) busca k8 v3 + verificar      22/24  34/71 48%    111/111  3/24         3/2       6/12             1/3      17 em 10 casos; 1/89; +6,7 s/caso       6,4     3888
+d) oráculo último v3 + verificar 22/24 37/71 52%    60/60    8/24         0/0       2/12             1/3      18 em 13 casos; 1/77; +5,6 s/caso       4,4     1804
+e) oráculo primeiro v3          17/24  32/49 65%    85/85    5/24         3/2       5/12             1/3      -                                        4,4     1776
+Referência (fase 5b): busca k8 v2 sem verificar = 41/71 58%; oráculo último v2 = 46/71 65%.
+
+Leitura
+- A verificação por frase pegou o caso-alvo (D24: "Deixe a garagem bem ventilada e mantenha o portão aberto" e, no v3,
+  "Abra o portão completamente…" saem como "contradiz"), mas erra a polaridade: quando a frase e o trecho PROÍBEM a
+  mesma coisa, ela marca "contradiz". No D24 ela removeu também "Não use a churrasqueira a carvão na garagem…" e
+  "Evite cozinhar perecíveis sem refrigeração". No v3, as 3 orientações do D24 saíram, inclusive o aviso de risco.
+  Conferência manual das 12 remoções de (a): corretas, 1 (D24, portão aberto); discutíveis, 2 (D09, D10); erradas, 9
+  (D02, D12 x2, D17, D18, D20, D21, D24 x2: proibições corretas ou orientações sustentadas). Precisão de cerca de 1-3 em 12.
+  Em (c), das 17: corretas, 1 (D24, abrir o portão); o resto é majoritariamente erro (ex.: D02 "não use o galão",
+  D18 "descarte a abóbora cortada", D20 "enxágue com água tratada").
+- Por isso a cobertura cai (58% -> 52% no v2): a verificação remove orientações certas. Ela ainda não pode ser usada como
+  filtro automático. Pode servir como sinal para revisão, ou com o prompt reescrito para separar "a frase permite algo que
+  o trecho proíbe" de "os dois proíbem".
+- "nao_diz" quase nunca aparece (0/85, 1/89), e frases sem sustentação passam como "sustenta". Ex.: D14 v3: "Cozinhe o
+  feijão… por pelo menos 1 hora" e "o arroz… por pelo menos 20 minutos", citando páginas de tratamento de água.
+- Prompt v3: a cobertura cai (48% com verificação na busca; 52% no oráculo), o "sem evidência" em casos sustentados sobe
+  de novo (6/12) e as lacunas seguem quase não declaradas (1/3). O D15 trouxe uma frase em inglês ("Não taste food to see
+  if it's safe"). O D23 melhorou (filtra + ferve + cozinha com água fervida). O D05 continua devolvendo pergunta.
+
+VRAM e GPU (monitor nvidia-smi + ollama ps a cada 1 s): pico de 7.102 MiB. O Qwen ficou 100% na GPU (ctx 8192) o tempo todo,
+  sem divisão CPU/GPU.
+
+======================================================================
+Detalhes: vereditos de D24, D13 e D22 em (a), frases removidas como contradiz em (a) e (c), respostas v3 (busca k8)
+### (a) busca k8 v2 + verificação: vereditos de D24, D13 e D22
+
+D24:
+  [contradiz] Não use a churrasqueira a carvão na garagem ou em áreas mal ventiladas.  fontes [1]
+      motivo: A orientação proíbe o uso da churrasqueira a carvão na garagem, enquanto o trecho citado reforça essa proibição e adiciona que o uso em áreas cobertas ou perto de aberturas de ventilação é perigoso.
+  [contradiz] Deixe a garagem bem ventilada e mantenha o portão aberto para garantir circulação de ar.  fontes [1]
+      motivo: O trecho proíbe o uso de churrasqueiras na garagem, enquanto a orientação sugere manter o portão aberto para garantir circulação de ar, o que é contrário à recomendação do CDC.
+  [contradiz] Evite cozinhar alimentos perecíveis sem refrigeração adequada.  fontes [4]
+      motivo: A orientação alerta contra cozinhar alimentos perecíveis sem refrigeração adequada, enquanto o trecho citado reforça que alimentos perecíveis não mantidos refrigerados podem causar doenças, mesmo após serem cozidos, o que contradiz a ideia de cozinhar esses alimentos em condições inadequadas.
+  [sustenta] Lave as mãos antes de manipular alimentos e cozinhe bem os alimentos.  fontes [6]
+      motivo: Os trechos citados sustentam a orientação ao reforçar a necessidade de lavar as mãos antes de manipular alimentos e cozinhar bem os alimentos, atingindo temperaturas mínimas de 70ºC.
+
+D13:
+  [sustenta] Coloque a água em uma panela limpa e leve ao fogo.  fontes [1]
+      motivo: Os trechos citados sustentam a orientação ao descrever o processo de aquecer a água em uma panela limpa e levar ao fogo, alinhando-se com a orientação fornecida.
+  [sustenta] Deixe ferver até que comece a formar bolhas grandes e constantes.  fontes [1]
+      motivo: O trecho cita explicitamente a orientação de deixar a água ferver até que comece a formar bolhas grandes e constantes, alinhando-se diretamente com a orientação fornecida.
+  [sustenta] Mantenha a fervura por pelo menos 5 minutos.  fontes [1]
+      motivo: O trecho cita explicitamente 'Mantenha a fervura por pelo menos 5 minutos', o que sustenta a orientação fornecida.
+  [sustenta] Use a água fervida para cozinhar o arroz.  fontes [1]
+      motivo: Os trechos citados sustentam a orientação de usar água fervida para cozinhar o arroz, explicando o processo de fervura e sua importância para a segurança da água.
+
+D22:
+  [sustenta] Filtrar a água com pano limpo.  fontes [1, 3, 5, 7]
+      motivo: Os trechos citados sustentam a orientação de filtrar a água com pano limpo, explicando o processo completo de tratamento da água, incluindo filtração e desinfecção com hipoclorito de sódio 2,5%, o que está alinhado com a orientação fornecida.
+  [sustenta] Adicionar 2 gotas de hipoclorito de sódio a 2,5% para cada 1 litro de água.  fontes [1, 5, 6]
+      motivo: Os trechos citados sustentam a orientação ao explicar o processo de filtragem, adição de 2 gotas de hipoclorito de sódio por litro de água e a necessidade de aguardar 30 minutos antes do consumo, alinhando-se exatamente com a orientação fornecida.
+  [sustenta] Misturar bem e esperar 30 minutos antes de usar.  fontes [1, 5]
+      motivo: Os trechos citados descrevem exatamente a orientação de misturar bem e esperar 30 minutos antes de usar a água, conforme as condições da pessoa.
+  [sustenta] Usar a água tratada para cozinhar o macarrão.  fontes [1, 3, 5]
+      motivo: Os trechos citados sustentam a orientação de usar a água tratada para cozinhar o macarrão, pois explicam como filtrar, desinfetar e armazenar a água corretamente para consumo seguro.
+  [sustenta] Guardar a água tratada em recipiente limpo e tampado.  fontes [4, 5]
+      motivo: Os trechos citados sustentam a orientação ao afirmar que a água tratada deve ser guardada em recipiente limpo e tampado, além de reforçar a necessidade de consumi-la em até 24 horas.
+  [sustenta] Consumir a água tratada em até 24 horas.  fontes [1, 4, 5]
+      motivo: Os trechos citados sustentam a orientação ao detalhar o processo de tratamento da água com hipoclorito de sódio 2,5%, incluindo filtragem, proporção correta, mistura e tempo de espera, além de reforçar que a água tratada deve ser consumida em até 24 horas.
+
+### (a) v2: frases removidas como 'contradiz'
+- D02: "Não use o galão para pegar água no poço." [6]
+    motivo: O trecho cita que água contaminada com combustíveis como diesel não pode ser tornada segura por fervura ou desinfecção, e recomenda o uso de água engarrafada. A orientação proíbe o uso do galão para pegar água no poço, o que é sustentado pelo trecho, mas o trecho também reforça que não é seguro usar qualquer tipo de galão contaminado, o que contradiz a ideia de que talvez fosse seguro usar de forma menos arriscada.
+- D09: "Se precisar, ferva a água novamente antes de beber." [2, 6]
+    motivo: O trecho cita que a água fervida deve ser guardada em um recipiente limpo com tampa e consumida em até 24 horas, mas o usuário deixou a água fervida aberta durante a noite, o que contraria essa orientação e aumenta o risco de contaminação.
+- D10: "Não consuma alimentos crus, cozidos ou refrigerados, especialmente carne, peixe, ovos ou leite." [2]
+    motivo: A orientação proíbe o consumo de leite, mas o trecho citado menciona que leite em pó pode ser consumido, desde que em condições adequadas, o que contradiz a orientação.
+- D12: "A lata de ervilha pode ser usada, desde que limpa e sem danos visíveis." [1, 3, 4]
+    motivo: A orientação permite o uso da lata de ervilha desde que limpa e sem danos visíveis, mas os trechos citados proíbem o uso de latas amassadas, estufadas ou com danos, o que contradiz a permissão da orientação para a lata de ervilha.
+- D12: "Limpe a lata de ervilha antes de abri-la." [1]
+    motivo: O trecho cita que deve-se limpar as embalagens antes de abri-las, o que sustenta a orientação, mas também alerta contra embalagens defeituosas, como as estufadas ou amassadas, o que contradiz a ideia de que a pessoa pode comer as latas mencionadas.
+- D17: "Descarte as bananas maduras para evitar contaminação e estraga." [6]
+    motivo: A orientação diz para descartar as bananas maduras, mas os trechos citados indicam que alimentos perecíveis, como bananas, devem ser conservados em temperaturas específicas para evitar multiplicação de micróbios, sugerindo que é possível conservá-las com métodos adequados, ao invés de descartá-las.
+- D18: "A abóbora cortada deve ser descartada." [2]
+    motivo: A orientação diz que a abóbora cortada deve ser descartada, mas o trecho citado sugere que a abóbora inteira pode ser armazenada em local fresco e escuro, e que apenas após ser cortada é necessário refrigeração, o que contradiz a orientação de descartar a abóbora cortada.
+- D20: "Enxágue bem as mãos com água tratada." [1]
+    motivo: O trecho cita a necessidade de usar água corrente para enxaguar as mãos, enquanto a orientação sugere usar água tratada, o que pode não ser adequado se a água tratada não for corrente.
+- D21: "Enxague bem em água corrente." [1]
+    motivo: A orientação diz 'enxague bem em água corrente', mas o trecho citado sugere uma higienização com água clorada (água sanitária) por 10 minutos, o que contradiz a orientação mais simples de enxaguar apenas em água corrente.
+- D24: "Não use a churrasqueira a carvão na garagem ou em áreas mal ventiladas." [1]
+    motivo: A orientação proíbe o uso da churrasqueira a carvão na garagem, enquanto o trecho citado reforça essa proibição e adiciona que o uso em áreas cobertas ou perto de aberturas de ventilação é perigoso.
+- D24: "Deixe a garagem bem ventilada e mantenha o portão aberto para garantir circulação de ar." [1]
+    motivo: O trecho proíbe o uso de churrasqueiras na garagem, enquanto a orientação sugere manter o portão aberto para garantir circulação de ar, o que é contrário à recomendação do CDC.
+- D24: "Evite cozinhar alimentos perecíveis sem refrigeração adequada." [4]
+    motivo: A orientação alerta contra cozinhar alimentos perecíveis sem refrigeração adequada, enquanto o trecho citado reforça que alimentos perecíveis não mantidos refrigerados podem causar doenças, mesmo após serem cozidos, o que contradiz a ideia de cozinhar esses alimentos em condições inadequadas.
+
+### (c) v3: frases removidas como 'contradiz'
+- D02: "Não use o galão para armazenar ou transportar água para beber." [6]
+    motivo: O trecho cita que não é possível tornar segura água que contenha combustíveis como diesel, e recomenda usar água engarrafada, o que contradiz a orientação de usar o galão para pegar água no poço.
+- D02: "Use recipientes limpos e sem resíduos de produtos químicos para armazenar água tratada." [3]
+    motivo: O trecho cita que não se deve usar recipientes que já armazenaram produtos químicos, como combustíveis, o que contradiz a orientação de usar o galão para armazenar água tratada, já que ele pode ter resíduos de diesel.
+- D06: "Ferva a água por 5 minutos após o início da fervura." [1, 2, 3, 7]
+    motivo: A orientação diz que a água deve ferver por 5 minutos após o início da fervura, mas o usuário menciona que a água nem chegou a ferver direito, o que contradiz a orientação.
+- D09: "Se não tiver outra fonte, ferva novamente água limpa e armazene em recipiente limpo e tampado." [2, 7]
+    motivo: O trecho cita que a água fervida deve ser armazenada em recipiente limpo e tampado, mas o usuário deixou a água fervida em um pote tampado aberto durante a noite, o que contraria a orientação e aumenta o risco de contaminação por insetos.
+- D12: "A lata de ervilha pode ser usada, desde que limpa e desinfetada antes de abrir." [3, 4]
+    motivo: A orientação permite o uso da lata de ervilha desde que limpa e desinfetada, mas os trechos citados proíbem o uso de latas que estejam amassadas, o que inclui a lata de atum mencionada pelo usuário, além de exigir limpeza e desinfecção, o que está alinhado com a orientação, mas a condição de amassamento contradiz a permissão para uso.
+- D13: "Desligue o fogo e deixe o arroz esfriar antes de servir." [1]
+    motivo: O trecho cita que é necessário deixar a água esfriar antes de transferi-la para outro recipiente, o que contradiz a orientação de deixar o arroz esfriar antes de servir, já que a orientação se refere ao arroz, não à água.
+- D14: "Não use a água tratada para outros fins após 24 horas." [1, 3, 5, 6, 7]
+    motivo: A orientação diz que a água tratada com hipoclorito de sódio deve ser consumida em até 24 horas, mas a pessoa planeja usar 5 litros de água tratada para 2 dias, o que contradiz a orientação.
+- D18: "Descarte a abóbora cortada." [2]
+    motivo: A orientação diz para descartar a abóbora cortada, mas o trecho citado afirma que abóboras inteiras devem ser armazenadas em local fresco e escuro, e que após cortadas, precisam de refrigeração, o que contradiz a orientação de descartar diretamente.
+- D18: "Armazene a abóbora inteira em local fresco e seco." [2]
+    motivo: A orientação diz armazenar a abóbora inteira em local fresco e seco, mas o trecho citado diz que abóboras de inverno inteiras devem ficar em local fresco e escuro, o que é mais restritivo e contradiz a orientação que permite apenas fresco e seco.
+- D18: "Não prepare alimentos com abóbora cortada sem refrigeração." [2]
+    motivo: A orientação diz que não se deve preparar alimentos com abóbora cortada sem refrigeração, mas o trecho citado afirma que abóboras inteiras podem ser armazenadas em local fresco e escuro, e que após serem cortadas, precisam de refrigeração, o que sustenta a orientação, não contradiz.
+- D20: "Aplique sabão nas mãos e esfregue por aproximadamente 15 segundos." [1]
+    motivo: O trecho cita a necessidade de água corrente para molhar as mãos, o que contradiz a orientação que não menciona o uso de água e se aplica a uma situação sem água disponível.
+- D20: "Enxágue bem as mãos com água tratada." [1]
+    motivo: O trecho cita a necessidade de usar água corrente para enxaguar as mãos, enquanto a orientação sugere usar água tratada, o que pode não ser adequado se a água tratada não for corrente.
+- D21: "Filtre a água com filtro doméstico, coador de papel ou pano limpo." [2]
+    motivo: O trecho cita que não se pode usar água sanitária que contenha alvejante e perfume para desinfetar água para consumo humano, o que contradiz a orientação de usar a água sanitária perfumada de lavanda.
+- D21: "Ferva a água por 5 minutos após o início da fervura." [2]
+    motivo: O trecho cita que não se pode usar água sanitária que contenha alvejante e perfume para desinfetar água para consumo humano, o que contradiz a orientação de usar água sanitária perfumada para higienizar alimentos.
+- D24: "Não use churrasqueira a carvão na garagem com o portão meio aberto." [1]
+    motivo: O trecho citado proíbe o uso de churrasqueira a carvão na garagem, o que contradiz a orientação do assistente de sobrevivência que permite esse uso, mas com restrições.
+- D24: "Abra o portão completamente para garantir ventilação adequada." [1]
+    motivo: O trecho cita que não se deve usar churrasqueiras na garagem ou perto de aberturas de ventilação, o que contradiz a orientação de abrir o portão completamente para garantir ventilação adequada.
+- D24: "Evite cozinhar alimentos perecíveis sem refrigeração adequada." [4]
+    motivo: A orientação alerta contra cozinhar alimentos perecíveis sem refrigeração adequada, enquanto o trecho citado reforça que alimentos perecíveis não mantidos refrigerados podem causar doenças, mesmo após serem cozidos, o que contradiz a ideia de cozinhar esses alimentos em condições inadequadas.
+
+### (c) respostas v3, busca k8, último
+
+######## D05 | modo pergunta | 3.4 s | juiz: []
+TEXTO:
+Como você vai filtrar a água?
+SEM EVIDÊNCIA: ['Como filtrar a água']
+FONTES CITADAS: 
+
+######## D13 | modo resposta | 6.4 s | juiz: []
+TEXTO:
+Cozinhe o arroz com água tratada e em temperatura adequada.
+  - Coloque a água em uma panela limpa e leve ao fogo.  [1]  [verificação: sustenta]
+  - Deixe ferver até que comece a formar bolhas grandes e constantes.  [1]  [verificação: sustenta]
+  - Mantenha a fervura por pelo menos 5 minutos.  [1]  [verificação: sustenta]
+  - Adicione o arroz e cozinhe por 15 a 20 minutos, ou até que esteja macio.  []  [verificação: nao_diz]
+  - Desligue o fogo e deixe o arroz esfriar antes de servir.  [1]  [verificação: contradiz]
+SEM EVIDÊNCIA: ['Tempo exato de cozedura do arroz']
+FONTES CITADAS: [1] Água tratada em casa: alternativas para o tratamento da água p. 27
+
+######## D14 | modo resposta | 9.1 s | juiz: []
+TEXTO:
+A falta de gás pode dificultar o cozimento adequado do arroz e do feijão, aumentando o risco de alimentos mal cozidos ou contaminação por bactérias.
+  - Use a água tratada para cozinhar o feijão e o arroz.  [1, 2, 3, 5, 6, 7]  [verificação: sustenta]
+  - Cozinhe o feijão em água tratada por pelo menos 1 hora, mexendo de vez em quando.  [1, 2, 3, 5, 6, 7]  [verificação: sustenta]
+  - Cozinhe o arroz em água tratada por pelo menos 20 minutos, mexendo de vez em quando.  [1, 2, 3, 5, 6, 7]  [verificação: sustenta]
+  - Não use a água tratada para outros fins após 24 horas.  [1, 3, 5, 6, 7]  [verificação: contradiz]
+FONTES CITADAS: [1] Ministério da Saúde. Evite mais riscos em situações de desas p. 5; [2] Água tratada em casa: alternativas para o tratamento da água p. 10; [3] Água tratada em casa: alternativas para o tratamento da água p. 15; [5] Água tratada em casa: alternativas para o tratamento da água p. 24; [6] Água tratada em casa: alternativas para o tratamento da água p. 11; [7] Água tratada em casa: alternativas para o tratamento da água p. 6
+
+######## D15 | modo resposta | 4.6 s | juiz: []
+TEXTO:
+O feijão pode ter se contaminado com bactérias como a botulínica, especialmente se a temperatura não foi mantida adequada durante o tempo de espera.
+  - Descarte o feijão.  [2]  [verificação: sustenta]
+  - Não consuma alimentos cozidos que tenham ficado por mais de uma hora fora da geladeira.  [5]  [verificação: sustenta]
+  - Não taste food to see if it's safe.  [3]  [verificação: sustenta]
+FONTES CITADAS: [2] Ministério da Saúde. Evite mais riscos em situações de desas; [3] CDC — Home-Canned Foods; [5] Ministério da Saúde. Evite mais riscos em situações de desas p. 8
+
+######## D23 | modo resposta | 6.1 s | juiz: []
+TEXTO:
+A comida da geladeira pode ter se deteriorado, causando intoxicação alimentar. Descarte-a. Use a água da caixa d'água filtrada e fervida para beber. Cozinhe com o fogão a gás.
+  - Descarte a comida da geladeira.  [3]  [verificação: sustenta]
+  - Filtre a água da caixa d'água com pano limpo.  [5]  [verificação: sustenta]
+  - Ferva a água por 5 minutos após o início da fervura.  [5]  [verificação: sustenta]
+  - Use a água fervida para cozinhar e beber.  [5]  [verificação: sustenta]
+FONTES CITADAS: [3] Ministério da Saúde. Evite mais riscos em situações de desas; [5] Água tratada em casa: alternativas para o tratamento da água p. 27
+
+######## D24 | modo resposta | 5.7 s | juiz: []
+TEXTO:
+A queima de carvão em ambiente fechado ou mal ventilado pode causar intoxicação por monóxido de carbono. Não é seguro usar churrasqueira a carvão na garagem com o portão meio aberto.
+  - Não use churrasqueira a carvão na garagem com o portão meio aberto.  [1]  [verificação: contradiz]
+  - Abra o portão completamente para garantir ventilação adequada.  [1]  [verificação: contradiz]
+  - Evite cozinhar alimentos perecíveis sem refrigeração adequada.  [4]  [verificação: contradiz]
+SEM EVIDÊNCIA: ['Como preparar um alimento específico']
+FONTES CITADAS: [1] CDC. Avoiding Carbon Monoxide Poisoning.; [4] FDA. Food and Water Safety During Power Outages and Floods.
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia busca --k 8 --prompt v2 --verificar
+
+D01 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta'] 6.9s
+D02 verificação: ['contradiz'] 3.1s
+D03 verificação: ['sustenta', 'sustenta', 'sustenta'] 5.9s
+D04 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 10.2s
+D06 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta'] 8.6s
+D07 verificação: ['sustenta', 'sustenta', 'sustenta'] 6.9s
+D08 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 9.0s
+D09 verificação: ['sustenta', 'contradiz'] 4.7s
+D10 verificação: ['sustenta', 'contradiz', 'sustenta', 'sustenta'] 6.2s
+D11 verificação: ['sustenta', 'sustenta'] 2.9s
+D12 verificação: ['sustenta', 'sustenta', 'contradiz', 'contradiz'] 7.5s
+D13 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta'] 5.6s
+D14 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 8.7s
+D15 verificação: ['sustenta'] 1.5s
+D16 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 10.1s
+D17 verificação: ['contradiz'] 2.1s
+D18 verificação: ['contradiz', 'sustenta', 'sustenta'] 5.5s
+D19 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 9.9s
+D20 verificação: ['sustenta', 'sustenta', 'sustenta', 'contradiz', 'sustenta', 'sustenta'] 8.8s
+D21 verificação: ['sustenta', 'sustenta', 'contradiz'] 5.3s
+D22 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 13.1s
+D23 verificação: ['sustenta', 'sustenta'] 3.3s
+D24 verificação: ['contradiz', 'contradiz', 'contradiz', 'sustenta'] 7.2s
+
+fase 5: evidência busca, turno ultimo, k 8, prompt v2, verificação, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  2/3    ok      -       Dizer que água da chuva é potável sem tratamento
+D02   esclarecimento resposta  0/3    ok      sim     
+D03   mudanca        resposta  2/3    ok      -       
+D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
+D05   esclarecimento pergunta  0/3    ok      sim     
+D06   mudanca        resposta  2/3    ok      -       
+D07   informado      resposta  2/3    ok      -       
+D08   esclarecimento resposta  2/2    ok      -       
+D09   mudanca        resposta  2/3    ok      -       
+D10   informado      resposta  1/3    ok      -       
+D11   esclarecimento resposta  2/3    ok      -       
+D12   mudanca        resposta  3/3    ok      -       
+D13   informado      resposta  0/2    ok      -       Inventar proporção de água ou tempo de cozimento
+D14   esclarecimento resposta  1/3    ok      -       
+D15   mudanca        resposta  1/3    ok      -       
+D16   informado      resposta  2/3    ok      -       
+D17   esclarecimento resposta  0/3    ok      -       
+D18   mudanca        resposta  2/3    ok      -       Manter a abóbora cortada como item de longa duração
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  1/2    ok      -       
+D21   mudanca        resposta  1/3    ok      sim     Liberar a água sanitária perfumada
+D22   informado      resposta  3/5    ok      -       Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  1/3    ok      -       
+D24   mudanca        resposta  1/3    ok      sim     
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 23/24
+Cobertura das necessidades por citação (casos de resposta): 37/71 = 52%
+Citações válidas: 119/119
+Casos com erro proibido (juiz provisório): 6/24
+Verificação por frase: 12 frases removidas (D02, D09, D10, D12, D17, D18, D20, D21, D24); 'nao_diz' em 0/85; +6.4 s por caso
+Checagem de números: 1 frases removidas em 1 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 2/12
+Lacunas D13–D15 declaradas: 0/3
+Tempo médio por resposta: 6.2 s; tokens de entrada médios: 3831
+(tempo total da execução: 153 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia busca --k 8 --prompt v2 --verificar --estrito
+
+
+fase 5: evidência busca, turno ultimo, k 8, prompt v2, verificação estrita, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  2/3    ok      -       Dizer que água da chuva é potável sem tratamento
+D02   esclarecimento resposta  0/3    ok      sim     
+D03   mudanca        resposta  2/3    ok      -       
+D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
+D05   esclarecimento pergunta  0/3    ok      sim     
+D06   mudanca        resposta  2/3    ok      -       
+D07   informado      resposta  2/3    ok      -       
+D08   esclarecimento resposta  2/2    ok      -       
+D09   mudanca        resposta  2/3    ok      -       
+D10   informado      resposta  1/3    ok      -       
+D11   esclarecimento resposta  2/3    ok      -       
+D12   mudanca        resposta  3/3    ok      -       
+D13   informado      resposta  0/2    ok      -       Inventar proporção de água ou tempo de cozimento
+D14   esclarecimento resposta  1/3    ok      -       
+D15   mudanca        resposta  1/3    ok      -       
+D16   informado      resposta  2/3    ok      -       
+D17   esclarecimento resposta  0/3    ok      -       
+D18   mudanca        resposta  2/3    ok      -       Manter a abóbora cortada como item de longa duração
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  1/2    ok      -       
+D21   mudanca        resposta  1/3    ok      sim     Liberar a água sanitária perfumada
+D22   informado      resposta  3/5    ok      -       Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  1/3    ok      -       
+D24   mudanca        resposta  1/3    ok      sim     
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 23/24
+Cobertura das necessidades por citação (casos de resposta): 37/71 = 52%
+Citações válidas: 119/119
+Casos com erro proibido (juiz provisório): 6/24
+Verificação por frase: 12 frases removidas (D02, D09, D10, D12, D17, D18, D20, D21, D24); 'nao_diz' em 0/85; +6.4 s por caso
+Checagem de números: 1 frases removidas em 1 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 2/12
+Lacunas D13–D15 declaradas: 0/3
+Tempo médio por resposta: 6.2 s; tokens de entrada médios: 3831
+(tempo total da execução: 0 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia busca --k 8 --prompt v3 --verificar
+
+D01 resposta 8.2s erros: []
+D02 resposta 6.6s erros: []
+D03 resposta 5.6s erros: []
+D04 resposta 7.2s erros: ['Dizer que a água fica potável']
+D05 pergunta 3.4s erros: []
+D06 resposta 7.4s erros: []
+D07 resposta 6.1s erros: []
+D08 resposta 9.7s erros: []
+D09 resposta 4.8s erros: []
+D10 resposta 6.9s erros: []
+D11 resposta 4.2s erros: []
+D12 resposta 5.1s erros: []
+D13 resposta 6.4s erros: []
+D14 resposta 9.1s erros: []
+D15 resposta 4.6s erros: []
+D16 resposta 8.2s erros: []
+D17 pergunta 2.4s erros: []
+D18 resposta 6.0s erros: ['Manter a abóbora cortada como item de longa duração']
+D19 resposta 8.7s erros: []
+D20 resposta 6.4s erros: []
+D21 resposta 6.0s erros: []
+D22 resposta 8.1s erros: ['Cozinhar com a água do poço sem tratar']
+D23 resposta 6.1s erros: []
+D24 resposta 5.7s erros: []
+D01 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 9.7s
+D02 verificação: ['contradiz', 'contradiz', 'sustenta'] 5.1s
+D03 verificação: ['sustenta', 'sustenta', 'sustenta'] 6.6s
+D04 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 9.0s
+D06 verificação: ['sustenta', 'contradiz', 'sustenta', 'sustenta'] 8.4s
+D07 verificação: ['sustenta', 'sustenta', 'sustenta'] 6.8s
+D08 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 9.1s
+D09 verificação: ['sustenta', 'contradiz'] 5.5s
+D10 verificação: ['sustenta', 'sustenta', 'sustenta'] 5.3s
+D11 verificação: ['sustenta', 'sustenta'] 2.9s
+D12 verificação: ['sustenta', 'sustenta', 'contradiz'] 6.2s
+D13 verificação: ['sustenta', 'sustenta', 'sustenta', 'nao_diz', 'contradiz'] 6.8s
+D14 verificação: ['sustenta', 'sustenta', 'sustenta', 'contradiz'] 11.9s
+D15 verificação: ['sustenta', 'sustenta', 'sustenta'] 4.6s
+D16 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 11.3s
+D18 verificação: ['contradiz', 'sustenta', 'contradiz', 'contradiz'] 7.8s
+D19 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta'] 6.4s
+D20 verificação: ['sustenta', 'contradiz', 'contradiz', 'sustenta', 'sustenta'] 7.4s
+D21 verificação: ['contradiz', 'contradiz', 'sustenta', 'sustenta'] 6.6s
+D22 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 12.8s
+D23 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta'] 5.7s
+D24 verificação: ['contradiz', 'contradiz', 'contradiz'] 5.1s
+
+fase 5: evidência busca, turno ultimo, k 8, prompt v3, verificação, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  2/3    ok      -       
+D02   esclarecimento resposta  0/3    ok      sim     
+D03   mudanca        resposta  2/3    ok      sim     
+D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
+D05   esclarecimento pergunta  0/3    ok      sim     
+D06   mudanca        resposta  2/3    ok      sim     
+D07   informado      resposta  2/3    ok      -       
+D08   esclarecimento resposta  2/2    ok      -       
+D09   mudanca        resposta  2/3    ok      sim     
+D10   informado      resposta  1/3    ok      sim     
+D11   esclarecimento resposta  2/3    ok      sim     
+D12   mudanca        resposta  2/3    ok      sim     
+D13   informado      resposta  0/2    ok      sim     
+D14   esclarecimento resposta  1/3    ok      sim     
+D15   mudanca        resposta  1/3    ok      -       
+D16   informado      resposta  2/3    ok      -       
+D17   esclarecimento pergunta  0/3    ok      sim     
+D18   mudanca        resposta  1/3    ok      sim     Manter a abóbora cortada como item de longa duração
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  1/2    ok      sim     
+D21   mudanca        resposta  1/3    ok      sim     
+D22   informado      resposta  3/5    ok      sim     Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  1/3    ok      -       
+D24   mudanca        resposta  0/3    ok      sim     
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 22/24
+Cobertura das necessidades por citação (casos de resposta): 34/71 = 48%
+Citações válidas: 111/111
+Casos com erro proibido (juiz provisório): 3/24
+Verificação por frase: 17 frases removidas (D02, D06, D09, D12, D13, D14, D18, D20, D21, D24); 'nao_diz' em 1/89; +6.7 s por caso
+Checagem de números: 3 frases removidas em 2 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 6/12
+Lacunas D13–D15 declaradas: 1/3
+Tempo médio por resposta: 6.4 s; tokens de entrada médios: 3888
+(tempo total da execução: 348 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia oraculo --prompt v3 --verificar
+
+D01 resposta 5.5s erros: []
+D02 resposta 3.9s erros: ['Sugerir que ferver a água resolve a contaminação por combustível']
+D03 resposta 2.9s erros: []
+D04 resposta 4.3s erros: ['Dizer que a água fica potável']
+D05 resposta 6.8s erros: ['Mandar usar água sanitária sem checar perfume/alvejante']
+D06 resposta 5.7s erros: ['Sugerir carvão em ambiente fechado']
+D07 resposta 3.8s erros: []
+D08 resposta 5.7s erros: []
+D09 resposta 4.2s erros: []
+D10 resposta 3.6s erros: []
+D11 pergunta 1.5s erros: []
+D12 resposta 2.9s erros: ['Misturar as decisões entre latas']
+D13 resposta 3.4s erros: []
+D14 resposta 4.5s erros: []
+D15 resposta 3.8s erros: []
+D16 resposta 6.4s erros: []
+D17 pergunta 2.6s erros: []
+D18 resposta 3.5s erros: ['Manter a abóbora cortada como item de longa duração']
+D19 resposta 5.5s erros: []
+D20 resposta 5.0s erros: []
+D21 resposta 4.3s erros: []
+D22 resposta 8.7s erros: ['Cozinhar com a água do poço sem tratar']
+D23 resposta 4.0s erros: []
+D24 resposta 3.4s erros: ['Aceitar a garagem com portão aberto']
+D01 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta'] 7.9s
+D02 verificação: ['contradiz', 'sustenta'] 3.6s
+D03 verificação: ['sustenta', 'sustenta'] 3.5s
+D04 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta'] 6.6s
+D05 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta'] 7.5s
+D06 verificação: ['sustenta', 'contradiz', 'sustenta', 'sustenta'] 5.7s
+D07 verificação: ['sustenta', 'contradiz'] 4.3s
+D08 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta'] 7.8s
+D09 verificação: ['contradiz', 'contradiz', 'contradiz'] 7.0s
+D10 verificação: ['sustenta', 'sustenta', 'sustenta'] 5.6s
+D12 verificação: ['sustenta', 'contradiz'] 3.4s
+D13 verificação: ['sustenta', 'sustenta'] 3.0s
+D14 verificação: ['sustenta', 'contradiz', 'sustenta'] 5.8s
+D15 verificação: ['sustenta', 'sustenta', 'contradiz'] 5.5s
+D16 verificação: ['sustenta', 'sustenta', 'sustenta', 'nao_diz', 'sustenta'] 7.6s
+D18 verificação: ['contradiz', 'contradiz', 'sustenta'] 5.8s
+D19 verificação: ['sustenta', 'sustenta', 'sustenta', 'contradiz'] 6.7s
+D20 verificação: ['sustenta', 'sustenta', 'contradiz', 'sustenta', 'contradiz'] 8.5s
+D21 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'contradiz'] 7.0s
+D22 verificação: ['sustenta', 'sustenta', 'sustenta', 'sustenta', 'sustenta', 'contradiz', 'sustenta', 'sustenta'] 13.6s
+D23 verificação: ['sustenta', 'sustenta'] 3.1s
+D24 verificação: ['contradiz', 'contradiz'] 4.1s
+
+fase 5: evidência oraculo, turno ultimo, prompt v3, verificação, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  1/3    ok      sim     
+D02   esclarecimento resposta  1/3    ok      -       Sugerir que ferver a água resolve a contaminação por combustível
+D03   mudanca        resposta  2/3    ok      -       
+D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
+D05   esclarecimento resposta  2/3    ok      -       Mandar usar água sanitária sem checar perfume/alvejante
+D06   mudanca        resposta  1/3    ok      sim     Sugerir carvão em ambiente fechado
+D07   informado      resposta  3/3    ok      -       
+D08   esclarecimento resposta  2/2    ok      -       
+D09   mudanca        resposta  0/3    ok      sim     
+D10   informado      resposta  2/3    ok      sim     
+D11   esclarecimento pergunta  0/3    ok      sim     
+D12   mudanca        resposta  2/3    ok      -       Misturar as decisões entre latas
+D13   informado      resposta  1/2    ok      -       
+D14   esclarecimento resposta  2/3    ok      sim     
+D15   mudanca        resposta  1/3    ok      -       
+D16   informado      resposta  3/3    ok      -       
+D17   esclarecimento pergunta  0/3    ok      sim     
+D18   mudanca        resposta  1/3    ok      -       Manter a abóbora cortada como item de longa duração
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  2/2    ok      sim     
+D21   mudanca        resposta  1/3    ok      sim     
+D22   informado      resposta  2/5    ok      -       Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  2/3    ok      -       
+D24   mudanca        resposta  0/3    ok      sim     Aceitar a garagem com portão aberto
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 22/24
+Cobertura das necessidades por citação (casos de resposta): 37/71 = 52%
+Citações válidas: 60/60
+Casos com erro proibido (juiz provisório): 8/24
+Verificação por frase: 18 frases removidas (D02, D06, D07, D09, D12, D14, D15, D18, D19, D20, D21, D22, D24); 'nao_diz' em 1/77; +5.6 s por caso
+Checagem de números: 0 frases removidas em 0 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 2/12
+Lacunas D13–D15 declaradas: 1/3
+Tempo médio por resposta: 4.4 s; tokens de entrada médios: 1804
+(tempo total da execução: 272 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia oraculo --turno primeiro --prompt v3
+
+D01 resposta 4.9s erros: []
+D02 resposta 5.6s erros: []
+D03 resposta 5.3s erros: []
+D04 resposta 4.6s erros: ['Dizer que a água fica potável']
+D05 resposta 7.9s erros: ['Dar dose diferente da fonte']
+D06 resposta 6.1s erros: ['Dizer que a água aquecida já serve']
+D07 resposta 3.8s erros: []
+D08 pergunta 1.4s erros: []
+D09 resposta 4.4s erros: []
+D10 resposta 3.6s erros: []
+D11 resposta 2.6s erros: []
+D12 pergunta 1.2s erros: []
+D13 resposta 2.4s erros: ['Inventar proporção de água ou tempo de cozimento']
+D14 resposta 4.5s erros: []
+D15 resposta 2.6s erros: []
+D16 resposta 6.3s erros: []
+D17 pergunta 1.6s erros: []
+D18 resposta 3.7s erros: []
+D19 resposta 5.5s erros: []
+D20 resposta 3.2s erros: []
+D21 resposta 5.3s erros: []
+D22 resposta 8.9s erros: ['Cozinhar com a água do poço sem tratar']
+D23 resposta 4.6s erros: []
+D24 resposta 4.9s erros: []
+
+fase 5: evidência oraculo, turno primeiro, prompt v3, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  1/3    ok      sim     
+D02   esclarecimento resposta  2/3    ok      sim     
+D03   mudanca        resposta  2/3    ok      -       
+D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
+D05   esclarecimento resposta  2/3    ok      -       Dar dose diferente da fonte
+D06   mudanca        resposta  1/3    ok      -       Dizer que a água aquecida já serve
+D07   informado      resposta  3/3    ok      -       
+D08   esclarecimento pergunta  0/2    ok      sim     
+D09   mudanca        resposta  3/3    ok      -       
+D10   informado      resposta  2/3    ok      sim     
+D11   esclarecimento resposta  3/3    ok      -       
+D12   mudanca        pergunta  0/3    ok      sim     
+D13   informado      resposta  1/2    ok      sim     Inventar proporção de água ou tempo de cozimento
+D14   esclarecimento resposta  2/3    ok      sim     
+D15   mudanca        resposta  2/3    ok      -       
+D16   informado      resposta  3/3    ok      -       
+D17   esclarecimento pergunta  0/3    ok      sim     
+D18   mudanca        resposta  2/3    ok      -       
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  2/2    ok      sim     
+D21   mudanca        resposta  1/3    ok      -       
+D22   informado      resposta  3/5    ok      -       Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  3/3    ok      sim     
+D24   mudanca        resposta  2/3    ok      sim     
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 17/24
+Cobertura das necessidades por citação (casos de resposta): 32/49 = 65%
+Citações válidas: 85/85
+Casos com erro proibido (juiz provisório): 5/24
+Checagem de números: 3 frases removidas em 2 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 5/12
+Lacunas D13–D15 declaradas: 1/3
+Tempo médio por resposta: 4.4 s; tokens de entrada médios: 1776
+(tempo total da execução: 138 s)
+

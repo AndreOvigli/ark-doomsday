@@ -1,0 +1,33 @@
+name: Nova fonte para o acervo
+description: Propor um documento oficial para o ARK
+title: "[Fonte] "
+labels: ["acervo"]
+body:
+  - type: input
+    id: titulo
+    attributes:
+      label: Título e instituição
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL oficial do documento
+    validations:
+      required: true
+  - type: input
+    id: licenca
+    attributes:
+      label: Licença e link da política de uso do site
+    validations:
+      required: true
+  - type: textarea
+    id: lacuna
+    attributes:
+      label: Que dúvida real ela resolve e o acervo atual não?
+    validations:
+      required: true
+  - type: input
+    id: custo
+    attributes:
+      label: Tamanho aproximado (páginas e MB)

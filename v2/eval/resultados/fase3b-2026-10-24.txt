@@ -1,0 +1,659 @@
+ARK v2 - fase 3b: títulos corrigidos, texto de busca sem ficha de catalogação (--limpar), título no reranker
+Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB. Branch v2/fase-1-gabarito, base f3af2eb.
+Corpus remontado: build_passages.py -> 345 passagens; build_chunks.py -> 967 trechos. Nenhuma passagem e nenhum trecho
+  com título vazio. Comparado ao build anterior: mesmos IDs e mesmo texto (só os títulos mudaram), então os caches
+  emb-bge-m3.json e emb-bge-m3-trecho.json continuaram válidos. Só emb-bge-m3-trecho-ctx.json foi apagado e refeito.
+  Gerados agora: passagem-limpo, trecho-limpo, trecho-ctx e trecho-ctx-limpo.
+Busca: bge-m3 denso (Ollama 127.0.0.1:11435, OLLAMA_MODELS=%USERPROFILE%\ollama-v2, encerrado ao fim).
+Reranker: BAAI/bge-reranker-v2-m3 fp16, cuda:0, max_length 1024 (exceto em l). Nenhuma rodada usa --excluir.
+Gabarito: 24 casos, 71 necessidades. O k conta passagens distintas.
+
+Resumo: R@5 / R@10 / R@20 (necessidades de 71)
+                                                               turno último     turno primeiro   soma R@5
+ref a) passagem, rerank 20 (fase 3)                            44 / 56 / 62     46 / 54 / 63     90
+ref d) trecho+ctx, rerank 40 (fase 3, títulos antigos)         48 / 58 / 65     46 / 53 / 62     94
+h) passagem, rerank 20, +título                                48 / 55 / 62     47 / 54 / 63     95
+i) passagem, limpar, rerank 20, +título                        49 / 57 / 63     46 / 54 / 61     95
+j) trecho, rerank 40, +título                                  48 / 58 / 65     42 / 57 / 66     90
+k) trecho, limpar, rerank 40, +título                          47 / 61 / 66     43 / 58 / 65     90
+l) = k com max-len 512                                         47 / 61 / 66     43 / 58 / 65     90
+m) trecho+ctx, rerank 40 (= d com títulos certos)              48 / 55 / 64     43 / 51 / 64     91
+n) trecho+ctx, limpar, rerank 40                               49 / 56 / 64     43 / 54 / 63     92
+
+Leitura
+- O título no reranker é o que mais rende em passagem: a) -> h) dá +4 no último turno e +1 no primeiro.
+  Limpar a ficha (h -> i) troca +1 no último turno por -1 no primeiro: empate.
+- Melhor R@5: h) e i) empatam em 95 na soma dos turnos. Escolhi i) para a lista abaixo, porque tem o maior R@5 no
+  último turno (49) e R@10 maior (57 contra 55). h) é mais simples e 1 ponto melhor no primeiro turno.
+- Trechos (j-n) melhoram o R@10/R@20 (até 61/66), mas não o R@5. No primeiro turno, o R@5 cai para 42-43.
+- max-len 512 (l) dá exatamente o mesmo que k; com trechos curtos, o corte não chega a atuar.
+- Os títulos corretos não deram ganho sobre o diagnóstico da fase 3 com os títulos antigos (49/48, passagem + título
+  sem limpar). h) com os títulos certos dá 48/47. A diferença é de 1 necessidade por turno, dentro do ruído do gabarito.
+- As variações entre as configurações boas são de 1 a 3 necessidades em 71: o gabarito de 24 casos já não separa bem
+  essas opções.
+
+Padrões nas 14 necessidades perdidas de i) no último turno (lista completa abaixo)
+- Concorrência dentro do mesmo caso: os casos têm 3 a 5 necessidades e só há 5 vagas. O top-1 costuma ser uma
+  passagem boa para outra necessidade do mesmo caso (ex.: D05, top-1 ARK-001#p013 "como tratar a água", enquanto
+  a dose está em p024). Sugestão: diversidade no top-5 (MMR, ou no máximo N passagens por documento ou seção),
+  ou uma consulta por necessidade/subpergunta.
+- Os recortes limpos ainda começam com blocos editoriais ("CONTEXTO EDITORIAL:", "ESCOPO:", "TRECHO CONFERIDO
+  VISUALMENTE", "TRADUÇÃO EDITORIAL REVISADA", "SEÇÃO:"), que o --limpar não remove, e alguns trazem o original em
+  inglês ("TRECHO ORIGINAL:") antes da tradução.
+- Passagens de PDF com duas colunas embaralhadas pelo pdftotext (ARK-008 p018/p038: "O que fazer? Por que fazer?"
+  intercalados) perdem para textos mais limpos: D13, D15 e D22 caem por isso.
+
+Saídas completas abaixo; no fim, a lista da configuração i).
+
+======================================================================
+[h] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   1/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 48/71 = 68%
+Recall@10: 55/71 = 77%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 19,3 s)
+
+======================================================================
+[i] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --limpar --rerank 20 --titulo-rerank
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem-limpo, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   1/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   2/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   3/3   
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 49/71 = 69%
+Recall@10: 57/71 = 80%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 25,3 s)
+
+======================================================================
+[j] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --rerank 40 --titulo-rerank
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho, rerank top-40 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     2/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   3/3   
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 48/71 = 68%
+Recall@10: 58/71 = 82%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 19,5 s)
+
+======================================================================
+[k] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-limpo, rerank top-40 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   2/3   3/3   
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   3/3   
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%
+Recall@10: 61/71 = 86%
+Recall@20: 66/71 = 93%
+(tempo total da execução: 32,8 s)
+
+======================================================================
+[l] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --max-len 512
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-limpo, rerank top-40 fp16 +título max 512
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   2/3   3/3   
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   3/3   
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%
+Recall@10: 61/71 = 86%
+Recall@20: 66/71 = 93%
+(tempo total da execução: 19,2 s)
+
+======================================================================
+[m] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --contexto --rerank 40
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-ctx, rerank top-40 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     2/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   2/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 48/71 = 68%
+Recall@10: 55/71 = 77%
+Recall@20: 64/71 = 90%
+(tempo total da execução: 34,5 s)
+
+======================================================================
+[n] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --contexto --limpar --rerank 40
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-ctx-limpo, rerank top-40 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 49/71 = 69%
+Recall@10: 56/71 = 79%
+Recall@20: 64/71 = 90%
+(tempo total da execução: 34,0 s)
+
+======================================================================
+[h] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%
+Recall@10: 54/71 = 76%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 17,8 s)
+
+======================================================================
+[i] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --limpar --rerank 20 --titulo-rerank --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem-limpo, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   2/3   2/3   n2
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   2/3   2/3   n1
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   2/3   2/3   n2
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 54/71 = 76%
+Recall@20: 61/71 = 86%
+(tempo total da execução: 17,5 s)
+
+======================================================================
+[j] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --rerank 40 --titulo-rerank --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho, rerank top-40 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   3/3   
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   3/3   3/3   
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 42/71 = 59%
+Recall@10: 57/71 = 80%
+Recall@20: 66/71 = 93%
+(tempo total da execução: 19,2 s)
+
+======================================================================
+[k] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-limpo, rerank top-40 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   2/3   3/3   
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   3/3   3/3   
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 58/71 = 82%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 19,2 s)
+
+======================================================================
+[l] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --max-len 512 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-limpo, rerank top-40 fp16 +título max 512
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   2/3   3/3   
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   3/3   3/3   
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 58/71 = 82%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 19,6 s)
+
+======================================================================
+[m] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --contexto --rerank 40 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-ctx, rerank top-40 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   2/3   n2
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   2/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   2/3   3/3   
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   2/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 51/71 = 72%
+Recall@20: 64/71 = 90%
+(tempo total da execução: 19,9 s)
+
+======================================================================
+[n] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --contexto --limpar --rerank 40 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-ctx-limpo, rerank top-40 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   2/3   n2
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   2/3   3/3   
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 54/71 = 76%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 19,9 s)
+
+======================================================================
+Configuração i) (passagem, --limpar, rerank 20, +título, fp16): necessidades no top-20 mas fora do top-5
+(script à parte que reproduz a lógica do retrieval_eval; os totais de R@5 conferem com a rodada oficial: 49 e 46)
+
+Turno ultimo: R@5 49/71 (conferência com a rodada oficial); 14 necessidades no top-20 mas fora do top-5:
+- D05 n2 (posição 16) precisa: Água de superfície precisa ser filtrada antes da cloração; água sanitária só sem alvejante e sem perfume, 2,0 a 2,5% de cloro ativo
+    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
+    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
+- D05 n3 (posição 11) precisa: Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em 24 h
+    aceita ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
+    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
+- D07 n3 (posição 14) precisa: Manter fechado, em lugar limpo, longe de sol, poeira e animais
+    aceita ARK-001#p016 [Água tratada em casa: alternativas para o tratamento da água]: QUE MATERIAL PRECISO? Recipientes seguros Usar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes limpos e com tampa. Se possível, usar recipientes co
+    top-1  ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
+- D10 n3 (posição 9) precisa: Latas só se íntegras, sem estufamento, ferrugem ou vazamento
+    aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte [Ministério da Saúde. Evite mais riscos em situações de desas]: CONTEXTO EDITORIAL: Descarte de alimentos em embalagens danificadas, abertas ou fechadas. TRECHO CONFERIDO VISUALMENTE; a página 8 integra a lista "descartar e não consum
+    top-1  ARK-011#Illinois-Planejamento-alimentos-pouco-preparo [Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Fo]: ESCOPO: escolha de alimentos para reserva em emergências com possível falta de eletricidade/refrigeração e escassez de água. Não é receita nem avaliação da segurança de u
+- D11 n2 (posição 10) precisa: Validade vencida: descartar
+    aceita ARK-008#p031 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Verifique cuidadosamente a condição dos alimentos que entram na sua cozinha! Produtos com prazo de validade vencido não devem ser utilizados no preparo de alimen
+    top-1  ARK-009#p010 [Ministério da Saúde. Evite mais riscos em situações de desas]: ALIMENTOS QUE PODEM SER REAPROVEITADOS APÓS CONTATO COM ÁGUA DE ENCHENTE: São seguros apenas os alimentos industrializados e embalados em latas de metal herméticas e sela
+- D13 n2 (posição 9) precisa: Usar só água potável no preparo dos alimentos
+    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Por que fazer? Os estabelecimentos devem ser Os micróbios patogênicos e os abastecidos com água corre
+    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
+- D14 n2 (posição 13) precisa: Com combustível limitado, priorizar pequenas quantidades de água para beber e cozinhar
+    aceita ARK-001#p028 [Água tratada em casa: alternativas para o tratamento da água]: QUANTA ÁGUA POSSO CONSEGUIR? A quantidade de água vai depender do tamanho do recipiente e da quantidade de calor ou combustível disponíveis Se o combustível for limitado,
+    top-1  ARK-001#p015 [Água tratada em casa: alternativas para o tratamento da água]: ARMAZENAMENTO ADEQUADO DA ÁGUA O QUE É O ARMAZENAMENTO ADEQUADO DA ÁGUA? Armazenar a água de forma adequada significa guardar a água tratada em recipientes limpos e bem p
+- D15 n2 (posição 10) precisa: Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo)
+    aceita ARK-008#p038 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 14 A comida está pronta! Como devemos servi-la? O que fazer? Por que fazer? Deixe a área das mesas e cadeiras Os micróbios apenas reduzem a bem limpa e organizad
+    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada entre alimentos crus e cozidos. TRECHO CONFERIDO VISUALMENTE; somente normalização de espaços e palavras 
+- D15 n3 (posição 9) precisa: Cozinhar não resgata alimento mal conservado
+    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: SEÇÃO: Once Power is Restored. TRADUÇÃO EDITORIAL REVISADA PARA PORTUGUÊS; recorte do escopo indicado: Alimentos perecíveis, como carne, aves, frutos do mar, leite e ovos
+    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada entre alimentos crus e cozidos. TRECHO CONFERIDO VISUALMENTE; somente normalização de espaços e palavras 
+- D17 n3 (posição 7) precisa: Descartar fruta com mofo, mau cheiro ou mudança de textura
+    aceita ARK-018#UMD-Conservacao-hortalicas [University of Maryland Extension.]: TRECHO ORIGINAL: Tomatoes: Store at room temperature. Potatoes, sweet potatoes, onions: Store in a cool, dry, well-ventilated area away from light. Winter squash: Store i
+    top-1  ARK-024#NLM-FoodHero-Banana-seca-forno [MedlinePlus / US National Library of Medicine; receita Food ]: ESCOPO: receita específica de banana em forno de temperatura controlada; não valida um forno a lenha específico, tela improvisada ou prazo de conservação. TRECHOS ORIGINA
+- D18 n3 (posição 7) precisa: Sem refrigeração, preparar só para consumo imediato
+    aceita ARK-009#PDFp010-Trecho-sobras-sem-geladeira [Ministério da Saúde. Evite mais riscos em situações de desas]: CONTEXTO EDITORIAL: Sem refrigeração: preparar somente consumo imediato. TRECHO CONFERIDO VISUALMENTE; a página 8 integra a lista "descartar e não consumir": Em situações
+    top-1  ARK-018#UMD-Conservacao-hortalicas [University of Maryland Extension.]: TRECHO ORIGINAL: Tomatoes: Store at room temperature. Potatoes, sweet potatoes, onions: Store in a cool, dry, well-ventilated area away from light. Winter squash: Store i
+- D21 n3 (posição 8) precisa: Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou detergente nos alimentos
+    aceita ARK-021#FDA-Vegetais-preparo [US Food and Drug Administration.]: TRECHO ORIGINAL: Cut away any damaged or bruised areas on fresh fruits and vegetables before preparing and/or eating. Throw away any produce that looks rotten. Wash all p
+    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higieniza- dos, tendo em vista que esses podem ser consumidos crus. A corre- ta higienização elimina os mic
+- D22 n3 (posição 15) precisa: Usar só água potável/tratada no preparo dos alimentos
+    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Por que fazer? Os estabelecimentos devem ser Os micróbios patogênicos e os abastecidos com água corre
+    top-1  ARK-009#p005 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 1 FILTRAR E DESINFETAR 1º Filtrar ou coar a água com filtro doméstico, coador de papel ou pano limpo. 2º Após a filtração, adicionar 2 gotas de hipoclorito de sódio
+- D23 n2 (posição 12) precisa: Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não bastam
+    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: SEÇÃO: Once Power is Restored. TRADUÇÃO EDITORIAL REVISADA PARA PORTUGUÊS; recorte do escopo indicado: Alimentos perecíveis, como carne, aves, frutos do mar, leite e ovos
+    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
+
+Turno primeiro: R@5 46/71 (conferência com a rodada oficial); 15 necessidades no top-20 mas fora do top-5:
+- D05 n2 (posição 18) precisa: Água de superfície precisa ser filtrada antes da cloração; água sanitária só sem alvejante e sem perfume, 2,0 a 2,5% de cloro ativo
+    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
+    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
+- D05 n3 (posição 7) precisa: Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em 24 h
+    aceita ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
+    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
+- D07 n3 (posição 14) precisa: Manter fechado, em lugar limpo, longe de sol, poeira e animais
+    aceita ARK-001#p016 [Água tratada em casa: alternativas para o tratamento da água]: QUE MATERIAL PRECISO? Recipientes seguros Usar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes limpos e com tampa. Se possível, usar recipientes co
+    top-1  ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
+- D10 n3 (posição 9) precisa: Latas só se íntegras, sem estufamento, ferrugem ou vazamento
+    aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte [Ministério da Saúde. Evite mais riscos em situações de desas]: CONTEXTO EDITORIAL: Descarte de alimentos em embalagens danificadas, abertas ou fechadas. TRECHO CONFERIDO VISUALMENTE; a página 8 integra a lista "descartar e não consum
+    top-1  ARK-011#Illinois-Planejamento-alimentos-pouco-preparo [Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Fo]: ESCOPO: escolha de alimentos para reserva em emergências com possível falta de eletricidade/refrigeração e escassez de água. Não é receita nem avaliação da segurança de u
+- D11 n2 (posição 12) precisa: Validade vencida: descartar
+    aceita ARK-009#p008 [Ministério da Saúde. Evite mais riscos em situações de desas]: NESSAS SITUAÇÕES É IMPORTANTE DESCARTAR E NÃO CONSUMIR: Qualquer alimento que tenha entrado em contato com a água de enchentes/inundações/alagamentos/lama. Alimentos cons
+    top-1  ARK-009#p010 [Ministério da Saúde. Evite mais riscos em situações de desas]: ALIMENTOS QUE PODEM SER REAPROVEITADOS APÓS CONTATO COM ÁGUA DE ENCHENTE: São seguros apenas os alimentos industrializados e embalados em latas de metal herméticas e sela
+- D12 n2 (posição 7) precisa: Embalagem amassada, esmagada, enferrujada ou com outro dano: não usar, mesmo sem vazamento
+    aceita ARK-009#p009 [Ministério da Saúde. Evite mais riscos em situações de desas]: Alimentos com embalagens em latas, PET, vidros e caixa tipo "longa vida" que apresentem sinais de alteração, como inchaço, esmagamento, vazamento, ferrugem, buracos, tamp
+    top-1  ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas [Ministério da Saúde. Evite mais riscos em situações de desas]: CONTEXTO EDITORIAL: decisão após contato com enchente. A página 8 determina descarte de embalagens não impermeáveis; a página 10 estabelece uma exceção condicionada para 
+- D12 n3 (posição 14) precisa: Lata íntegra: conferir a validade e limpar a embalagem antes de abrir
+    aceita ARK-008#p031 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Verifique cuidadosamente a condição dos alimentos que entram na sua cozinha! Produtos com prazo de validade vencido não devem ser utilizados no preparo de alimen
+    top-1  ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas [Ministério da Saúde. Evite mais riscos em situações de desas]: CONTEXTO EDITORIAL: decisão após contato com enchente. A página 8 determina descarte de embalagens não impermeáveis; a página 10 estabelece uma exceção condicionada para 
+- D13 n2 (posição 9) precisa: Usar só água potável no preparo dos alimentos
+    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Por que fazer? Os estabelecimentos devem ser Os micróbios patogênicos e os abastecidos com água corre
+    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
+- D14 n2 (posição 6) precisa: Com combustível limitado, priorizar pequenas quantidades de água para beber e cozinhar
+    aceita ARK-001#p028 [Água tratada em casa: alternativas para o tratamento da água]: QUANTA ÁGUA POSSO CONSEGUIR? A quantidade de água vai depender do tamanho do recipiente e da quantidade de calor ou combustível disponíveis Se o combustível for limitado,
+    top-1  ARK-011#Illinois-Planejamento-alimentos-pouco-preparo [Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Fo]: ESCOPO: escolha de alimentos para reserva em emergências com possível falta de eletricidade/refrigeração e escassez de água. Não é receita nem avaliação da segurança de u
+- D15 n2 (posição 11) precisa: Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo)
+    aceita ARK-008#p038 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 14 A comida está pronta! Como devemos servi-la? O que fazer? Por que fazer? Deixe a área das mesas e cadeiras Os micróbios apenas reduzem a bem limpa e organizad
+    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada entre alimentos crus e cozidos. TRECHO CONFERIDO VISUALMENTE; somente normalização de espaços e palavras 
+- D15 n3 (posição 6) precisa: Cozinhar não resgata alimento mal conservado
+    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: SEÇÃO: Once Power is Restored. TRADUÇÃO EDITORIAL REVISADA PARA PORTUGUÊS; recorte do escopo indicado: Alimentos perecíveis, como carne, aves, frutos do mar, leite e ovos
+    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada entre alimentos crus e cozidos. TRECHO CONFERIDO VISUALMENTE; somente normalização de espaços e palavras 
+- D21 n2 (posição 6) precisa: Água sanitária com alvejante ou perfume não serve (regra escrita para água de consumo)
+    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
+    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higieniza- dos, tendo em vista que esses podem ser consumidos crus. A corre- ta higienização elimina os mic
+- D21 n3 (posição 7) precisa: Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou detergente nos alimentos
+    aceita ARK-021#FDA-Vegetais-preparo [US Food and Drug Administration.]: TRECHO ORIGINAL: Cut away any damaged or bruised areas on fresh fruits and vegetables before preparing and/or eating. Throw away any produce that looks rotten. Wash all p
+    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higieniza- dos, tendo em vista que esses podem ser consumidos crus. A corre- ta higienização elimina os mic
+- D22 n3 (posição 15) precisa: Usar só água potável/tratada no preparo dos alimentos
+    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Por que fazer? Os estabelecimentos devem ser Os micróbios patogênicos e os abastecidos com água corre
+    top-1  ARK-009#p005 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 1 FILTRAR E DESINFETAR 1º Filtrar ou coar a água com filtro doméstico, coador de papel ou pano limpo. 2º Após a filtração, adicionar 2 gotas de hipoclorito de sódio
+- D23 n2 (posição 12) precisa: Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não bastam
+    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: SEÇÃO: Once Power is Restored. TRADUÇÃO EDITORIAL REVISADA PARA PORTUGUÊS; recorte do escopo indicado: Alimentos perecíveis, como carne, aves, frutos do mar, leite e ovos
+    top-1  ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 

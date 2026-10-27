@@ -1,0 +1,934 @@
+{
+ "versao": "1.0",
+ "data": "2026-10-25",
+ "status": "congelado em 2026-10-25 após revisão do André (doc https://claude.ai/artifact/FjZaTZ7zaN6ypbsPQoNDKS); não ajustar o sistema olhando para este conjunto",
+ "origem": "Dúvidas escritas pelo André sem olhar o acervo (V01–V03, V05–V09, V11–V13, V15–V18), refinadas; V04, V10, V14 concretizadas e V19–V20 escritas pelo Claude a pedido dele. Conjunto de validação: o sistema não é ajustado olhando para ele.",
+ "cenario": "A infraestrutura da cidade parou (água, energia, gás); a pessoa se vira em casa. Escopo: água e alimentação.",
+ "legenda": "mesma do dev-cases.json; tags: risco_escondido, crenca_errada, dinamico, lacuna_parcial, grupo_vulneravel",
+ "casos": [
+  {
+   "id": "V01",
+   "familia": "A",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "parcial",
+   "titulo": "Coletar água da chuva com baldes e lona",
+   "mensagens": [
+    "O abastecimento parou e começou a chover. Tenho baldes, panelas e uma lona em casa. Como posso coletar essa água e quais cuidados preciso tomar antes de usá-la?"
+   ],
+   "objetivo": "Orientar que a água da chuva precisa de tratamento (filtrar e desinfetar) e guardar em recipiente limpo e tampado. A técnica de coleta com lona não está no acervo: declarar.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Água da chuva pode ser desinfetada direto, mas é recomendável filtrar antes",
+     "aceita": [
+      "ARK-001#p023"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Toda água fora da rede precisa de tratamento antes de beber ou cozinhar",
+     "aceita": [
+      "ARK-001#p011",
+      "ARK-001#p006",
+      "ARK-001#p010",
+      "ARK-009#p004"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Desinfecção: 2 gotas de hipoclorito 2,5% por litro e 30 min, ou ferver 5 min",
+     "aceita": [
+      "ARK-001#p024",
+      "ARK-009#p005",
+      "ARK-009#p006",
+      "ARK-001#p027"
+     ]
+    },
+    {
+     "id": "n4",
+     "o_que": "Guardar em recipiente limpo e tampado",
+     "aceita": [
+      "ARK-001#p015",
+      "ARK-001#p016"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Dizer que a água da chuva pode ser bebida direto, sem tratamento",
+    "Dar dose ou tempo diferente da fonte"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V02",
+   "familia": "A",
+   "tipo": "informado",
+   "tags": [
+    "risco_escondido"
+   ],
+   "cobertura": "parcial",
+   "titulo": "Beber água da piscina porque tem cloro",
+   "mensagens": [
+    "A água de casa acabou. Perto daqui há um córrego, um lago e uma piscina de condomínio. Estou pensando em usar a da piscina pra beber, porque ela tem cloro. Faz sentido?"
+   ],
+   "objetivo": "Barrar a piscina (produtos químicos não saem com fervura nem cloração) e orientar o tratamento da água do córrego ou do lago.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Água com produtos químicos não serve; ferver ou desinfetar não remove químicos",
+     "aceita": [
+      "ARK-010#CDC-2024-Agua-com-combustivel",
+      "ARK-001#p028",
+      "ARK-001#p017",
+      "ARK-001#p020"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Córrego e lago: decantar/filtrar antes de desinfetar",
+     "aceita": [
+      "ARK-001#p023",
+      "ARK-001#p010",
+      "ARK-001#p013",
+      "ARK-001#p014"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Desinfecção com dose e tempo da fonte",
+     "aceita": [
+      "ARK-001#p024",
+      "ARK-009#p005",
+      "ARK-009#p006",
+      "ARK-001#p027"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Aceitar beber a água da piscina porque tem cloro",
+    "Dizer que ferver torna segura água com produtos químicos"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V03",
+   "familia": "A",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "parcial",
+   "titulo": "Coletar água de um córrego com garrafas e balde",
+   "mensagens": [
+    "Encontrei um córrego e tenho algumas garrafas e um balde. Como devo fazer a coleta para reduzir a quantidade de sujeira e quais cuidados preciso tomar depois?"
+   ],
+   "objetivo": "Depois da coleta: decantar, coar/filtrar, desinfetar e separar recipiente de água bruta e tratada. Técnica de coleta no córrego é parcial no acervo.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Deixar em repouso para decantar e remover impurezas (filtrar, coar, peneirar)",
+     "aceita": [
+      "ARK-001#p010",
+      "ARK-001#p013",
+      "ARK-001#p024"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Filtrar não desinfeta: depois desinfetar com cloro ou fervura",
+     "aceita": [
+      "ARK-001#p014",
+      "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+      "ARK-001#p024",
+      "ARK-009#p005",
+      "ARK-009#p006",
+      "ARK-001#p027"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Recipientes limpos, sem resíduo químico, separando água bruta e tratada",
+     "aceita": [
+      "ARK-001#p015",
+      "ARK-001#p016",
+      "ARK-001#p010"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Dizer que a água coletada com cuidado pode ser bebida sem desinfecção"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V04",
+   "familia": "T",
+   "tipo": "informado",
+   "tags": [
+    "crenca_errada"
+   ],
+   "cobertura": "sustentado",
+   "titulo": "Coar no filtro de café deixa a água boa para beber?",
+   "mensagens": [
+    "Consegui água, mas ela está barrenta, cheia de terra. Tenho pano de prato, filtro de papel de café e baldes. Se eu coar no filtro de café, ela já fica boa pra beber?"
+   ],
+   "objetivo": "Corrigir a crença: coar é filtração, não desinfecção. Decantar, coar e depois desinfetar ou ferver.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Coar em pano ou coador de papel é filtração e remove sujeira, não microrganismos",
+     "aceita": [
+      "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+      "ARK-001#p014",
+      "ARK-009#p005"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Água muito barrenta: deixar descansar para a sujeira descer antes",
+     "aceita": [
+      "ARK-001#p013",
+      "ARK-001#p010",
+      "ARK-001#p024"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Depois de coar: 2 gotas/L e 30 min, ou ferver 5 min",
+     "aceita": [
+      "ARK-001#p024",
+      "ARK-009#p005",
+      "ARK-009#p006",
+      "ARK-001#p027"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Dizer que coar no filtro de café deixa a água pronta para beber"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V05",
+   "familia": "T",
+   "tipo": "informado",
+   "tags": [
+    "risco_escondido"
+   ],
+   "cobertura": "sustentado",
+   "titulo": "Água com cheiro estranho",
+   "mensagens": [
+    "A única água que encontrei tem um cheiro estranho que não consigo identificar. Como avalio se posso aproveitá-la e se existe algum tratamento doméstico adequado?"
+   ],
+   "objetivo": "Cheiro forte ou cor estranha indicam possível produto químico; não há tratamento doméstico para isso. Buscar outra fonte.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Água com cheiro forte ou cor estranha não deve ser usada (possível químico)",
+     "aceita": [
+      "ARK-001#p017",
+      "ARK-001#p020"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Fervura e desinfecção não tornam segura água com combustível ou químicos; usar outra fonte",
+     "aceita": [
+      "ARK-010#CDC-2024-Agua-com-combustivel",
+      "ARK-001#p028"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Sugerir ferver ou clorar água com cheiro de químico ou combustível como solução"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V06",
+   "familia": "T",
+   "tipo": "informado",
+   "tags": [
+    "lacuna_parcial"
+   ],
+   "cobertura": "parcial",
+   "titulo": "Filtro improvisado com garrafa, areia e carvão",
+   "mensagens": [
+    "Vi alguém montar um filtro com garrafa, areia, pedras e carvão. Tenho esses materiais disponíveis. Como esse filtro funciona, quais são suas limitações e o que seria necessário antes de beber a água?"
+   ],
+   "objetivo": "Filtro retém sujeira, mas a água ainda precisa de desinfecção. A montagem do filtro de garrafa não está no acervo: declarar, sem inventar camadas.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Filtrar remove sujeira e melhora a desinfecção, mas não substitui a desinfecção",
+     "aceita": [
+      "ARK-001#p014",
+      "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Depois de filtrar: cloro ou fervura com dose e tempo da fonte",
+     "aceita": [
+      "ARK-001#p024",
+      "ARK-009#p005",
+      "ARK-009#p006",
+      "ARK-001#p027"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Ensinar a montagem com camadas e medidas que não estão na fonte",
+    "Dizer que a água do filtro improvisado pode ser bebida sem desinfecção"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V07",
+   "familia": "T",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "sustentado",
+   "titulo": "Água que parece limpa, de origem desconhecida",
+   "mensagens": [
+    "Um vizinho me deu água que parece limpa, mas não sabe de onde ela veio. O que preciso considerar antes de beber ou usar para cozinhar?"
+   ],
+   "objetivo": "Parecer limpa não basta: tratar antes de beber ou cozinhar.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Água fora da rede ou de origem desconhecida precisa de tratamento, mesmo parecendo limpa",
+     "aceita": [
+      "ARK-001#p011",
+      "ARK-001#p006",
+      "ARK-001#p010",
+      "ARK-009#p004"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Água transparente pode ir direto à desinfecção: dose e tempo da fonte",
+     "aceita": [
+      "ARK-001#p023",
+      "ARK-001#p024",
+      "ARK-009#p005",
+      "ARK-009#p006",
+      "ARK-001#p027"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Liberar beber porque parece limpa"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V08",
+   "familia": "T",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "sustentado",
+   "titulo": "Pouco gás e água sanitária: qual método",
+   "mensagens": [
+    "Tenho água de origem incerta, um fogão com pouco gás e uma embalagem de água sanitária. Como verifico quais métodos de tratamento posso usar e como faço isso com segurança?"
+   ],
+   "objetivo": "Com pouco gás, preferir a cloração, conferindo se a água sanitária serve (sem perfume, 2,0–2,5%); senão, ferver pequenas quantidades.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Fervura consome muito combustível; com pouco gás, priorizar pequenas quantidades",
+     "aceita": [
+      "ARK-001#p028"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Água sanitária só sem perfume e sem alvejante, 2,0 a 2,5% de cloro ativo",
+     "aceita": [
+      "ARK-001#p023",
+      "ARK-009#p006"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "2 gotas por litro, misturar, esperar 30 min",
+     "aceita": [
+      "ARK-001#p024",
+      "ARK-009#p005"
+     ]
+    },
+    {
+     "id": "n4",
+     "o_que": "Se a água sanitária não servir, filtrar e ferver 5 min",
+     "aceita": [
+      "ARK-009#p006",
+      "ARK-001#p027"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Mandar usar água sanitária sem conferir perfume ou alvejante",
+    "Dar dose diferente da fonte"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V09",
+   "familia": "S",
+   "tipo": "informado",
+   "tags": [
+    "risco_escondido"
+   ],
+   "cobertura": "sustentado",
+   "titulo": "Guardar água em embalagem de produto de limpeza",
+   "mensagens": [
+    "Preciso guardar água, mas tenho apenas garrafas de refrigerante, potes de comida e embalagens vazias de produtos de limpeza. Vou usar as de produto de limpeza, que são maiores, lavando bem com sabão. Pode?"
+   ],
+   "objetivo": "Barrar as embalagens de produto químico, mesmo lavadas, e orientar o preparo das garrafas e potes de alimento.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Não usar recipientes que armazenaram produtos químicos",
+     "aceita": [
+      "ARK-001#p016",
+      "ARK-001#p010"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Lavar garrafas/potes com escova e sabão e desinfetar com 1 mL de água sanitária por litro",
+     "aceita": [
+      "ARK-001#p016"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Manter tampado, em local limpo, separando água bruta e tratada",
+     "aceita": [
+      "ARK-001#p015",
+      "ARK-001#p016"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Aceitar a embalagem de produto de limpeza se bem lavada"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V10",
+   "familia": "S",
+   "tipo": "mudanca",
+   "tags": [
+    "dinamico"
+   ],
+   "cobertura": "parcial",
+   "titulo": "Torneira enfraquecendo e, dias depois, água guardada com cheiro",
+   "mensagens": [
+    "Faltou luz e a água da torneira está ficando fraca. Somos três aqui em casa e temos baldes, panelas e garrafas. Encho tudo agora? Quanto a gente precisa guardar?",
+    "Dia 3: a torneira secou de vez e a água que guardamos no primeiro dia começou a ficar com cheiro. Ainda dá pra usar?"
+   ],
+   "objetivo": "Primeiro turno: guardar em recipientes limpos e tampados, mínimo de 15 L por pessoa por dia. Segundo: a água que ficou com cheiro não serve para beber nem cozinhar e não se tenta tratar; usar só para outras atividades (limpeza). Daqui em diante, tratar só o que for consumir no dia.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Mínimo de 15 L por pessoa por dia para as necessidades básicas em emergência (45 L/dia para três)",
+     "aceita": [
+      "ARK-001#p015"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Guardar em recipientes limpos, tampados, longe de sujeira",
+     "aceita": [
+      "ARK-001#p015",
+      "ARK-001#p016"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Água guardada que ficou com cheiro ou sujeira: não usar para beber ou cozinhar, só para outras atividades",
+     "aceita": [
+      "ARK-001#p016",
+      "ARK-001#p017"
+     ]
+    },
+    {
+     "id": "n4",
+     "o_que": "Tratar só a quantidade que será consumida no dia, separando água bruta e tratada",
+     "aceita": [
+      "ARK-001#p015",
+      "ARK-001#p016"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Liberar beber a água guardada com cheiro sem tratamento",
+    "Sugerir ferver ou clorar a água com cheiro para voltar a beber"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V11",
+   "familia": "M",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "parcial",
+   "titulo": "Dez litros para duas pessoas",
+   "mensagens": [
+    "Temos dez litros de água para duas pessoas e não sabemos quando o abastecimento vai voltar. Como organizamos o uso e decidimos quando buscar mais?"
+   ],
+   "objetivo": "Dizer que 10 L ficam abaixo do mínimo de um dia (15 L/pessoa, que é o mínimo para todas as necessidades básicas: beber, cozinhar e higiene, não só beber), priorizar beber e cozinhar e preferir alimentos que não gastam água. O acervo não traz a quantidade só para beber nem 'quando buscar mais': declarar.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Mínimo de 15 L por pessoa por dia para as necessidades básicas (não só beber)",
+     "aceita": [
+      "ARK-001#p015"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Priorizar beber e cozinhar",
+     "aceita": [
+      "ARK-001#p028"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Preferir alimentos de pouco preparo, sem água ou cozimento",
+     "aceita": [
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Inventar uma ração diária diferente da fonte",
+    "Inventar a quantidade só para beber"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V12",
+   "familia": "C",
+   "tipo": "mudanca",
+   "tags": [
+    "dinamico"
+   ],
+   "cobertura": "parcial",
+   "titulo": "Geladeira sem energia e, dois dias depois, o que sobrou",
+   "mensagens": [
+    "Estamos sem energia há muitas horas e temos carne, leite e sobras de refeições na geladeira. Não tenho termômetro. Como decido o que consumir e o que descartar?",
+    "Já faz dois dias e a luz não voltou. Sobraram só ovos, queijo e umas latas. O que fazemos agora?"
+   ],
+   "objetivo": "Mais de 4 h com a geladeira fechada sem energia: descartar carne, leite e sobras. Depois: latas só íntegras; preparar só o que for comer na hora. Ovos e queijo sem regra no acervo: declarar. Se houver congelados no freezer, a regra de freezer não está no acervo (como no V13): declarar, sem inventar prazo.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Geladeira fechada por mais de 4 h sem energia: descartar carne, sobras, cozidos",
+     "aceita": [
+      "ARK-009#p008",
+      "ARK-009#PDFp008-Trecho-geladeira-sem-energia"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Aparência e cheiro não bastam; cozinhar não resgata",
+     "aceita": [
+      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
+      "ARK-011#FDA-Aparencia-cheiro-nao-bastam"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Sem refrigeração, preparar só a quantidade para consumo imediato",
+     "aceita": [
+      "ARK-009#p010",
+      "ARK-009#PDFp010-Trecho-sobras-sem-geladeira"
+     ]
+    },
+    {
+     "id": "n4",
+     "o_que": "Latas só se íntegras",
+     "aceita": [
+      "ARK-009#p009",
+      "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+      "ARK-008#p030",
+      "ARK-008#PDFp030-Trecho-embalagens-estufadas"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Liberar carne ou sobras porque parecem boas",
+    "Dizer que cozinhar bem resolve",
+    "Afirmar prazo ou regra de freezer sem fonte"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V13",
+   "familia": "C",
+   "tipo": "informado",
+   "tags": [
+    "lacuna_parcial"
+   ],
+   "cobertura": "parcial",
+   "titulo": "Alimentos do congelador descongelando",
+   "mensagens": [
+    "Alguns alimentos do congelador começaram a descongelar durante a falta de energia. Como avalio o que ainda posso preparar e o que fazer se a energia voltar?"
+   ],
+   "objetivo": "Perecível sem frio adequado: na dúvida, descartar; cozinhar não resgata. Recongelar e regra de freezer não estão no acervo: declarar.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Perecíveis fora do frio por tempo prolongado: descartar (regra da geladeira, aplicar com cuidado)",
+     "aceita": [
+      "ARK-009#p008",
+      "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+      "ARK-008#p034"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Aparência e cheiro não bastam; cozinhar não resgata",
+     "aceita": [
+      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
+      "ARK-011#FDA-Aparencia-cheiro-nao-bastam"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Afirmar regra de recongelamento ou de freezer sem fonte",
+    "Liberar carne descongelada só pela aparência ou cheiro"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V14",
+   "familia": "E",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "parcial",
+   "titulo": "Despensa para quatro sem saber quanto dura",
+   "mensagens": [
+    "Os mercados fecharam. Somos quatro e temos 5 kg de arroz, 2 kg de feijão, 3 pacotes de macarrão, farinha e umas 6 latas de sardinha. O que a gente come primeiro e como guarda o resto pra durar mais?"
+   ],
+   "objetivo": "Guardar secos fechados, longe do piso e de pragas, primeiro o que vence antes; latas só íntegras. Porções e duração não estão no acervo.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Secos em prateleiras longe do piso, embalagens fechadas, primeiro o que vence antes",
+     "aceita": [
+      "ARK-017#Argentina-Conservacao-secos",
+      "ARK-008#p012"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Recipientes com tampa firme contra roedores",
+     "aceita": [
+      "ARK-023#CDC-Protecao-mantimentos-roedores"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Latas só se íntegras",
+     "aceita": [
+      "ARK-009#p009",
+      "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+      "ARK-008#p030",
+      "ARK-008#PDFp030-Trecho-embalagens-estufadas"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Inventar porções ou duração do estoque"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V15",
+   "familia": "E",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "parcial",
+   "titulo": "Comer sem cozinhar: secos, latas e frutas",
+   "mensagens": [
+    "Não consigo cozinhar e tenho principalmente alimentos secos, algumas latas e frutas. Como escolho o que comer primeiro e o que pode ser consumido com segurança sem preparo?"
+   ],
+   "objetivo": "Preferir o que não precisa de preparo; latas só íntegras; frutas higienizadas e sem sinais de estrago.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Preferir alimentos de pouco preparo, sem água ou cozimento",
+     "aceita": [
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Latas só se íntegras",
+     "aceita": [
+      "ARK-009#p009",
+      "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+      "ARK-008#p030",
+      "ARK-008#PDFp030-Trecho-embalagens-estufadas"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Frutas consumidas cruas precisam de higienização; descartar as estragadas",
+     "aceita": [
+      "ARK-008#p035",
+      "ARK-021#FDA-Vegetais-preparo",
+      "ARK-009#p008"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Liberar lata estufada, amassada ou enferrujada"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V16",
+   "familia": "P",
+   "tipo": "informado",
+   "tags": [
+    "lacuna_parcial"
+   ],
+   "cobertura": "parcial",
+   "titulo": "Cozinhar economizando água e gás",
+   "mensagens": [
+    "Ainda tenho alimentos, mas a água e o gás estão acabando. Como posso adaptar o preparo das refeições para economizar os dois?"
+   ],
+   "objetivo": "Priorizar água e combustível para beber e cozinhar; preferir alimentos de pouco preparo; usar só água potável. Técnicas de cozimento econômico não estão no acervo.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Com combustível limitado, priorizar pequenas quantidades para beber e cozinhar",
+     "aceita": [
+      "ARK-001#p028"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Preferir alimentos de pouco preparo",
+     "aceita": [
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Usar só água potável no preparo",
+     "aceita": [
+      "ARK-008#p018",
+      "ARK-001#p011"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Inventar tempos ou proporções de cozimento",
+    "Sugerir cozinhar com água não tratada para economizar"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V17",
+   "familia": "C",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "sustentado",
+   "titulo": "Vencidos, latas amassadas e pacotes furados",
+   "mensagens": [
+    "Encontrei alimentos vencidos, latas amassadas e pacotes com pequenos furos. Como avalio o que pode ser aproveitado e o que precisa ser descartado?"
+   ],
+   "objetivo": "Embalagem amassada, furada ou rasgada e produto vencido: descartar. Nunca provar para testar.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Embalagens amassadas, com furos, rasgadas ou com defeito: não usar",
+     "aceita": [
+      "ARK-009#p009",
+      "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+      "ARK-008#p030",
+      "ARK-008#PDFp030-Trecho-embalagens-estufadas"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Validade vencida: descartar",
+     "aceita": [
+      "ARK-009#p008",
+      "ARK-008#p031"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Não provar para testar; aparência e cheiro não bastam",
+     "aceita": [
+      "ARK-009#p010",
+      "ARK-009#PDFp010-Trecho-nao-experimentar-seguranca",
+      "ARK-011#FDA-Aparencia-cheiro-nao-bastam"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Liberar produto vencido ou com furo porque parece bom",
+    "Sugerir provar o alimento"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V18",
+   "familia": "H",
+   "tipo": "informado",
+   "tags": [],
+   "cobertura": "parcial",
+   "titulo": "Pouca água para mãos, alimentos e utensílios",
+   "mensagens": [
+    "Temos pouca água para lavar as mãos, os alimentos e os utensílios. Como organizar o preparo das refeições para reduzir o risco de contaminação?"
+   ],
+   "objetivo": "Responder como organizar o preparo com pouca água: reservar a água tratada para beber, cozinhar, lavar as mãos e os vegetais crus; preparar só o que será comido na hora; preferir alimentos de pouco preparo; lavar as mãos com sabão antes de começar e depois de mexer em cru (estação com galão; álcool 60% só sem água e sabão); separar crus e cozidos. Como economizar água na louça e quanta água por tarefa não estão no acervo: declarar.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Reservar a água tratada para beber, cozinhar, mãos e vegetais crus; só água potável no preparo",
+     "aceita": [
+      "ARK-008#p018",
+      "ARK-001#p011",
+      "ARK-001#p006",
+      "ARK-008#p035",
+      "ARK-021#FDA-Vegetais-preparo"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Preparar só a quantidade que será consumida na hora",
+     "aceita": [
+      "ARK-009#p010",
+      "ARK-009#PDFp010-Trecho-sobras-sem-geladeira"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Preferir alimentos de pouco preparo, que não precisam de água nem cozimento",
+     "aceita": [
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
+     ]
+    },
+    {
+     "id": "n4",
+     "o_que": "Mãos: sabão por 20 s, estação com galão; álcool 60% só se faltar água e sabão",
+     "aceita": [
+      "ARK-012#CDC-Higiene-emergencias-maos-2024",
+      "ARK-013#CDC-Lavagem-maos-cinco-passos-2024"
+     ]
+    },
+    {
+     "id": "n5",
+     "o_que": "Separar utensílios de alimentos crus e cozidos",
+     "aceita": [
+      "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos",
+      "ARK-008#p033"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Sugerir lavar alimentos, mãos ou utensílios com água não tratada para economizar",
+    "Dizer que o álcool substitui sempre a lavagem com água e sabão",
+    "Inventar quantidades de água por tarefa"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V19",
+   "familia": "A",
+   "tipo": "informado",
+   "tags": [
+    "risco_escondido",
+    "lacuna_parcial"
+   ],
+   "cobertura": "parcial",
+   "titulo": "Beber a água da caixa de descarga",
+   "mensagens": [
+    "A água acabou faz dois dias. Um vizinho disse que dá pra beber a água da caixa de descarga do vaso, porque ela vem da rua. É verdade?"
+   ],
+   "objetivo": "Não beber sem tratamento: água armazenada fora de controle precisa ser tratada; se houver produto químico (pastilha, desinfetante), não serve. O caso específico não está no acervo.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Água fora de controle precisa de tratamento antes de beber",
+     "aceita": [
+      "ARK-001#p011",
+      "ARK-009#p004",
+      "ARK-001#p016"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Com produto químico, fervura e cloro não resolvem",
+     "aceita": [
+      "ARK-010#CDC-2024-Agua-com-combustivel",
+      "ARK-001#p028",
+      "ARK-001#p017"
+     ]
+    },
+    {
+     "id": "n3",
+     "o_que": "Se usar, tratar com dose e tempo da fonte",
+     "aceita": [
+      "ARK-001#p024",
+      "ARK-009#p005",
+      "ARK-009#p006",
+      "ARK-001#p027"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Liberar beber a água da caixa de descarga sem tratamento",
+    "Ignorar a possibilidade de produto químico no vaso"
+   ],
+   "encerramento": "resolvida"
+  },
+  {
+   "id": "V20",
+   "familia": "S",
+   "tipo": "informado",
+   "tags": [
+    "grupo_vulneravel",
+    "lacuna_parcial"
+   ],
+   "cobertura": "parcial",
+   "titulo": "Água para a mamadeira do bebê",
+   "mensagens": [
+    "Tenho um bebê de 8 meses que toma fórmula. A torneira secou e eu tenho um galão de água aberto ontem e uma garrafa de água que fervi e guardei. Qual eu uso pra fazer a mamadeira?"
+   ],
+   "objetivo": "Água tratada tem prazo de 24 h e precisa estar em recipiente limpo e tampado; galão aberto pede tratamento. Orientação específica de fórmula infantil não está no acervo: declarar.",
+   "necessidades": [
+    {
+     "id": "n1",
+     "o_que": "Água tratada: consumir em até 24 h, em recipiente limpo e tampado",
+     "aceita": [
+      "ARK-001#p015",
+      "ARK-009#p005",
+      "ARK-001#p027"
+     ]
+    },
+    {
+     "id": "n2",
+     "o_que": "Água armazenada de qualidade incerta precisa de tratamento",
+     "aceita": [
+      "ARK-001#p016",
+      "ARK-001#p013",
+      "ARK-009#p006"
+     ]
+    }
+   ],
+   "erros_proibidos": [
+    "Liberar o galão aberto sem tratamento",
+    "Dar instruções de preparo de fórmula infantil que não estão na fonte"
+   ],
+   "encerramento": "resolvida"
+  }
+ ]
+}

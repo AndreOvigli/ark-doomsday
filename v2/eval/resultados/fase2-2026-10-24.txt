@@ -1,0 +1,390 @@
+ARK v2 - fase 2: busca densa e híbrida (RRF k=60) vs BM25
+Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060. Branch v2/fase-1-gabarito, base f5f1da3.
+Corpus: python v2\corpus\build_passages.py --library C:\ARK\library -> 345 passagens (pdftotext do Git for Windows).
+Gabarito: v2\eval\dev-cases.json, 24 casos, 71 necessidades.
+
+Ollama
+- nomic-embed-text: Ollama da v1 (C:\ARK\runtime\ollama, 127.0.0.1:11434), modelo já instalado, só leitura.
+- bge-m3: segundo Ollama (mesmo executável), OLLAMA_HOST=127.0.0.1:11435 e OLLAMA_MODELS=%USERPROFILE%\ollama-v2,
+  para não gravar em C:\ARK\models. Encerrado ao fim.
+
+Resumo (necessidades cobertas de 71)
+                              turno último         turno primeiro
+método    modelo              R@5      R@20        R@5      R@20
+bm25      -                   27 38%   46 65%      27 38%   43 61%
+denso     nomic-embed-text    30 42%   47 66%      30 42%   40 56%
+híbrido   nomic-embed-text    29 41%   49 69%      31 44%   46 65%
+denso     bge-m3              38 54%   62 87%      41 58%   63 89%
+híbrido   bge-m3              40 56%   58 82%      39 55%   55 77%
+
+Tempos (script à parte; cache de embeddings apagado antes; modelo já carregado na GPU; via 127.0.0.1)
+- nomic-embed-text: corpus de 345 passagens (lotes de 16) em 5.2 s; consulta média 20 ms (18-30 ms)
+- bge-m3:           corpus de 345 passagens (lotes de 16) em 8.2 s; consulta média 30 ms (26-40 ms)
+  (consulta = embed da consulta via HTTP + produto escalar com 345 vetores em Python puro; 24 consultas por turno)
+- cada execução completa do retrieval_eval (24 casos, cache pronto): 0.8-1.2 s
+
+DESVIO: com o OLLAMA_URL padrão (http://localhost:11434), cada requisição custa cerca de 2 s a mais
+  (nomic: corpus em 52.8 s, consulta média 2157 ms). No Windows o urllib tenta ::1 (IPv6) antes de 127.0.0.1,
+  e o Ollama só escuta em IPv4. Por isso todas as rodadas abaixo usam 127.0.0.1. Os recalls não mudam,
+  só a latência. Sugestão: trocar o padrão do dense.py para http://127.0.0.1:11434.
+
+Saídas completas abaixo.
+
+======================================================================
+$ python v2\eval\retrieval_eval.py
+
+método: bm25, turno: ultimo
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   n1
+D02   sustentado  0/3   2/3   n2
+D03   parcial     2/3   2/3   n2
+D04   sustentado  3/3   3/3   
+D05   sustentado  1/3   2/3   n3
+D06   parcial     2/3   3/3   
+D07   sustentado  2/3   2/3   n3
+D08   sustentado  0/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     2/3   2/3   n3
+D11   parcial     1/3   2/3   n1
+D12   sustentado  0/3   0/3   n1,n2,n3
+D13   lacuna      0/2   1/2   n1
+D14   lacuna      1/3   2/3   n2
+D15   lacuna      0/3   0/3   n1,n2,n3
+D16   sustentado  0/3   1/3   n1,n3
+D17   parcial     2/3   2/3   n3
+D18   sustentado  2/3   2/3   n3
+D19   sustentado  1/3   3/3   
+D20   sustentado  0/2   1/2   n1
+D21   parcial     1/3   2/3   n3
+D22   sustentado  2/5   3/5   n3,n4
+D23   parcial     1/3   2/3   n2
+D24   parcial     1/3   2/3   n2
+
+Total de necessidades: 71
+Recall@5: 27/71 = 38%
+Recall@20: 46/71 = 65%
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --turno primeiro
+
+método: bm25, turno: primeiro
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   n1
+D02   sustentado  0/3   2/3   n2
+D03   parcial     2/3   2/3   n2
+D04   sustentado  3/3   3/3   
+D05   sustentado  0/3   1/3   n2,n3
+D06   parcial     2/3   2/3   n3
+D07   sustentado  2/3   2/3   n3
+D08   sustentado  0/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     2/3   2/3   n3
+D11   parcial     1/3   2/3   n2
+D12   sustentado  2/3   2/3   n3
+D13   lacuna      0/2   1/2   n1
+D14   lacuna      1/3   1/3   n1,n2
+D15   lacuna      0/3   0/3   n1,n2,n3
+D16   sustentado  0/3   1/3   n1,n3
+D17   parcial     1/3   1/3   n2,n3
+D18   sustentado  2/3   2/3   n3
+D19   sustentado  1/3   3/3   
+D20   sustentado  0/2   1/2   n1
+D21   parcial     0/3   2/3   n3
+D22   sustentado  2/5   3/5   n3,n4
+D23   parcial     2/3   2/3   n2
+D24   parcial     1/3   1/3   n2,n3
+
+Total de necessidades: 71
+Recall@5: 27/71 = 38%
+Recall@20: 43/71 = 61%
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo nomic-embed-text   (OLLAMA_URL=http://127.0.0.1:11434)
+
+método: denso (nomic-embed-text), turno: ultimo
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   n1
+D02   sustentado  1/3   2/3   n2
+D03   parcial     2/3   3/3   
+D04   sustentado  3/3   3/3   
+D05   sustentado  1/3   3/3   
+D06   parcial     2/3   2/3   n3
+D07   sustentado  1/3   1/3   n2,n3
+D08   sustentado  2/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     0/3   1/3   n1,n2
+D11   parcial     1/3   2/3   n2
+D12   sustentado  2/3   2/3   n3
+D13   lacuna      0/2   1/2   n1
+D14   lacuna      0/3   2/3   n3
+D15   lacuna      0/3   2/3   n3
+D16   sustentado  0/3   1/3   n2,n3
+D17   parcial     1/3   2/3   n2
+D18   sustentado  0/3   0/3   n1,n2,n3
+D19   sustentado  3/3   3/3   
+D20   sustentado  1/2   1/2   n1
+D21   parcial     2/3   2/3   n3
+D22   sustentado  3/5   3/5   n3,n4
+D23   parcial     1/3   2/3   n2
+D24   parcial     1/3   2/3   n2
+
+Total de necessidades: 71
+Recall@5: 30/71 = 42%
+Recall@20: 47/71 = 66%
+(tempo total da execucao: 1,1 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo hibrido --modelo nomic-embed-text   (OLLAMA_URL=http://127.0.0.1:11434)
+
+método: hibrido (nomic-embed-text), turno: ultimo
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   n1
+D02   sustentado  2/3   2/3   n2
+D03   parcial     2/3   3/3   
+D04   sustentado  3/3   3/3   
+D05   sustentado  1/3   2/3   n3
+D06   parcial     2/3   2/3   n3
+D07   sustentado  1/3   2/3   n3
+D08   sustentado  2/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     0/3   2/3   n3
+D11   parcial     1/3   3/3   
+D12   sustentado  2/3   2/3   n3
+D13   lacuna      0/2   1/2   n1
+D14   lacuna      0/3   2/3   n2
+D15   lacuna      0/3   2/3   n3
+D16   sustentado  0/3   1/3   n2,n3
+D17   parcial     1/3   2/3   n3
+D18   sustentado  0/3   0/3   n1,n2,n3
+D19   sustentado  1/3   3/3   
+D20   sustentado  1/2   1/2   n1
+D21   parcial     2/3   2/3   n3
+D22   sustentado  3/5   3/5   n3,n4
+D23   parcial     1/3   2/3   n2
+D24   parcial     1/3   2/3   n2
+
+Total de necessidades: 71
+Recall@5: 29/71 = 41%
+Recall@20: 49/71 = 69%
+(tempo total da execucao: 0,8 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3   (OLLAMA_URL=http://127.0.0.1:11435)
+
+método: denso (bge-m3), turno: ultimo
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   2/3   n1
+D02   sustentado  3/3   3/3   
+D03   parcial     1/3   3/3   
+D04   sustentado  3/3   3/3   
+D05   sustentado  0/3   3/3   
+D06   parcial     2/3   2/3   n3
+D07   sustentado  1/3   3/3   
+D08   sustentado  2/2   2/2   
+D09   parcial     0/3   1/3   n1,n2
+D10   parcial     0/3   2/3   n2
+D11   parcial     2/3   3/3   
+D12   sustentado  2/3   3/3   
+D13   lacuna      1/2   1/2   n1
+D14   lacuna      1/3   2/3   n3
+D15   lacuna      0/3   3/3   
+D16   sustentado  1/3   3/3   
+D17   parcial     3/3   3/3   
+D18   sustentado  2/3   3/3   
+D19   sustentado  3/3   3/3   
+D20   sustentado  1/2   2/2   
+D21   parcial     2/3   3/3   
+D22   sustentado  3/5   4/5   n4
+D23   parcial     2/3   3/3   
+D24   parcial     2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 38/71 = 54%
+Recall@20: 62/71 = 87%
+(tempo total da execucao: 1,1 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo hibrido --modelo bge-m3   (OLLAMA_URL=http://127.0.0.1:11435)
+
+método: hibrido (bge-m3), turno: ultimo
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   2/3   n1
+D02   sustentado  2/3   2/3   n2
+D03   parcial     2/3   3/3   
+D04   sustentado  3/3   3/3   
+D05   sustentado  1/3   2/3   n3
+D06   parcial     2/3   3/3   
+D07   sustentado  2/3   3/3   
+D08   sustentado  2/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     1/3   2/3   n3
+D11   parcial     2/3   3/3   
+D12   sustentado  2/3   2/3   n3
+D13   lacuna      1/2   1/2   n1
+D14   lacuna      2/3   2/3   n2
+D15   lacuna      1/3   2/3   n3
+D16   sustentado  1/3   2/3   n3
+D17   parcial     2/3   3/3   
+D18   sustentado  2/3   3/3   
+D19   sustentado  3/3   3/3   
+D20   sustentado  0/2   1/2   n1
+D21   parcial     2/3   2/3   n3
+D22   sustentado  3/5   4/5   n4
+D23   parcial     1/3   2/3   n2
+D24   parcial     1/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 40/71 = 56%
+Recall@20: 58/71 = 82%
+(tempo total da execucao: 1,2 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo nomic-embed-text --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11434)
+
+método: denso (nomic-embed-text), turno: primeiro
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   n1
+D02   sustentado  1/3   2/3   n2
+D03   parcial     2/3   2/3   n2
+D04   sustentado  3/3   3/3   
+D05   sustentado  2/3   3/3   
+D06   parcial     2/3   2/3   n3
+D07   sustentado  1/3   1/3   n2,n3
+D08   sustentado  1/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     0/3   1/3   n1,n2
+D11   parcial     0/3   0/3   n1,n2,n3
+D12   sustentado  2/3   2/3   n3
+D13   lacuna      0/2   1/2   n1
+D14   lacuna      1/3   1/3   n1,n3
+D15   lacuna      0/3   0/3   n1,n2,n3
+D16   sustentado  0/3   1/3   n2,n3
+D17   parcial     2/3   2/3   n2
+D18   sustentado  0/3   0/3   n1,n2,n3
+D19   sustentado  3/3   3/3   
+D20   sustentado  1/2   1/2   n1
+D21   parcial     2/3   2/3   n3
+D22   sustentado  3/5   3/5   n3,n4
+D23   parcial     1/3   2/3   n2
+D24   parcial     0/3   1/3   n1,n2
+
+Total de necessidades: 71
+Recall@5: 30/71 = 42%
+Recall@20: 40/71 = 56%
+(tempo total da execucao: 0,9 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo hibrido --modelo nomic-embed-text --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11434)
+
+método: hibrido (nomic-embed-text), turno: primeiro
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   n1
+D02   sustentado  2/3   2/3   n2
+D03   parcial     2/3   2/3   n2
+D04   sustentado  3/3   3/3   
+D05   sustentado  2/3   3/3   
+D06   parcial     2/3   2/3   n3
+D07   sustentado  1/3   2/3   n3
+D08   sustentado  1/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     0/3   2/3   n3
+D11   parcial     2/3   2/3   n2
+D12   sustentado  2/3   2/3   n3
+D13   lacuna      0/2   1/2   n1
+D14   lacuna      0/3   2/3   n1
+D15   lacuna      0/3   0/3   n1,n2,n3
+D16   sustentado  0/3   1/3   n2,n3
+D17   parcial     2/3   2/3   n2
+D18   sustentado  0/3   0/3   n1,n2,n3
+D19   sustentado  1/3   3/3   
+D20   sustentado  1/2   1/2   n1
+D21   parcial     2/3   2/3   n3
+D22   sustentado  3/5   3/5   n3,n4
+D23   parcial     2/3   2/3   n2
+D24   parcial     0/3   2/3   n2
+
+Total de necessidades: 71
+Recall@5: 31/71 = 44%
+Recall@20: 46/71 = 65%
+(tempo total da execucao: 0,9 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435)
+
+método: denso (bge-m3), turno: primeiro
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   2/3   n1
+D02   sustentado  2/3   2/3   n2
+D03   parcial     1/3   3/3   
+D04   sustentado  3/3   3/3   
+D05   sustentado  0/3   3/3   
+D06   parcial     2/3   2/3   n3
+D07   sustentado  1/3   3/3   
+D08   sustentado  2/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     0/3   2/3   n2
+D11   parcial     2/3   3/3   
+D12   sustentado  2/3   3/3   
+D13   lacuna      1/2   1/2   n1
+D14   lacuna      2/3   2/3   n1
+D15   lacuna      2/3   3/3   
+D16   sustentado  1/3   3/3   
+D17   parcial     2/3   3/3   
+D18   sustentado  2/3   3/3   
+D19   sustentado  3/3   3/3   
+D20   sustentado  2/2   2/2   
+D21   parcial     2/3   3/3   
+D22   sustentado  3/5   4/5   n4
+D23   parcial     2/3   3/3   
+D24   parcial     2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 41/71 = 58%
+Recall@20: 63/71 = 89%
+(tempo total da execucao: 1,2 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo hibrido --modelo bge-m3 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435)
+
+método: hibrido (bge-m3), turno: primeiro
+
+caso  cobertura   R@5    R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   2/3   n1
+D02   sustentado  2/3   2/3   n2
+D03   parcial     2/3   2/3   n2
+D04   sustentado  3/3   3/3   
+D05   sustentado  1/3   3/3   
+D06   parcial     2/3   2/3   n3
+D07   sustentado  2/3   3/3   
+D08   sustentado  2/2   2/2   
+D09   parcial     1/3   3/3   
+D10   parcial     1/3   2/3   n3
+D11   parcial     2/3   3/3   
+D12   sustentado  2/3   2/3   n3
+D13   lacuna      1/2   1/2   n1
+D14   lacuna      1/3   2/3   n1
+D15   lacuna      0/3   1/3   n1,n2
+D16   sustentado  1/3   2/3   n3
+D17   parcial     2/3   2/3   n2
+D18   sustentado  2/3   3/3   
+D19   sustentado  3/3   3/3   
+D20   sustentado  1/2   1/2   n1
+D21   parcial     1/3   3/3   
+D22   sustentado  3/5   4/5   n4
+D23   parcial     2/3   2/3   n2
+D24   parcial     1/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 39/71 = 55%
+Recall@20: 55/71 = 77%
+(tempo total da execucao: 1,2 s)
+

@@ -1,0 +1,756 @@
+{
+  "V01": {
+    "modo": "resposta",
+    "texto": "A água da chuva pode ter impurezas, então é preciso tratá-la antes de usar. Use baldes limpos para coletar, filtre se possível e desinfete com cloro. Armazene em recipiente fechado e consuma em até 24 horas.",
+    "orientacoes": [
+      {
+        "frase": "Colete a água da chuva em baldes limpos e protegidos da sujeira.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Filtre a água com um pano limpo se estiver barrenta.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Adicione 2 gotas de hipoclorito de sódio (2,5%) por litro de água.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Misture bem e deixe descansar 30 minutos antes de usar.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Armazene a água tratada em recipiente limpo, fechado e longe de animais.",
+        "fontes": [
+          4
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2831,
+    "_tokens_saida": 709,
+    "_segundos": 17.6,
+    "_ids": [
+      "ARK-001#p023",
+      "ARK-001#p011",
+      "ARK-001#p024",
+      "ARK-001#p015"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V02": {
+    "modo": "resposta",
+    "texto": "A água da piscina não é segura para beber, mesmo com cloro. Pode conter impurezas, bactérias e substâncias químicas que não são removidas pelo cloro. Use água engarrafada ou outra fonte segura.",
+    "orientacoes": [
+      {
+        "frase": "Não beba água da piscina, pois pode conter combustíveis, produtos químicos tóxicos ou materiais radioativos que não podem ser neutralizados por cloro.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Se precisar usar água de fonte, filtre para remover cor e impurezas antes de clorar.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Como identificar se a água da piscina tem substâncias químicas tóxicas"
+    ],
+    "_tokens_entrada": 1828,
+    "_tokens_saida": 580,
+    "_segundos": 13.9,
+    "_ids": [
+      "ARK-010#CDC-2024-Agua-com-combustivel",
+      "ARK-001#p023",
+      "ARK-001#p024"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": [
+      "Aceitar beber a água da piscina porque tem cloro"
+    ]
+  },
+  "V03": {
+    "modo": "resposta",
+    "texto": "A água do córrego precisa ser tratada para remover sujeira e microrganismos. Primeiro, deixe a água parada em um balde para que os sedimentos se depositem (trecho 1). Em seguida, filtre com um pano limpo ou use o balde como filtro (trecho 2). Após a filtração, desinfete com hipoclorito de sódio 2,5% ou ferva (trecho 1 e 2). Armazene em garrafas limpas, fechadas e protegidas de insetos (trecho 3).",
+    "orientacoes": [
+      {
+        "frase": "Deixe a água parada em um balde para que os sedimentos se depositem",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Filtre com um pano limpo ou use o balde como filtro",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Desinfete com hipoclorito de sódio 2,5% ou ferva a água",
+        "fontes": [
+          1,
+          2
+        ]
+      },
+      {
+        "frase": "Armazene em garrafas limpas, fechadas e protegidas de insetos",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2504,
+    "_tokens_saida": 741,
+    "_segundos": 17.4,
+    "_ids": [
+      "ARK-001#p010",
+      "ARK-001#p014",
+      "ARK-001#p015"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V04": {
+    "modo": "resposta",
+    "texto": "A água não é segura para beber apenas com o filtro de café. Primeiro, filtre com pano de prato para remover partículas. Depois, desinfete com hipoclorito de sódio. Não use apenas o filtro de café.",
+    "orientacoes": [
+      {
+        "frase": "Filtre a água com pano de prato para remover partículas.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Adicione 2 gotas de hipoclorito de sódio por litro de água filtrada.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Mexa a água e deixe descansar 30 minutos antes de beber.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "A eficácia do filtro de café não foi mencionada nos trechos."
+    ],
+    "_tokens_entrada": 1949,
+    "_tokens_saida": 477,
+    "_segundos": 11.4,
+    "_ids": [
+      "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+      "ARK-001#p013",
+      "ARK-001#p024"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V05": {
+    "modo": "resposta",
+    "texto": "A água com cheiro estranho pode conter contaminantes. Não é possível torná-la segura por fervura ou desinfecção se houver combustível ou produtos químicos. Se a água estiver limpa e sem óleo, use filtro de cerâmica. Se houver cheiro forte, descarte.",
+    "orientacoes": [
+      {
+        "frase": "Descarte a água se o cheiro for forte ou houver suspeita de produtos químicos.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Se a água estiver limpa e sem óleo, use filtro de cerâmica.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Antes de usar o filtro, limpe os recipientes com água tratada e sabão.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Como identificar se o cheiro indica produtos químicos ou combustíveis"
+    ],
+    "_tokens_entrada": 1537,
+    "_tokens_saida": 1103,
+    "_segundos": 25.7,
+    "_ids": [
+      "ARK-001#p017",
+      "ARK-010#CDC-2024-Agua-com-combustivel"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V06": {
+    "modo": "resposta",
+    "texto": "A água filtrada ainda pode ter microrganismos. É necessário desinfetar após a filtração.",
+    "orientacoes": [
+      {
+        "frase": "Filtre a água com areia, pedras e carvão para remover impurezas sólidas.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Adicione 2 gotas de hipoclorito de sódio por litro de água filtrada.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Mexa a água e deixe descansar 30 minutos antes de beber.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Guarde a água tratada em recipiente limpo e tampado por até 24 horas.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1509,
+    "_tokens_saida": 525,
+    "_segundos": 12.0,
+    "_ids": [
+      "ARK-001#p014",
+      "ARK-001#p024"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V07": {
+    "modo": "resposta",
+    "texto": "A água pode ter contaminantes e precisa ser tratada antes de beber ou cozinhar. Trate-a com cloro ou descarte se não for possível.",
+    "orientacoes": [
+      {
+        "frase": "Trate a água com hipoclorito de sódio a 2,5% usando 2 colheres de sopa por 10 litros de água.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Se não for possível tratar, descarte a água para evitar doenças.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1876,
+    "_tokens_saida": 447,
+    "_segundos": 10.4,
+    "_ids": [
+      "ARK-001#p011",
+      "ARK-001#p023"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V08": {
+    "modo": "resposta",
+    "texto": "A água de origem incerta precisa ser tratada. Use cloração com água sanitária, mas antes filtre ou deixe a sujeira sedimentar. Se não puder filtrar, use o pano limpo para coar.",
+    "orientacoes": [
+      {
+        "frase": "Filtre a água com pano limpo ou deixe a sujeira sedimentar.",
+        "fontes": [
+          4
+        ]
+      },
+      {
+        "frase": "Para cada litro de água, adicione 2 gotas de hipoclorito de sódio a 2,5%.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Misture bem e deixe a água descansar por 30 minutos antes de consumir.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Guarde a água tratada em recipiente limpo e tampado, consuma em até 24 horas.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "A quantidade exata de cloro ativo na água sanitária não foi especificada nos trechos."
+    ],
+    "_tokens_entrada": 2213,
+    "_tokens_saida": 824,
+    "_segundos": 19.1,
+    "_ids": [
+      "ARK-001#p028",
+      "ARK-001#p023",
+      "ARK-001#p024",
+      "ARK-009#p006"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V09": {
+    "modo": "resposta",
+    "texto": "Não use embalagens de produtos de limpeza, mesmo após lavar, pois resíduos químicos podem contaminar a água (trecho 1).",
+    "orientacoes": [
+      {
+        "frase": "Use recipientes feitos de materiais seguros, como garrafas plásticas ou potes de alimentos, após lavar e desinfetar com água sanitária (trecho 1).",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Lave os recipientes com água e sabão, depois desinfete com 1 mL de água sanitária por litro de água (trecho 1).",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2111,
+    "_tokens_saida": 418,
+    "_segundos": 10.3,
+    "_ids": [
+      "ARK-001#p016",
+      "ARK-001#p015"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": [
+      "Aceitar a embalagem de produto de limpeza se bem lavada"
+    ]
+  },
+  "V10": {
+    "modo": "resposta",
+    "texto": "A água armazenada não é segura para consumo. O cheiro indica contaminação. Descarte-a e use apenas água tratada.",
+    "orientacoes": [
+      {
+        "frase": "Não use a água com cheiro para beber ou cozinhar. Descarte-a completamente.",
+        "fontes": [
+          1,
+          2
+        ]
+      },
+      {
+        "frase": "Armazene apenas água tratada em recipientes limpos e fechados.",
+        "fontes": [
+          1,
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Quantidade exata de água a ser armazenada dependendo do número de pessoas"
+    ],
+    "_tokens_entrada": 2103,
+    "_tokens_saida": 422,
+    "_segundos": 10.3,
+    "_ids": [
+      "ARK-001#p015",
+      "ARK-001#p016"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": [
+      "Liberar beber a água guardada com cheiro sem tratamento"
+    ]
+  },
+  "V11": {
+    "modo": "resposta",
+    "texto": "A distribuição inadequada da água pode levar à escassez e doenças por desidratação. Use apenas a quantidade necessária para o dia, evitando desperdício. Decida buscar mais água antes de 24 horas para evitar contaminação. Se precisar ferver, priorize pequenas quantidades devido ao consumo de combustível.",
+    "orientacoes": [
+      {
+        "frase": "Use apenas a quantidade necessária para o dia",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Decida buscar mais água antes de 24 horas",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Se precisar ferver, priorize pequenas quantidades",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Quantidade exata de água para cada pessoa",
+      "Tipo específico de recipiente para armazenamento"
+    ],
+    "_tokens_entrada": 1807,
+    "_tokens_saida": 652,
+    "_segundos": 15.3,
+    "_ids": [
+      "ARK-001#p015",
+      "ARK-001#p028",
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V12": {
+    "modo": "resposta",
+    "texto": "Descarte ovos, queijo e latas danificadas. Verifique latas intactas para danos.",
+    "orientacoes": [
+      {
+        "frase": "Descarte ovos, carne, peixe, leite, frango e ovos crus ou malcozidos.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Descarte alimentos com embalagens danificadas, mesmo sem contato com água de enchente.",
+        "fontes": [
+          4
+        ]
+      },
+      {
+        "frase": "Descarte alimentos que ficaram mais de 4 horas fora da geladeira.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Não consuma alimentos com cheiro, cor ou aspecto alterado.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Validade dos alimentos"
+    ],
+    "_tokens_entrada": 1618,
+    "_tokens_saida": 618,
+    "_segundos": 13.8,
+    "_ids": [
+      "ARK-009#p008",
+      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
+      "ARK-009#p010",
+      "ARK-009#p009"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V13": {
+    "modo": "resposta",
+    "texto": "Se a energia estiver fora há mais de 4 horas, descarte alimentos que estavam no congelador. Se a energia voltar antes disso, verifique se os alimentos ficaram fora do congelador por mais de 4 horas. Se sim, descarte-os. Se não, use apenas se não apresentarem cheiro, cor ou aspecto alterado.",
+    "orientacoes": [
+      {
+        "frase": "Descarte alimentos que ficaram fora do congelador por mais de 4 horas.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Não consuma alimentos perecíveis que não foram mantidos congelados adequadamente.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Como verificar se um alimento está estragado além de cheiro, cor ou aspecto alterado"
+    ],
+    "_tokens_entrada": 1239,
+    "_tokens_saida": 512,
+    "_segundos": 11.6,
+    "_ids": [
+      "ARK-009#p008",
+      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": [
+      "Liberar carne descongelada só pela aparência ou cheiro"
+    ]
+  },
+  "V14": {
+    "modo": "resposta",
+    "texto": "Primeiro, consuma os alimentos com menor prazo de validade. Guarde o restante em recipientes fechados, longe do piso, e verifique a validade antes de usar.",
+    "orientacoes": [
+      {
+        "frase": "Consuma os alimentos com prazo de validade mais próximo primeiro",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Guarde alimentos secos em recipientes de plástico espesso, metal ou vidro com tampas firmes",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Descarte embalagens danificadas, mesmo que não tenham contato com água",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Temperatura ideal de armazenamento",
+      "Quantidade exata de alimento a consumir por dia"
+    ],
+    "_tokens_entrada": 1485,
+    "_tokens_saida": 581,
+    "_segundos": 13.4,
+    "_ids": [
+      "ARK-017#Argentina-Conservacao-secos",
+      "ARK-023#CDC-Protecao-mantimentos-roedores",
+      "ARK-009#p009"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V15": {
+    "modo": "resposta",
+    "texto": "Verifique as latas: descarte as com danos (inchaço, vazamento, etc.) conforme orientado. Lave frutas e legumes crus com água corrente e solução clorada. Alimentos secos podem ser consumidos se bem armazenados, mas não há orientação específica sobre sua segurança.",
+    "orientacoes": [
+      {
+        "frase": "Descarte latas com danos visíveis",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Lave frutas e legumes em água corrente e solução clorada",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Alimentos secos podem ser consumidos se bem armazenados",
+        "fontes": []
+      }
+    ],
+    "sem_evidencia": [
+      "Segurança de alimentos secos em armazenamento"
+    ],
+    "_tokens_entrada": 1421,
+    "_tokens_saida": 652,
+    "_segundos": 15.0,
+    "_ids": [
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+      "ARK-009#p009",
+      "ARK-008#p035"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V16": {
+    "modo": "resposta",
+    "texto": "Evite usar água não tratada para cozinhar. Faça pequenas quantidades de água fervida com o que tiver de combustível, mas não use água com sujeira ou substâncias tóxicas. Confira se os alimentos estão em condições de serem consumidos.",
+    "orientacoes": [
+      {
+        "frase": "Use água tratada para cozinhar e beber, priorizando pequenas quantidades para economizar combustível.",
+        "fontes": [
+          1,
+          3
+        ]
+      },
+      {
+        "frase": "Não use água com sujeira, produtos químicos ou substâncias tóxicas para preparar alimentos.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Verifique se os alimentos estão em condições de serem consumidos, evitando itens deteriorados ou mal conservados.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Métodos alternativos de cozinhar sem gás ou água tratada"
+    ],
+    "_tokens_entrada": 1531,
+    "_tokens_saida": 555,
+    "_segundos": 13.0,
+    "_ids": [
+      "ARK-001#p028",
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+      "ARK-008#p018"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V17": {
+    "modo": "resposta",
+    "texto": "Descarte todos os alimentos vencidos, latas amassadas e pacotes com furos. Esses itens apresentam riscos de contaminação por bactérias, toxinas ou microrganismos.",
+    "orientacoes": [
+      {
+        "frase": "Descarte alimentos com embalagens danificadas, como latas amassadas ou pacotes com furos.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Descarte alimentos com validade vencida.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Não consuma alimentos que tenham contato com água de enchente, mesmo que pareçam secos.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Avaliação de danos pré-existentes nas latas ou embalagens não está abordada nos trechos"
+    ],
+    "_tokens_entrada": 1480,
+    "_tokens_saida": 376,
+    "_segundos": 8.5,
+    "_ids": [
+      "ARK-009#p009",
+      "ARK-009#p008",
+      "ARK-009#p010"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V18": {
+    "modo": "resposta",
+    "texto": "Evite usar água contaminada para preparar alimentos. Use apenas água potável para lavar mãos, utensílios e alimentos. Se não houver água, use álcool 60% ou mais para desinfetar mãos, mas não substitua a lavagem por completo. Separe utensílios para alimentos crus e cozidos. Descarte alimentos que entraram em contato com água imprevisível.",
+    "orientacoes": [
+      {
+        "frase": "Use apenas água potável para preparo de alimentos e higiene.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Use álcool 60% ou mais para desinfetar mãos quando não houver água.",
+        "fontes": [
+          4
+        ]
+      },
+      {
+        "frase": "Separe utensílios para alimentos crus e cozidos.",
+        "fontes": [
+          5
+        ]
+      },
+      {
+        "frase": "Descarte alimentos que entraram em contato com água imprevisível.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Métodos específicos para desinfetar caixas d'água",
+      "Receitas ou duração de armazenamento de alimentos"
+    ],
+    "_tokens_entrada": 1822,
+    "_tokens_saida": 666,
+    "_segundos": 15.3,
+    "_ids": [
+      "ARK-008#p018",
+      "ARK-009#p010",
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+      "ARK-012#CDC-Higiene-emergencias-maos-2024",
+      "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "V19": {
+    "modo": "resposta",
+    "texto": "A água da caixa de descarga pode ter resíduos ou bactérias, então não é segura sem tratamento. Trate-a antes de beber.",
+    "orientacoes": [
+      {
+        "frase": "Trate a água da caixa de descarga usando filtragem, deixe descansar para que a sujeira se acumule no fundo e/ou faça a coagem com pano limpo.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Para cada litro de água, adicione duas gotas de hipoclorito de sódio (2,5%) e misture bem.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Deixe a água descansar por 30 minutos antes de consumir.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Guarde a água tratada em recipiente limpo e tampado, consuma em até 24 horas.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Verifique se a água da caixa de descarga contém combustíveis ou produtos químicos tóxicos, que não podem ser tratados com fervura ou desinfecção."
+    ],
+    "_tokens_entrada": 1846,
+    "_tokens_saida": 612,
+    "_segundos": 14.4,
+    "_ids": [
+      "ARK-001#p011",
+      "ARK-010#CDC-2024-Agua-com-combustivel",
+      "ARK-001#p024"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": [
+      "Liberar beber a água da caixa de descarga sem tratamento"
+    ]
+  },
+  "V20": {
+    "modo": "resposta",
+    "texto": "Use a água fervida. A água aberta da torneira secou não é segura por estar exposta a contaminação.",
+    "orientacoes": [
+      {
+        "frase": "Use a água fervida em recipientes fechados e limpos.",
+        "fontes": [
+          1,
+          2
+        ]
+      },
+      {
+        "frase": "Descarte a água aberta da torneira secou por estar exposta a microrganismos.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2099,
+    "_tokens_saida": 540,
+    "_segundos": 13.2,
+    "_ids": [
+      "ARK-001#p015",
+      "ARK-001#p016"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  }
+}

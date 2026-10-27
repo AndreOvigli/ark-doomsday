@@ -1,0 +1,639 @@
+ARK v2 - fase 3: preparo do acervo (trechos, cabeçalho de contexto, exclusão de documentos) + reranker fp16
+Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB. Branch v2/fase-1-gabarito, base e0525a0.
+Corpus: passages.jsonl da fase 2 (345 passagens, não remontado). build_chunks.py (padrão: 120 palavras, sobra 2) -> 967 trechos.
+Busca: bge-m3 denso, no segundo Ollama em 127.0.0.1:11435 (OLLAMA_MODELS=%USERPROFILE%\ollama-v2), encerrado ao fim.
+Reranker: BAAI/bge-reranker-v2-m3, venv %USERPROFILE%\ark-v2-venv (torch 2.14.1+cu126), cuda:0, max_length 1024.
+Gabarito: 24 casos, 71 necessidades. O k conta passagens distintas (trechos da mesma passagem ocupam uma vaga só).
+
+Resumo: R@5 / R@10 / R@20 (necessidades de 71)
+                                                            turno último       turno primeiro
+ref  passagem, rerank 20 fp32 (fase 2)                      44 / 56 / 62       46 / 54 / 63
+a)   passagem, rerank 20 fp16                               44 / 56 / 62       46 / 54 / 63
+b)   trecho, sem rerank                                     45 / 56 / 66       43 / 56 / 65
+c)   trecho + contexto, sem rerank                          43 / 54 / 63       43 / 54 / 61
+d)   trecho + contexto, rerank 40 fp16                      48 / 58 / 65       46 / 53 / 62
+e)   trecho + contexto, rerank 60 fp16                      47 / 55 / 64       46 / 54 / 64
+f)   passagem, sem ARK-002/006, rerank 20 fp16              44 / 56 / 62       46 / 54 / 63
+g)   trecho + contexto, sem ARK-002/006, rerank 40 fp16     48 / 58 / 65       46 / 54 / 63
+
+Leitura
+- fp16 mantém a qualidade: a) é idêntico ao fp32 da fase 2, caso a caso, nos dois turnos.
+- Trechos sem rerank (b) já melhoram o R@20 (62 -> 66 no último turno) e empatam no R@5.
+- O cabeçalho de contexto sem rerank (c) piora em relação a b) nos dois turnos.
+- A melhor configuração é d), trecho + contexto + rerank 40: R@5 sobe para 48 no último turno (+4 sobre a ref),
+  mas fica igual (46) no primeiro turno. O pool 60 (e) não ajuda.
+- Excluir ARK-002/006 não muda nada em passagem (f = a) e muda só 1 necessidade em trecho (g contra d, R@10/20 do primeiro turno).
+
+Tempos
+- embeddings dos 967 trechos no bge-m3: cerca de 13,4 s (trecho) e cerca de 13,9 s (trecho + contexto); estimado pela
+  1ª rodada de cada variante (15,3 s e 16,0 s) menos a mesma rodada com cache pronto (1,9 s e 2,1 s).
+- rerank fp16 por consulta (reranker carregado e aquecido; script à parte):
+    passagem pool 20: 217 ms (último), 218 ms (primeiro)   [fp32 na fase 2: 754 ms -> 3,5x mais rápido]
+    trecho-ctx pool 40: 274 ms (último), 264 ms (primeiro)
+    trecho-ctx pool 60: 408 ms (último), 394 ms (primeiro)
+- cada execução com --rerank leva 17-23 s no total, quase tudo carregando o reranker (cerca de 15 s).
+
+VRAM (nvidia-smi, total da GPU; a base já inclui o bge-m3 carregado no Ollama 11435)
+- antes do reranker: 2185 MiB; com o reranker fp16 carregado: 3360 MiB (cerca de +1,2 GB; o fp32 somava cerca de +2,3 GB)
+- pico durante o rerank: 3940 MiB (passagem/20); 3596 MiB (trecho-ctx/40 e /60)
+- pico do torch: passagem/20 alocada 1257 / reservada 1642 MiB; trecho-ctx/40 1171 / 1298 MiB (fp32 passagem/20: 2534 / 3912)
+- reranker fp16 + bge-m3 ocupam cerca de 2,5 GB além do desktop, o que deve caber junto com o qwen3:8b (cerca de 5-6 GB) em 8 GB, mas com pouca folga.
+DESVIO: a medição de VRAM por rodada com nvidia-smi em paralelo falhou e saiu vazia; os números acima vêm do script à parte.
+
+EXTRA (diagnóstico feito antes do plano, em script à parte, não versionado; passagem, pool 20 do bge-m3):
+  fp32 max_length 1024                         R@5 último 44, primeiro 46; 769 ms/consulta; torch reservada 3436 MiB
+  fp16 max_length 1024                         R@5 último 44, primeiro 46; 225 ms/consulta; 2206 MiB
+  fp16 max_length 1024 + título do documento   R@5 último 49, primeiro 48; 225 ms/consulta
+  fp16 max_length 512                          R@5 último 46, primeiro 47; 197 ms/consulta; 1600 MiB
+  fp16 max_length 2048                         R@5 último 44, primeiro 46
+  -> Pôr só "título\n" antes da passagem, no texto que o reranker lê, dá R@5 49/48: melhor que d). E max_length 512
+     também ajuda (+2/+1). As passagens têm mediana de 459 tokens, p90 722, máximo 1122; 142 delas passam de 512.
+  -> Nos erros, muitos top-1 e muitas aceitas começam com o bloco de metadados ("FONTE: ... URL ... EDIÇÃO ..."):
+     o reranker lê esse cabeçalho como conteúdo. Vale testar remover ou reduzir esse bloco no texto do reranker.
+  Lista das 18 necessidades no top-20 mas fora do top-5 (fp32, turno último) no fim do arquivo.
+
+Saídas completas abaixo.
+
+======================================================================
+[a] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade passagem --rerank 20 --fp16
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 44/71 = 62%
+Recall@10: 56/71 = 79%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 17,5 s)
+
+======================================================================
+[b] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   3/3   
+D02   sustentado  2/3   2/3   3/3   
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  0/3   1/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     0/3   1/3   3/3   
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n3
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  1/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   1/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   3/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 45/71 = 63%
+Recall@10: 56/71 = 79%
+Recall@20: 66/71 = 93%
+(tempo total da execução: 15,3 s)
+
+======================================================================
+[c] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --contexto
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-ctx
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   3/3   
+D02   sustentado  0/3   1/3   3/3   
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  0/3   2/3   2/3   n2
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n3
+D15   lacuna      2/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  0/2   0/2   1/2   n1
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     1/3   3/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 54/71 = 76%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 16,0 s)
+
+======================================================================
+[d] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --contexto --rerank 40 --fp16
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-ctx, rerank top-40 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     2/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 48/71 = 68%
+Recall@10: 58/71 = 82%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 19,5 s)
+
+======================================================================
+[e] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --contexto --rerank 60 --fp16
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-ctx, rerank top-60 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     2/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%
+Recall@10: 55/71 = 77%
+Recall@20: 64/71 = 90%
+(tempo total da execução: 22,8 s)
+
+======================================================================
+[f] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade passagem --excluir ARK-002,ARK-006 --rerank 20 --fp16
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, sem ARK-002,ARK-006, rerank top-20 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 44/71 = 62%
+Recall@10: 56/71 = 79%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 16,9 s)
+
+======================================================================
+[g] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --contexto --excluir ARK-002,ARK-006 --rerank 40 --fp16
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-ctx, sem ARK-002,ARK-006, rerank top-40 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     2/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 48/71 = 68%
+Recall@10: 58/71 = 82%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 19,0 s)
+
+======================================================================
+[a] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade passagem --rerank 20 --fp16 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     1/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 54/71 = 76%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 17,4 s)
+
+======================================================================
+[b] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     1/3   1/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     0/3   1/3   3/3   
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  1/3   3/3   3/3   
+D17   parcial     2/3   2/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     3/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   3/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 56/71 = 79%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 1,9 s)
+
+======================================================================
+[c] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --contexto --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-ctx
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   3/3   
+D02   sustentado  1/3   1/3   2/3   n2
+D03   parcial     1/3   1/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  0/3   2/3   2/3   n2
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   2/3   2/3   n2
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   3/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 54/71 = 76%
+Recall@20: 61/71 = 86%
+(tempo total da execução: 2,1 s)
+
+======================================================================
+[d] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --contexto --rerank 40 --fp16 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-ctx, rerank top-40 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   2/3   n2
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  2/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   2/3   3/3   
+D15   lacuna      1/3   2/3   2/3   n2
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 53/71 = 75%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 19,4 s)
+
+======================================================================
+[e] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --contexto --rerank 60 --fp16 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-ctx, rerank top-60 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  2/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   2/3   3/3   
+D15   lacuna      1/3   2/3   2/3   n2
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 54/71 = 76%
+Recall@20: 64/71 = 90%
+(tempo total da execução: 22,4 s)
+
+======================================================================
+[f] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade passagem --excluir ARK-002,ARK-006 --rerank 20 --fp16 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, sem ARK-002,ARK-006, rerank top-20 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     1/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 54/71 = 76%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 17,0 s)
+
+======================================================================
+[g] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --unidade trecho --contexto --excluir ARK-002,ARK-006 --rerank 40 --fp16 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-ctx, sem ARK-002,ARK-006, rerank top-40 fp16
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   2/3   n2
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n3
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  2/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   3/3   3/3   
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 54/71 = 76%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 18,6 s)
+
+======================================================================
+EXTRA: saída do diagnóstico (script à parte)
+
+tokens por passagem: mediana 459, p90 722, max 1122, >1000: 2, >512: 142
+
+Necessidades no top-20 mas fora do top-5 após rerank (fp32, 1024, turno último):
+  D02 n2 pos  7 | precisa: Água com combustível não fica segura com fervura ou desinfecção
+      aceita ARK-010#CDC-2024-Agua-com-combustivel: 'FONTE: CDC. How to Make Water Safe in an Emergency. 19/09/2024.\nSEÇÃO: Water with fuel or toxic chemicals in it. Página web, sem página física de PDF.\nTRADUÇÃO '
+      top1 ARK-001#p016: 'QUE MATERIAL PRECISO?\nRecipientes seguros\nUsar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes\nlimpos e com tampa. Se possível, usar reci'
+  D05 n2 pos 10 | precisa: Água de superfície precisa ser filtrada antes da cloração; água sanitária só sem alvejante
+      aceita ARK-009#p006: 'OPÇÃO 2\nFILTRAR E FERVER\n\n Atenção! Na falta do hipoclorito de sódio a 2,5%, é\n necessário filtrar e ferver a água por cinco minutos\n antes de beber e/ou lavar '
+      top1 ARK-001#p013: 'COMO TRATAR A ÁGUA PARA BEBER\nEM CASA?\nQuando a água não chega tratada por meio da rede de abastecimento,\né necessário realizar o tratamento dela em casa. Afina'
+  D05 n3 pos 13 | precisa: Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em 24 h
+      aceita ARK-001#p024: 'COMO USAR?\nPrepare a água\nRecomenda-se que a água tenha sido filtrada.\nSe a água disponível estiver barrenta e não seja possível realizar\na filtração, deixe des'
+      top1 ARK-001#p013: 'COMO TRATAR A ÁGUA PARA BEBER\nEM CASA?\nQuando a água não chega tratada por meio da rede de abastecimento,\né necessário realizar o tratamento dela em casa. Afina'
+  D07 n3 pos 13 | precisa: Manter fechado, em lugar limpo, longe de sol, poeira e animais
+      aceita ARK-001#p016: 'QUE MATERIAL PRECISO?\nRecipientes seguros\nUsar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes\nlimpos e com tampa. Se possível, usar reci'
+      top1 ARK-001#p024: 'COMO USAR?\nPrepare a água\nRecomenda-se que a água tenha sido filtrada.\nSe a água disponível estiver barrenta e não seja possível realizar\na filtração, deixe des'
+  D10 n3 pos 12 | precisa: Latas só se íntegras, sem estufamento, ferrugem ou vazamento
+      aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte: 'FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos.\nPÁGINA FÍSICA: 9. Data de criação do'
+      top1 ARK-011#Illinois-Planejamento-alimentos-pouco-preparo: 'FONTE: Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Food.\nURL OFICIAL: https://ready.illinois.gov/plan/food.html\nCONSULTA: 22/10/2026. Data de publ'
+  D11 n2 pos  8 | precisa: Validade vencida: descartar
+      aceita ARK-008#p031: 'Atenção!\nVerifique cuidadosamente a condição dos alimentos que\n\n entram na sua cozinha!\nProdutos com prazo de validade vencido não devem ser\n\n utilizados no pre'
+      top1 ARK-009#p009: 'Alimentos com embalagens em latas, PET, vidros e caixa\ntipo "longa vida" que apresentem sinais de alteração,\ncomo inchaço, esmagamento, vazamento, ferrugem,\nbur'
+  D12 n3 pos  6 | precisa: Lata íntegra: conferir a validade e limpar a embalagem antes de abrir
+      aceita ARK-008#p030: 'O que fazer? Por que fazer?\n\nNão use e não compre produtos A embalagem é uma importante\ncom embalagens amassadas, proteção dos alimentos, portan-\nestufadas, enf'
+      top1 ARK-009#p009: 'Alimentos com embalagens em latas, PET, vidros e caixa\ntipo "longa vida" que apresentem sinais de alteração,\ncomo inchaço, esmagamento, vazamento, ferrugem,\nbur'
+  D13 n2 pos  9 | precisa: Usar só água potável no preparo dos alimentos
+      aceita ARK-008#p018: 'Capítulo 7\n\nQuais cuidados devem ser tomados com a água?\n\nO que fazer? Por que fazer?\n\nOs estabelecimentos devem ser Os micróbios patogênicos e os\nabastecidos c'
+      top1 ARK-001#p024: 'COMO USAR?\nPrepare a água\nRecomenda-se que a água tenha sido filtrada.\nSe a água disponível estiver barrenta e não seja possível realizar\na filtração, deixe des'
+  D14 n2 pos 13 | precisa: Com combustível limitado, priorizar pequenas quantidades de água para beber e cozinhar
+      aceita ARK-001#p028: 'QUANTA ÁGUA POSSO CONSEGUIR?\nA quantidade de água vai depender do tamanho do recipiente e da quantidade\nde calor ou combustível disponíveis\nSe o combustível for'
+      top1 ARK-001#p024: 'COMO USAR?\nPrepare a água\nRecomenda-se que a água tenha sido filtrada.\nSe a água disponível estiver barrenta e não seja possível realizar\na filtração, deixe des'
+  D15 n2 pos  9 | precisa: Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo)
+      aceita ARK-008#p038: 'Capítulo 14\n\nA comida está pronta! Como devemos servi-la?\n\nO que fazer? Por que fazer?\n\nDeixe a área das mesas e cadeiras Os micróbios apenas reduzem a\nbem limp'
+      top1 ARK-008#PDFp033-Trecho-utensilios-crus-cozidos: 'FONTE: Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação. 3ª edição.\nPÁGINA FÍSICA: 33.\nCONTEXTO EDITORIAL: Utensílios de cozinha e contaminação'
+  D15 n3 pos  6 | precisa: Cozinhar não resgata alimento mal conservado
+      aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao: 'FONTE: FDA. Food and Water Safety During Power Outages and Floods.\nData de edição não confirmada; captura em 22/10/2026.\nSEÇÃO: Once Power is Restored.\nURL: htt'
+      top1 ARK-008#PDFp033-Trecho-utensilios-crus-cozidos: 'FONTE: Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação. 3ª edição.\nPÁGINA FÍSICA: 33.\nCONTEXTO EDITORIAL: Utensílios de cozinha e contaminação'
+  D16 n2 pos  9 | precisa: Recipientes de plástico espesso, metal ou vidro com tampa firme contra roedores
+      aceita ARK-023#CDC-Protecao-mantimentos-roedores: 'FONTE: CDC / NCEZID. How to Seal Up to Prevent Rodents.\nURL OFICIAL: https://www.cdc.gov/healthy-pets/rodent-control/seal-up.html\nEDIÇÃO: 08/04/2024. CONSULTA: '
+      top1 ARK-017#Argentina-Conservacao-secos: 'FONTE: Governo da Argentina, Alimentar Saberes.\nURL OFICIAL: https://www.argentina.gob.ar/alimentarsaberes/limpiaryguardar/guardaryconservar\nEDIÇÃO: data/edição'
+  D17 n3 pos  6 | precisa: Descartar fruta com mofo, mau cheiro ou mudança de textura
+      aceita ARK-018#UMD-Conservacao-hortalicas: 'FONTE: University of Maryland Extension.\nURL OFICIAL: https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables\nEDIÇÃO: atualizado em 20/02/20'
+      top1 ARK-024#NLM-FoodHero-Banana-seca-forno: 'FONTE: MedlinePlus / US National Library of Medicine; receita Food Hero / Oregon State University Extension. Dried Bananas.\nURL OFICIAL: https://medlineplus.gov'
+  D18 n3 pos  6 | precisa: Sem refrigeração, preparar só para consumo imediato
+      aceita ARK-009#PDFp010-Trecho-sobras-sem-geladeira: 'FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos.\nPÁGINA FÍSICA: 10. Data de criação d'
+      top1 ARK-018#UMD-Conservacao-hortalicas: 'FONTE: University of Maryland Extension.\nURL OFICIAL: https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables\nEDIÇÃO: atualizado em 20/02/20'
+  D20 n1 pos  6 | precisa: Sem torneira, montar estação temporária com galão; lavar por pelo menos 20 s; álcool 60% s
+      aceita ARK-012#CDC-Higiene-emergencias-maos-2024: 'FONTE OFICIAL: CDC. Guidelines for Personal Hygiene During an Emergency.\nURL: https://www.cdc.gov/water-emergency/safety/guidelines-for-personal-hygiene-during-'
+      top1 ARK-013#CDC-Lavagem-maos-cinco-passos-2024: 'FONTE OFICIAL: CDC. About Handwashing.\nURL: https://www.cdc.gov/clean-hands/about/index.html\nDATA INFORMADA NA PÁGINA: 2024-02-16. Edição numerada não indicada.'
+  D21 n3 pos 10 | precisa: Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou detergente nos alimen
+      aceita ARK-021#FDA-Vegetais-preparo: 'FONTE: US Food and Drug Administration.\nURL OFICIAL: https://www.fda.gov/food/buy-store-serve-safe-food/selecting-and-serving-produce-safely\nEDIÇÃO: data de edi'
+      top1 ARK-008#p035: 'Atenção!\n Alimentos como frutas, legumes e hortaliças devem ser higieniza-\ndos, tendo em vista que esses podem ser consumidos crus. A corre-\n ta higienização el'
+  D22 n3 pos 17 | precisa: Usar só água potável/tratada no preparo dos alimentos
+      aceita ARK-008#p018: 'Capítulo 7\n\nQuais cuidados devem ser tomados com a água?\n\nO que fazer? Por que fazer?\n\nOs estabelecimentos devem ser Os micróbios patogênicos e os\nabastecidos c'
+      top1 ARK-009#p005: 'OPÇÃO 1\nFILTRAR E DESINFETAR\n\n1º Filtrar ou coar a água com filtro doméstico, coador de\n\n papel ou pano limpo.\n\n2º Após a filtração, adicionar 2 gotas de hipocl'
+  D23 n2 pos 12 | precisa: Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não bastam
+      aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao: 'FONTE: FDA. Food and Water Safety During Power Outages and Floods.\nData de edição não confirmada; captura em 22/10/2026.\nSEÇÃO: Once Power is Restored.\nURL: htt'
+      top1 ARK-009#p006: 'OPÇÃO 2\nFILTRAR E FERVER\n\n Atenção! Na falta do hipoclorito de sódio a 2,5%, é\n necessário filtrar e ferver a água por cinco minutos\n antes de beber e/ou lavar '
+float32 max_length=1024: R@5 último 44/71, primeiro 46/71; 769 ms/consulta; VRAM reservada pico 3436 MiB
+float16 max_length=1024: R@5 último 44/71, primeiro 46/71; 225 ms/consulta; VRAM reservada pico 2206 MiB
+float16 max_length=1024 + título: R@5 último 49/71, primeiro 48/71; 225 ms/consulta; VRAM reservada pico 2206 MiB
+float16 max_length=512: R@5 último 46/71, primeiro 47/71; 197 ms/consulta; VRAM reservada pico 1600 MiB
+float16 max_length=2048: R@5 último 44/71, primeiro 46/71; 223 ms/consulta; VRAM reservada pico 1600 MiB

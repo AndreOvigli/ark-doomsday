@@ -1,0 +1,1214 @@
+{
+ "v3": {
+  "evidencia": {
+   "D01": [
+    "ARK-001#p010",
+    "ARK-001#p013",
+    "ARK-001#p006",
+    "ARK-001#p011",
+    "ARK-009#p004",
+    "ARK-001#p005",
+    "ARK-001#p009",
+    "ARK-001#p024"
+   ],
+   "D02": [
+    "ARK-001#p006",
+    "ARK-001#p015",
+    "ARK-001#p016",
+    "ARK-009#p006",
+    "ARK-001#p017",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p027",
+    "ARK-001#p007"
+   ],
+   "D03": [
+    "ARK-001#p006",
+    "ARK-001#p015",
+    "ARK-001#p010",
+    "ARK-001#p005",
+    "ARK-001#p011",
+    "ARK-009#p009",
+    "ARK-001#p016",
+    "ARK-009#p006"
+   ],
+   "D04": [
+    "ARK-001#p026",
+    "ARK-001#p027",
+    "ARK-001#p010",
+    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+    "ARK-009#p006",
+    "ARK-001#p017",
+    "ARK-001#p006",
+    "ARK-001#p014"
+   ],
+   "D05": [
+    "ARK-001#p013",
+    "ARK-001#p016",
+    "ARK-001#p015",
+    "ARK-001#p017",
+    "ARK-001#p010",
+    "ARK-001#p024",
+    "ARK-001#p005",
+    "ARK-001#p014"
+   ],
+   "D06": [
+    "ARK-009#p006",
+    "ARK-001#p026",
+    "ARK-001#p027",
+    "ARK-001#p023",
+    "ARK-001#p010",
+    "ARK-001#p011",
+    "ARK-001#p028",
+    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao"
+   ],
+   "D07": [
+    "ARK-001#p015",
+    "ARK-009#p005",
+    "ARK-001#p024",
+    "ARK-001#p025",
+    "ARK-001#p018",
+    "ARK-002#p118",
+    "ARK-001#p010",
+    "ARK-001#p021"
+   ],
+   "D08": [
+    "ARK-001#p015",
+    "ARK-001#p016",
+    "ARK-001#p010",
+    "ARK-001#p021",
+    "ARK-001#p011",
+    "ARK-001#p024",
+    "ARK-001#p005",
+    "ARK-009#p006"
+   ],
+   "D09": [
+    "ARK-001#p007",
+    "ARK-001#p027",
+    "ARK-009#p006",
+    "ARK-023#CDC-Protecao-mantimentos-roedores",
+    "ARK-008#p018",
+    "ARK-001#p028",
+    "ARK-001#p016",
+    "ARK-009#p009"
+   ],
+   "D10": [
+    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+    "ARK-009#p008",
+    "ARK-001#p011",
+    "ARK-001#p005",
+    "ARK-009#p007",
+    "ARK-009#p006",
+    "ARK-008#p018",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira"
+   ],
+   "D11": [
+    "ARK-009#p010",
+    "ARK-008#p030",
+    "ARK-009#p009",
+    "ARK-008#PDFp030-Trecho-embalagens-estufadas",
+    "ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-009#p011",
+    "ARK-017#Argentina-Conservacao-secos"
+   ],
+   "D12": [
+    "ARK-008#p030",
+    "ARK-008#PDFp030-Trecho-embalagens-estufadas",
+    "ARK-009#p010",
+    "ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas",
+    "ARK-009#p009",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-009#PDFp008-Trecho-Embalagens-nao-impermeaveis",
+    "ARK-008#p036"
+   ],
+   "D13": [
+    "ARK-001#p027",
+    "ARK-008#p018",
+    "ARK-001#p024",
+    "ARK-001#p010",
+    "ARK-009#p005",
+    "ARK-001#p005",
+    "ARK-001#p028",
+    "ARK-001#p011"
+   ],
+   "D14": [
+    "ARK-009#p005",
+    "ARK-001#p010",
+    "ARK-001#p015",
+    "ARK-001#p005",
+    "ARK-001#p024",
+    "ARK-001#p011",
+    "ARK-001#p006",
+    "ARK-001#p016"
+   ],
+   "D15": [
+    "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos",
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-016#CDC-Conservas-limites-2024",
+    "ARK-008#p032",
+    "ARK-009#p008",
+    "ARK-008#p033",
+    "ARK-019#UMN-Secagem-limites",
+    "ARK-009#p007"
+   ],
+   "D16": [
+    "ARK-017#Argentina-Conservacao-secos",
+    "ARK-009#p010",
+    "ARK-008#p029",
+    "ARK-008#p015",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-009#p007",
+    "ARK-008#p036",
+    "ARK-008#p037"
+   ],
+   "D17": [
+    "ARK-024#NLM-FoodHero-Banana-seca-forno",
+    "ARK-019#UMN-Secagem-limites",
+    "ARK-018#UMD-Conservacao-hortalicas",
+    "ARK-008#p038",
+    "ARK-017#Argentina-Conservacao-secos",
+    "ARK-008#p012",
+    "ARK-008#p035",
+    "ARK-009#p010"
+   ],
+   "D18": [
+    "ARK-022#UMN-Prioridade-hortalicas",
+    "ARK-018#UMD-Conservacao-hortalicas",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-008#p035",
+    "ARK-008#p038",
+    "ARK-008#p029",
+    "ARK-004#p006",
+    "ARK-008#p034"
+   ],
+   "D19": [
+    "ARK-001#p016",
+    "ARK-001#p010",
+    "ARK-001#p024",
+    "ARK-001#p015",
+    "ARK-001#p013",
+    "ARK-009#p006",
+    "ARK-009#p005",
+    "ARK-001#p006"
+   ],
+   "D20": [
+    "ARK-008#p025",
+    "ARK-001#p016",
+    "ARK-013#CDC-Lavagem-maos-cinco-passos-2024",
+    "ARK-001#p013",
+    "ARK-009#p004",
+    "ARK-009#p006",
+    "ARK-008#p027",
+    "ARK-012#CDC-Higiene-emergencias-maos-2024"
+   ],
+   "D21": [
+    "ARK-008#p035",
+    "ARK-009#p006",
+    "ARK-009#p011",
+    "ARK-008#p032",
+    "ARK-001#p016",
+    "ARK-003#p004",
+    "ARK-008#p018",
+    "ARK-008#p033"
+   ],
+   "D22": [
+    "ARK-009#p005",
+    "ARK-001#p025",
+    "ARK-009#p006",
+    "ARK-001#p015",
+    "ARK-001#p024",
+    "ARK-001#p023",
+    "ARK-001#p010",
+    "ARK-001#p018"
+   ],
+   "D23": [
+    "ARK-009#p008",
+    "ARK-009#p006",
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-009#p004",
+    "ARK-001#p027",
+    "ARK-009#p005",
+    "ARK-008#p038",
+    "ARK-001#p004"
+   ],
+   "D24": [
+    "ARK-012#CDC-Churrasqueira-dentro-de-casa",
+    "ARK-001#p026",
+    "ARK-011#FDA-Aparencia-cheiro-nao-bastam",
+    "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
+    "ARK-008#p014",
+    "ARK-008#p032",
+    "ARK-001#p028",
+    "ARK-009#p001"
+   ],
+   "D25": [
+    "ARK-001#p011",
+    "ARK-001#p026",
+    "ARK-001#p005",
+    "ARK-009#p006",
+    "ARK-001#p028",
+    "ARK-001#p027",
+    "ARK-001#p006",
+    "ARK-001#p016"
+   ],
+   "D26": [
+    "ARK-009#p006",
+    "ARK-001#p010",
+    "ARK-001#p023",
+    "ARK-001#p011",
+    "ARK-001#p013",
+    "ARK-001#p006",
+    "ARK-002#p118",
+    "ARK-001#p015"
+   ],
+   "D27": [
+    "ARK-001#p006",
+    "ARK-009#p006",
+    "ARK-001#p026",
+    "ARK-001#p016",
+    "ARK-001#p027",
+    "ARK-001#p005",
+    "ARK-001#p028",
+    "ARK-001#p012"
+   ],
+   "D28": [
+    "ARK-001#p017",
+    "ARK-001#p023",
+    "ARK-001#p018",
+    "ARK-001#p006",
+    "ARK-001#p014",
+    "ARK-002#p037",
+    "ARK-001#p019",
+    "ARK-002#p050"
+   ],
+   "D29": [
+    "ARK-021#FDA-Vegetais-preparo",
+    "ARK-008#p035",
+    "ARK-001#p005",
+    "ARK-009#p006",
+    "ARK-009#p004",
+    "ARK-004#p006",
+    "ARK-009#p011",
+    "ARK-009#p010"
+   ]
+  },
+  "total": [
+   60,
+   82
+  ],
+  "contraindicacao": [
+   4,
+   6
+  ],
+  "segundos": 39.7
+ },
+ "v3+contra": {
+  "evidencia": {
+   "D01": [
+    "ARK-001#p010",
+    "ARK-001#p006",
+    "ARK-001#p013",
+    "ARK-001#p011",
+    "ARK-009#p006",
+    "ARK-009#p004",
+    "ARK-001#p005",
+    "ARK-001#p009"
+   ],
+   "D02": [
+    "ARK-009#p006",
+    "ARK-001#p006",
+    "ARK-001#p015",
+    "ARK-001#p016",
+    "ARK-001#p023",
+    "ARK-001#p017",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p027"
+   ],
+   "D03": [
+    "ARK-009#p006",
+    "ARK-001#p006",
+    "ARK-001#p015",
+    "ARK-001#p010",
+    "ARK-001#p005",
+    "ARK-001#p011",
+    "ARK-009#p009",
+    "ARK-001#p016"
+   ],
+   "D04": [
+    "ARK-001#p027",
+    "ARK-001#p026",
+    "ARK-001#p010",
+    "ARK-009#p006",
+    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+    "ARK-001#p017",
+    "ARK-001#p006",
+    "ARK-001#p014"
+   ],
+   "D05": [
+    "ARK-001#p013",
+    "ARK-001#p010",
+    "ARK-001#p016",
+    "ARK-001#p015",
+    "ARK-001#p017",
+    "ARK-001#p027",
+    "ARK-001#p024",
+    "ARK-001#p026"
+   ],
+   "D06": [
+    "ARK-009#p006",
+    "ARK-001#p026",
+    "ARK-001#p027",
+    "ARK-001#p023",
+    "ARK-001#p011",
+    "ARK-001#p010",
+    "ARK-001#p028",
+    "ARK-001#p006"
+   ],
+   "D07": [
+    "ARK-001#p025",
+    "ARK-001#p015",
+    "ARK-009#p005",
+    "ARK-001#p024",
+    "ARK-009#p006",
+    "ARK-001#p018",
+    "ARK-002#p118",
+    "ARK-001#p010"
+   ],
+   "D08": [
+    "ARK-001#p015",
+    "ARK-001#p016",
+    "ARK-009#p006",
+    "ARK-001#p010",
+    "ARK-001#p021",
+    "ARK-001#p011",
+    "ARK-001#p027",
+    "ARK-001#p024"
+   ],
+   "D09": [
+    "ARK-001#p027",
+    "ARK-001#p007",
+    "ARK-009#p006",
+    "ARK-023#CDC-Protecao-mantimentos-roedores",
+    "ARK-001#p026",
+    "ARK-008#p018",
+    "ARK-001#p028",
+    "ARK-001#p016"
+   ],
+   "D10": [
+    "ARK-009#p006",
+    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+    "ARK-009#p008",
+    "ARK-001#p011",
+    "ARK-001#p005",
+    "ARK-009#p007",
+    "ARK-008#p018",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira"
+   ],
+   "D11": [
+    "ARK-009#p010",
+    "ARK-008#p030",
+    "ARK-009#p009",
+    "ARK-008#PDFp030-Trecho-embalagens-estufadas",
+    "ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-009#p011",
+    "ARK-017#Argentina-Conservacao-secos"
+   ],
+   "D12": [
+    "ARK-008#PDFp030-Trecho-embalagens-estufadas",
+    "ARK-008#p030",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas",
+    "ARK-009#p010",
+    "ARK-009#p009",
+    "ARK-009#PDFp008-Trecho-Embalagens-nao-impermeaveis",
+    "ARK-008#p036"
+   ],
+   "D13": [
+    "ARK-001#p026",
+    "ARK-001#p027",
+    "ARK-008#p018",
+    "ARK-009#p006",
+    "ARK-001#p024",
+    "ARK-001#p010",
+    "ARK-009#p005",
+    "ARK-001#p005"
+   ],
+   "D14": [
+    "ARK-001#p010",
+    "ARK-009#p005",
+    "ARK-001#p015",
+    "ARK-009#p006",
+    "ARK-001#p005",
+    "ARK-001#p024",
+    "ARK-001#p011",
+    "ARK-001#p006"
+   ],
+   "D15": [
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos",
+    "ARK-009#p008",
+    "ARK-016#CDC-Conservas-limites-2024",
+    "ARK-008#p032",
+    "ARK-009#p006",
+    "ARK-008#p033",
+    "ARK-019#UMN-Secagem-limites"
+   ],
+   "D16": [
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-017#Argentina-Conservacao-secos",
+    "ARK-009#p010",
+    "ARK-008#p029",
+    "ARK-009#p008",
+    "ARK-008#p015",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-009#PDFp010-Trecho-nao-experimentar-seguranca"
+   ],
+   "D17": [
+    "ARK-024#NLM-FoodHero-Banana-seca-forno",
+    "ARK-019#UMN-Secagem-limites",
+    "ARK-008#p038",
+    "ARK-018#UMD-Conservacao-hortalicas",
+    "ARK-009#p008",
+    "ARK-017#Argentina-Conservacao-secos",
+    "ARK-008#p012",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira"
+   ],
+   "D18": [
+    "ARK-018#UMD-Conservacao-hortalicas",
+    "ARK-022#UMN-Prioridade-hortalicas",
+    "ARK-009#p008",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-008#p035",
+    "ARK-008#p038",
+    "ARK-008#p029",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte"
+   ],
+   "D19": [
+    "ARK-001#p016",
+    "ARK-001#p010",
+    "ARK-009#p006",
+    "ARK-001#p024",
+    "ARK-001#p015",
+    "ARK-001#p013",
+    "ARK-001#p027",
+    "ARK-001#p026"
+   ],
+   "D20": [
+    "ARK-009#p006",
+    "ARK-008#p025",
+    "ARK-001#p016",
+    "ARK-013#CDC-Lavagem-maos-cinco-passos-2024",
+    "ARK-001#p026",
+    "ARK-001#p010",
+    "ARK-001#p013",
+    "ARK-009#p004"
+   ],
+   "D21": [
+    "ARK-008#p035",
+    "ARK-009#p006",
+    "ARK-009#p011",
+    "ARK-001#p010",
+    "ARK-008#p032",
+    "ARK-001#p016",
+    "ARK-001#p006",
+    "ARK-003#p004"
+   ],
+   "D22": [
+    "ARK-009#p005",
+    "ARK-009#p006",
+    "ARK-001#p025",
+    "ARK-001#p015",
+    "ARK-001#p023",
+    "ARK-001#p024",
+    "ARK-001#p010",
+    "ARK-001#p026"
+   ],
+   "D23": [
+    "ARK-009#p006",
+    "ARK-009#p008",
+    "ARK-001#p026",
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-009#p004",
+    "ARK-001#p027",
+    "ARK-009#p005",
+    "ARK-008#p038"
+   ],
+   "D24": [
+    "ARK-012#CDC-Churrasqueira-dentro-de-casa",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-001#p026",
+    "ARK-011#FDA-Aparencia-cheiro-nao-bastam",
+    "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
+    "ARK-008#p014",
+    "ARK-009#p008",
+    "ARK-008#p032"
+   ],
+   "D25": [
+    "ARK-009#p006",
+    "ARK-001#p011",
+    "ARK-001#p026",
+    "ARK-001#p005",
+    "ARK-001#p028",
+    "ARK-001#p027",
+    "ARK-001#p006",
+    "ARK-001#p016"
+   ],
+   "D26": [
+    "ARK-009#p006",
+    "ARK-001#p010",
+    "ARK-001#p023",
+    "ARK-001#p011",
+    "ARK-001#p013",
+    "ARK-001#p006",
+    "ARK-002#p118",
+    "ARK-001#p005"
+   ],
+   "D27": [
+    "ARK-009#p006",
+    "ARK-001#p006",
+    "ARK-001#p026",
+    "ARK-001#p027",
+    "ARK-001#p016",
+    "ARK-009#p008",
+    "ARK-001#p005",
+    "ARK-001#p028"
+   ],
+   "D28": [
+    "ARK-009#p006",
+    "ARK-001#p017",
+    "ARK-001#p023",
+    "ARK-001#p018",
+    "ARK-001#p006",
+    "ARK-001#p014",
+    "ARK-009#p008",
+    "ARK-002#p037"
+   ],
+   "D29": [
+    "ARK-009#p006",
+    "ARK-021#FDA-Vegetais-preparo",
+    "ARK-008#p035",
+    "ARK-001#p005",
+    "ARK-001#p026",
+    "ARK-009#p004",
+    "ARK-004#p006",
+    "ARK-001#p006"
+   ]
+  },
+  "total": [
+   59,
+   82
+  ],
+  "contraindicacao": [
+   4,
+   6
+  ],
+  "segundos": 33.7
+ },
+ "v4": {
+  "evidencia": {
+   "D01": [
+    "ARK-001#p010",
+    "ARK-001#p005",
+    "ARK-001#p006",
+    "ARK-001#p013",
+    "ARK-001#p011",
+    "ARK-009#p008",
+    "ARK-001#p015",
+    "ARK-009#p004"
+   ],
+   "D02": [
+    "ARK-001#p016",
+    "ARK-002#p010",
+    "ARK-009#p003",
+    "ARK-001#p015",
+    "ARK-009#p006",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p005",
+    "ARK-001#p027"
+   ],
+   "D03": [
+    "ARK-009#PDFp008-Trecho-Embalagens-nao-impermeaveis",
+    "ARK-001#p006",
+    "ARK-001#p015",
+    "ARK-009#p006",
+    "ARK-001#p011",
+    "ARK-009#p008",
+    "ARK-001#p016",
+    "ARK-010#CDC-2024-Agua-com-combustivel"
+   ],
+   "D04": [
+    "ARK-001#p026",
+    "ARK-001#p027",
+    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p010",
+    "ARK-009#p006",
+    "ARK-009#p005",
+    "ARK-001#p028"
+   ],
+   "D05": [
+    "ARK-001#p026",
+    "ARK-001#p023",
+    "ARK-001#p013",
+    "ARK-001#p027",
+    "ARK-001#p016",
+    "ARK-001#p010",
+    "ARK-001#p024",
+    "ARK-001#p012"
+   ],
+   "D06": [
+    "ARK-001#p026",
+    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+    "ARK-009#p006",
+    "ARK-001#p008",
+    "ARK-001#p027",
+    "ARK-001#p023",
+    "ARK-001#p010",
+    "ARK-001#p028"
+   ],
+   "D07": [
+    "ARK-001#p015",
+    "ARK-009#p005",
+    "ARK-001#p024",
+    "ARK-001#p025",
+    "ARK-001#p010",
+    "ARK-001#p018",
+    "ARK-001#p016",
+    "ARK-002#p119"
+   ],
+   "D08": [
+    "ARK-001#p015",
+    "ARK-001#p016",
+    "ARK-001#p010",
+    "ARK-001#p021",
+    "ARK-001#p011",
+    "ARK-001#p024",
+    "ARK-001#p027",
+    "ARK-009#p006"
+   ],
+   "D09": [
+    "ARK-001#p027",
+    "ARK-009#p009",
+    "ARK-023#CDC-Protecao-mantimentos-roedores",
+    "ARK-009#p008",
+    "ARK-009#p006",
+    "ARK-001#p016",
+    "ARK-001#p005",
+    "ARK-010#CDC-2024-Agua-com-combustivel"
+   ],
+   "D10": [
+    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+    "ARK-009#PDFp008-Trecho-alimentos-mofados",
+    "ARK-001#p011",
+    "ARK-009#p005",
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-001#p005",
+    "ARK-001#p027",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira"
+   ],
+   "D11": [
+    "ARK-008#p030",
+    "ARK-009#p010",
+    "ARK-008#PDFp030-Trecho-embalagens-estufadas",
+    "ARK-009#p011",
+    "ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas",
+    "ARK-009#p009",
+    "ARK-017#Argentina-Conservacao-secos",
+    "ARK-009#p008"
+   ],
+   "D12": [
+    "ARK-008#p030",
+    "ARK-008#PDFp030-Trecho-embalagens-estufadas",
+    "ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas",
+    "ARK-009#p010",
+    "ARK-009#p009",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-008#p037",
+    "ARK-009#PDFp008-Trecho-Embalagens-nao-impermeaveis"
+   ],
+   "D13": [
+    "ARK-001#p016",
+    "ARK-001#p027",
+    "ARK-001#p024",
+    "ARK-001#p028",
+    "ARK-001#p010",
+    "ARK-009#p005",
+    "ARK-001#p013",
+    "ARK-001#p011"
+   ],
+   "D14": [
+    "ARK-001#p026",
+    "ARK-009#p005",
+    "ARK-001#p016",
+    "ARK-001#p028",
+    "ARK-001#p015",
+    "ARK-001#p027",
+    "ARK-001#p010",
+    "ARK-001#p024"
+   ],
+   "D15": [
+    "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos",
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-009#p008",
+    "ARK-008#p034",
+    "ARK-008#p014",
+    "ARK-008#p033",
+    "ARK-019#UMN-Secagem-limites",
+    "ARK-009#p010"
+   ],
+   "D16": [
+    "ARK-009#p007",
+    "ARK-008#p029",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-009#p010",
+    "ARK-017#Argentina-Conservacao-secos",
+    "ARK-008#p014",
+    "ARK-009#p008",
+    "ARK-008#p036"
+   ],
+   "D17": [
+    "ARK-024#NLM-FoodHero-Banana-seca-forno",
+    "ARK-019#UMN-Secagem-limites",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-008#p038",
+    "ARK-022#UMN-Prioridade-hortalicas",
+    "ARK-008#p012",
+    "ARK-018#UMD-Conservacao-hortalicas",
+    "ARK-017#Argentina-Conservacao-secos"
+   ],
+   "D18": [
+    "ARK-018#UMD-Conservacao-hortalicas",
+    "ARK-022#UMN-Prioridade-hortalicas",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-008#p035",
+    "ARK-008#p038",
+    "ARK-009#p010",
+    "ARK-009#p008",
+    "ARK-008#p029"
+   ],
+   "D19": [
+    "ARK-001#p016",
+    "ARK-001#p024",
+    "ARK-001#p027",
+    "ARK-001#p010",
+    "ARK-009#p006",
+    "ARK-001#p011",
+    "ARK-009#p005",
+    "ARK-001#p015"
+   ],
+   "D20": [
+    "ARK-001#p016",
+    "ARK-008#p025",
+    "ARK-013#CDC-Lavagem-maos-cinco-passos-2024",
+    "ARK-001#p015",
+    "ARK-001#p013",
+    "ARK-001#p010",
+    "ARK-001#p005",
+    "ARK-009#p004"
+   ],
+   "D21": [
+    "ARK-008#p035",
+    "ARK-009#p011",
+    "ARK-009#p006",
+    "ARK-009#p007",
+    "ARK-008#p032",
+    "ARK-001#p016",
+    "ARK-003#p004",
+    "ARK-008#p018"
+   ],
+   "D22": [
+    "ARK-009#p005",
+    "ARK-001#p015",
+    "ARK-001#p025",
+    "ARK-009#p006",
+    "ARK-001#p010",
+    "ARK-001#p024",
+    "ARK-001#p023",
+    "ARK-001#p018"
+   ],
+   "D23": [
+    "ARK-001#p005",
+    "ARK-009#p008",
+    "ARK-009#p004",
+    "ARK-001#p010",
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-001#p015",
+    "ARK-008#p038",
+    "ARK-001#p027"
+   ],
+   "D24": [
+    "ARK-012#CDC-Churrasqueira-dentro-de-casa",
+    "ARK-001#p026",
+    "ARK-011#FDA-Aparencia-cheiro-nao-bastam",
+    "ARK-009#p008",
+    "ARK-008#p014",
+    "ARK-008#p032",
+    "ARK-001#p028",
+    "ARK-009#p001"
+   ],
+   "D25": [
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-009#p006",
+    "ARK-001#p028",
+    "ARK-001#p008",
+    "ARK-001#p026",
+    "ARK-001#p027",
+    "ARK-001#p006",
+    "ARK-008#p018"
+   ],
+   "D26": [
+    "ARK-009#p006",
+    "ARK-001#p010",
+    "ARK-001#p013",
+    "ARK-001#p023",
+    "ARK-001#p006",
+    "ARK-001#p005",
+    "ARK-001#p011",
+    "ARK-001#p012"
+   ],
+   "D27": [
+    "ARK-001#p026",
+    "ARK-009#p006",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-008#p018",
+    "ARK-001#p027",
+    "ARK-001#p016",
+    "ARK-001#p028",
+    "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos"
+   ],
+   "D28": [
+    "ARK-001#p017",
+    "ARK-001#p023",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p018",
+    "ARK-002#p037",
+    "ARK-001#p012",
+    "ARK-001#p019",
+    "ARK-001#p014"
+   ],
+   "D29": [
+    "ARK-021#FDA-Vegetais-preparo",
+    "ARK-008#p035",
+    "ARK-009#p008",
+    "ARK-001#p014",
+    "ARK-009#p006",
+    "ARK-013#CDC-Lavagem-maos-cinco-passos-2024",
+    "ARK-009#PDFp008-Trecho-Embalagens-nao-impermeaveis",
+    "ARK-001#p016"
+   ]
+  },
+  "total": [
+   66,
+   82
+  ],
+  "contraindicacao": [
+   6,
+   6
+  ],
+  "segundos": 28.6
+ },
+ "v4+contra": {
+  "evidencia": {
+   "D01": [
+    "ARK-001#p010",
+    "ARK-001#p006",
+    "ARK-001#p005",
+    "ARK-001#p013",
+    "ARK-001#p011",
+    "ARK-009#p006",
+    "ARK-009#p004",
+    "ARK-009#p008"
+   ],
+   "D02": [
+    "ARK-009#p006",
+    "ARK-001#p016",
+    "ARK-002#p010",
+    "ARK-009#p003",
+    "ARK-001#p023",
+    "ARK-001#p015",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p005"
+   ],
+   "D03": [
+    "ARK-009#p006",
+    "ARK-009#PDFp008-Trecho-Embalagens-nao-impermeaveis",
+    "ARK-001#p006",
+    "ARK-001#p015",
+    "ARK-001#p011",
+    "ARK-009#p008",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-001#p016"
+   ],
+   "D04": [
+    "ARK-001#p027",
+    "ARK-001#p026",
+    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+    "ARK-009#p006",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p010",
+    "ARK-009#p005",
+    "ARK-001#p028"
+   ],
+   "D05": [
+    "ARK-001#p013",
+    "ARK-001#p026",
+    "ARK-001#p023",
+    "ARK-001#p010",
+    "ARK-001#p027",
+    "ARK-001#p016",
+    "ARK-001#p024",
+    "ARK-001#p012"
+   ],
+   "D06": [
+    "ARK-009#p006",
+    "ARK-001#p026",
+    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+    "ARK-001#p008",
+    "ARK-001#p027",
+    "ARK-001#p011",
+    "ARK-001#p023",
+    "ARK-001#p010"
+   ],
+   "D07": [
+    "ARK-001#p025",
+    "ARK-001#p015",
+    "ARK-009#p005",
+    "ARK-001#p024",
+    "ARK-009#p006",
+    "ARK-001#p010",
+    "ARK-001#p018",
+    "ARK-001#p016"
+   ],
+   "D08": [
+    "ARK-001#p015",
+    "ARK-001#p016",
+    "ARK-009#p006",
+    "ARK-001#p010",
+    "ARK-001#p021",
+    "ARK-001#p027",
+    "ARK-001#p011",
+    "ARK-001#p024"
+   ],
+   "D09": [
+    "ARK-001#p027",
+    "ARK-009#p009",
+    "ARK-023#CDC-Protecao-mantimentos-roedores",
+    "ARK-009#p006",
+    "ARK-009#p008",
+    "ARK-001#p026",
+    "ARK-001#p016",
+    "ARK-001#p005"
+   ],
+   "D10": [
+    "ARK-009#p006",
+    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+    "ARK-009#PDFp008-Trecho-alimentos-mofados",
+    "ARK-001#p011",
+    "ARK-009#p005",
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-001#p005",
+    "ARK-001#p027"
+   ],
+   "D11": [
+    "ARK-009#p010",
+    "ARK-008#p030",
+    "ARK-008#PDFp030-Trecho-embalagens-estufadas",
+    "ARK-009#p011",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas",
+    "ARK-009#p009",
+    "ARK-017#Argentina-Conservacao-secos"
+   ],
+   "D12": [
+    "ARK-008#PDFp030-Trecho-embalagens-estufadas",
+    "ARK-008#p030",
+    "ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-009#p010",
+    "ARK-009#p009",
+    "ARK-009#PDFp008-Trecho-Embalagens-nao-impermeaveis",
+    "ARK-008#p037"
+   ],
+   "D13": [
+    "ARK-001#p026",
+    "ARK-001#p016",
+    "ARK-001#p027",
+    "ARK-009#p006",
+    "ARK-001#p024",
+    "ARK-001#p028",
+    "ARK-001#p010",
+    "ARK-009#p005"
+   ],
+   "D14": [
+    "ARK-001#p010",
+    "ARK-001#p026",
+    "ARK-009#p005",
+    "ARK-001#p016",
+    "ARK-009#p006",
+    "ARK-001#p028",
+    "ARK-001#p015",
+    "ARK-001#p027"
+   ],
+   "D15": [
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos",
+    "ARK-009#p008",
+    "ARK-008#p034",
+    "ARK-008#p014",
+    "ARK-008#p033",
+    "ARK-009#p006",
+    "ARK-019#UMN-Secagem-limites"
+   ],
+   "D16": [
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-009#p007",
+    "ARK-008#p029",
+    "ARK-009#p008",
+    "ARK-009#p010",
+    "ARK-017#Argentina-Conservacao-secos",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-009#PDFp010-Trecho-nao-experimentar-seguranca"
+   ],
+   "D17": [
+    "ARK-024#NLM-FoodHero-Banana-seca-forno",
+    "ARK-019#UMN-Secagem-limites",
+    "ARK-008#p038",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-009#p008",
+    "ARK-022#UMN-Prioridade-hortalicas",
+    "ARK-008#p012",
+    "ARK-018#UMD-Conservacao-hortalicas"
+   ],
+   "D18": [
+    "ARK-018#UMD-Conservacao-hortalicas",
+    "ARK-022#UMN-Prioridade-hortalicas",
+    "ARK-009#p008",
+    "ARK-009#PDFp010-Trecho-sobras-sem-geladeira",
+    "ARK-008#p035",
+    "ARK-008#p038",
+    "ARK-009#p010",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte"
+   ],
+   "D19": [
+    "ARK-001#p016",
+    "ARK-009#p006",
+    "ARK-001#p024",
+    "ARK-001#p027",
+    "ARK-001#p010",
+    "ARK-001#p026",
+    "ARK-001#p011",
+    "ARK-009#p005"
+   ],
+   "D20": [
+    "ARK-009#p006",
+    "ARK-001#p016",
+    "ARK-008#p025",
+    "ARK-013#CDC-Lavagem-maos-cinco-passos-2024",
+    "ARK-001#p015",
+    "ARK-001#p026",
+    "ARK-001#p013",
+    "ARK-001#p010"
+   ],
+   "D21": [
+    "ARK-008#p035",
+    "ARK-009#p006",
+    "ARK-009#p011",
+    "ARK-001#p010",
+    "ARK-009#p007",
+    "ARK-008#p032",
+    "ARK-001#p016",
+    "ARK-001#p006"
+   ],
+   "D22": [
+    "ARK-009#p005",
+    "ARK-009#p006",
+    "ARK-001#p015",
+    "ARK-001#p025",
+    "ARK-001#p010",
+    "ARK-001#p023",
+    "ARK-001#p024",
+    "ARK-001#p018"
+   ],
+   "D23": [
+    "ARK-009#p006",
+    "ARK-001#p005",
+    "ARK-009#p008",
+    "ARK-009#p004",
+    "ARK-001#p026",
+    "ARK-001#p010",
+    "ARK-009#PDFp008-Trecho-geladeira-sem-energia",
+    "ARK-001#p027"
+   ],
+   "D24": [
+    "ARK-012#CDC-Churrasqueira-dentro-de-casa",
+    "ARK-009#PDFp009-Trecho-latas-estufadas-descarte",
+    "ARK-001#p026",
+    "ARK-011#FDA-Aparencia-cheiro-nao-bastam",
+    "ARK-009#p008",
+    "ARK-008#p014",
+    "ARK-008#p032",
+    "ARK-001#p028"
+   ],
+   "D25": [
+    "ARK-009#p006",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p028",
+    "ARK-001#p026",
+    "ARK-001#p008",
+    "ARK-001#p027",
+    "ARK-001#p006",
+    "ARK-008#p018"
+   ],
+   "D26": [
+    "ARK-009#p006",
+    "ARK-001#p010",
+    "ARK-001#p013",
+    "ARK-001#p023",
+    "ARK-001#p006",
+    "ARK-001#p005",
+    "ARK-001#p011",
+    "ARK-001#p012"
+   ],
+   "D27": [
+    "ARK-009#p006",
+    "ARK-001#p026",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-008#p018",
+    "ARK-001#p027",
+    "ARK-001#p016",
+    "ARK-009#p008",
+    "ARK-001#p028"
+   ],
+   "D28": [
+    "ARK-009#p006",
+    "ARK-001#p017",
+    "ARK-001#p023",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p018",
+    "ARK-002#p037",
+    "ARK-009#p008",
+    "ARK-001#p012"
+   ],
+   "D29": [
+    "ARK-009#p006",
+    "ARK-021#FDA-Vegetais-preparo",
+    "ARK-008#p035",
+    "ARK-001#p026",
+    "ARK-009#p008",
+    "ARK-001#p014",
+    "ARK-013#CDC-Lavagem-maos-cinco-passos-2024",
+    "ARK-009#PDFp008-Trecho-Embalagens-nao-impermeaveis"
+   ]
+  },
+  "total": [
+   66,
+   82
+  ],
+  "contraindicacao": [
+   6,
+   6
+  ],
+  "segundos": 36.0
+ }
+}
