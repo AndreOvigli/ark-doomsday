@@ -1,358 +1,358 @@
-ARK v2 - fase 3c: PDFs sem -layout, --limpar com rótulos editoriais, cache de vetores por hash do texto
-Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB. Branch v2/fase-1-gabarito, base 46bf74a.
-Corpus remontado: 345 passagens, 967 trechos, nenhum título vazio. O BM25 roda sem ID inexistente (27/71 e 46/71, igual a antes).
-  Comparado à 3b: mesmos IDs; o texto mudou em 51 passagens (ARK-008: 41; ARK-009: 10), por causa do pdftotext sem -layout.
-  As colunas da Anvisa agora saem legíveis (ex.: ARK-008#p030: "O que fazer? Não use e não compre produtos com
-  embalagens amassadas, estufadas…"). O cache por hash refez sozinho os vetores dos textos alterados.
-Busca: bge-m3 denso (Ollama 127.0.0.1:11435, encerrado ao fim). Reranker bge-reranker-v2-m3 fp16, max_length 1024.
-
-Resumo: R@5 / R@10 / R@20 (necessidades de 71)
-                                                       turno último     turno primeiro   soma R@5
-3b h) passagem, rerank 20, +título                     48 / 55 / 62     47 / 54 / 63     95
-3b i) passagem, limpar, rerank 20, +título             49 / 57 / 63     46 / 54 / 61     95
-3b k) trecho, limpar, rerank 40, +título               47 / 61 / 66     43 / 58 / 65     90
-p) = h, corpus novo                                    46 / 53 / 62     47 / 53 / 62     93
-q) = i, corpus novo                                    48 / 56 / 63     42 / 56 / 62     90
-r) = k, corpus novo                                    50 / 57 / 67     40 / 57 / 65     90
-
-R@5 por caso que mudou entre a 3b e a 3c (mesmas flags):
-  h->p último   -2: D01 -1, D18 -1                     primeiro  0: D01 -1, D15 +1
-  i->q último   -1: D14 -1, D16 -1, D18 +1             primeiro -4: D06 -1, D11 -1, D12 -1, D16 -1
-  k->r último   +3: D02, D18, D21, D24 +1; D14 -1      primeiro -3: D12 -1, D14 -1, D17 -2, D24 +1
-
-Leitura
-- As correções melhoram o dado (o texto da Anvisa fica legível, os rótulos editoriais saem), mas não melhoram o R@5.
-  Na soma dos turnos, nenhuma das três configurações supera a 3b, e as mudanças são de ±1 espalhadas por casos diferentes.
-- r) bate o recorde no turno último (50/71 no R@5, 67/71 no R@20), mas tem o pior R@5 do turno primeiro (40).
-  A instabilidade entre turnos é maior que o ganho.
-- Os alvos que eu atribuía às duas colunas (D13, D15 e D22 -> ARK-008#p018/p038) continuam fora do top-5 em p):
-  a extração não era a causa principal.
-- Conclusão: o gabarito atual tem um ruído de cerca de ±3 necessidades no R@5 entre variações razoáveis. Ajuste fino de
-  preparo do texto já não aparece na métrica. O padrão 1 (disputa entre necessidades do mesmo caso pelas 5 vagas)
-  segue como a causa dominante das perdas (ex.: D05, D07, D11, D14, D23 em todas as rodadas).
-- Melhor configuração pela soma do R@5 nesta rodada: p) (passagem, rerank 20, +título, sem limpar). A lista abaixo é dela.
-
-Saídas completas abaixo; no fim, a lista da configuração p).
-
-======================================================================
-[p] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  1/3   1/3   1/3   n1,n3
-D02   sustentado  3/3   3/3   3/3   
-D03   parcial     3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   1/3   3/3   
-D06   parcial     2/3   2/3   3/3   
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   1/3   1/3   n1,n2
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   
-D13   lacuna      0/2   1/2   1/2   n1
-D14   lacuna      1/3   1/3   2/3   n3
-D15   lacuna      1/3   2/3   3/3   
-D16   sustentado  3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  2/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  1/2   2/2   2/2   
-D21   parcial     2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 46/71 = 65%
-Recall@10: 53/71 = 75%
-Recall@20: 62/71 = 87%
-(tempo total da execução: 27,7 s)
-
-======================================================================
-[q] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --limpar --rerank 20 --titulo-rerank
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem-limpo, rerank top-20 fp16 +título
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  3/3   3/3   3/3   
-D03   parcial     3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   1/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   1/3   1/3   n1,n2
-D10   parcial     1/3   2/3   2/3   n2
-D11   parcial     2/3   2/3   3/3   
-D12   sustentado  3/3   3/3   3/3   
-D13   lacuna      0/2   1/2   1/2   n1
-D14   lacuna      1/3   2/3   3/3   
-D15   lacuna      1/3   3/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 48/71 = 68%
-Recall@10: 56/71 = 79%
-Recall@20: 63/71 = 89%
-(tempo total da execução: 25,1 s)
-
-======================================================================
-[r] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank
-
-método: denso (bge-m3), turno: ultimo, unidade: trecho-limpo, rerank top-40 fp16 +título
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   3/3   3/3   
-D02   sustentado  3/3   3/3   3/3   
-D03   parcial     3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  2/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   1/3   3/3   
-D10   parcial     1/3   1/3   3/3   
-D11   parcial     2/3   2/3   3/3   
-D12   sustentado  3/3   3/3   3/3   
-D13   lacuna      0/2   0/2   1/2   n1
-D14   lacuna      1/3   2/3   3/3   
-D15   lacuna      1/3   2/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     3/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 50/71 = 70%
-Recall@10: 57/71 = 80%
-Recall@20: 67/71 = 94%
-(tempo total da execução: 33,6 s)
-
-======================================================================
-[p] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  1/3   1/3   1/3   n1,n3
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     2/3   2/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   2/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   2/3   3/3   
-D12   sustentado  1/3   2/3   3/3   
-D13   lacuna      0/2   1/2   1/2   n1
-D14   lacuna      2/3   2/3   2/3   n1
-D15   lacuna      2/3   2/3   3/3   
-D16   sustentado  3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     1/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 47/71 = 66%
-Recall@10: 53/71 = 75%
-Recall@20: 62/71 = 87%
-(tempo total da execução: 17,9 s)
-
-======================================================================
-[q] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --limpar --rerank 20 --titulo-rerank --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem-limpo, rerank top-20 fp16 +título
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     2/3   2/3   2/3   n2
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   2/3   3/3   
-D06   parcial     1/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   
-D10   parcial     1/3   2/3   2/3   n2
-D11   parcial     1/3   2/3   3/3   
-D12   sustentado  0/3   2/3   3/3   
-D13   lacuna      0/2   1/2   1/2   n1
-D14   lacuna      1/3   2/3   2/3   n1
-D15   lacuna      1/3   3/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     1/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 42/71 = 59%
-Recall@10: 56/71 = 79%
-Recall@20: 62/71 = 87%
-(tempo total da execução: 17,6 s)
-
-======================================================================
-[r] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: trecho-limpo, rerank top-40 fp16 +título
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   3/3   3/3   
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     2/3   2/3   2/3   n2
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   3/3   3/3   
-D10   parcial     1/3   1/3   3/3   
-D11   parcial     1/3   2/3   3/3   
-D12   sustentado  0/3   2/3   3/3   
-D13   lacuna      0/2   0/2   1/2   n1
-D14   lacuna      1/3   3/3   3/3   
-D15   lacuna      1/3   2/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     1/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     1/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 40/71 = 56%
-Recall@10: 57/71 = 80%
-Recall@20: 65/71 = 92%
-(tempo total da execução: 19,6 s)
-
-======================================================================
-Configuração p) (passagem, rerank 20, +título, fp16, sem limpar): necessidades no top-20 mas fora do top-5
-(script à parte que reproduz a lógica do retrieval_eval; os totais de R@5 conferem com a rodada oficial: 46 e 47)
-
-Turno ultimo: R@5 46/71 (conferência com a rodada oficial); 16 necessidades no top-20 mas fora do top-5:
-- D05 n2 (posição 16) precisa: Água de superfície precisa ser filtrada antes da cloração; água sanitária só sem alvejante e sem perfume, 2,0 a 2,5% de cloro ativo
-    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
-    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
-- D05 n3 (posição 11) precisa: Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em 24 h
-    aceita ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
-    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
-- D06 n3 (posição 20) precisa: Nunca usar carvão ou churrasqueira dentro de casa ou perto de portas e janelas (monóxido de carbono)
-    aceita ARK-012#CDC-Churrasqueira-dentro-de-casa [CDC. Avoiding Carbon Monoxide Poisoning.]: FONTE: CDC. Avoiding Carbon Monoxide Poisoning. Publicada em 15/05/2024; página informa revisão em 26/08/2026. SEÇÃO: Key points / Script. URL: https://www.cdc.gov/natura
-    top-1  ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
-- D07 n3 (posição 14) precisa: Manter fechado, em lugar limpo, longe de sol, poeira e animais
-    aceita ARK-001#p016 [Água tratada em casa: alternativas para o tratamento da água]: QUE MATERIAL PRECISO? Recipientes seguros Usar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes limpos e com tampa. Se possível, usar recipientes co
-    top-1  ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
-- D10 n3 (posição 13) precisa: Latas só se íntegras, sem estufamento, ferrugem ou vazamento
-    aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 9. Data de criação do arquivo: 
-    top-1  ARK-011#Illinois-Planejamento-alimentos-pouco-preparo [Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Fo]: FONTE: Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Food. URL OFICIAL: https://ready.illinois.gov/plan/food.html CONSULTA: 22/10/2026. Data de publicação e e
-- D11 n2 (posição 9) precisa: Validade vencida: descartar
-    aceita ARK-008#p031 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Verifique cuidadosamente a condição dos alimentos que entram na sua cozinha! Produtos com prazo de validade vencido não devem ser utilizados no preparo de alimen
-    top-1  ARK-008#p030 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: O que fazer? Não use e não compre produtos com embalagens amassadas, estufadas, enferrujadas, trincadas, com furos ou vazamentos, rasgadas, abertas ou com outro tipo de d
-- D13 n2 (posição 10) precisa: Usar só água potável no preparo dos alimentos
-    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Os estabelecimentos devem ser abastecidos com água corrente tratada (proveniente do abastecimento púb
-    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
-- D14 n2 (posição 12) precisa: Com combustível limitado, priorizar pequenas quantidades de água para beber e cozinhar
-    aceita ARK-001#p028 [Água tratada em casa: alternativas para o tratamento da água]: QUANTA ÁGUA POSSO CONSEGUIR? A quantidade de água vai depender do tamanho do recipiente e da quantidade de calor ou combustível disponíveis Se o combustível for limitado,
-    top-1  ARK-001#p015 [Água tratada em casa: alternativas para o tratamento da água]: ARMAZENAMENTO ADEQUADO DA ÁGUA O QUE É O ARMAZENAMENTO ADEQUADO DA ÁGUA? Armazenar a água de forma adequada significa guardar a água tratada em recipientes limpos e bem p
-- D15 n2 (posição 11) precisa: Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo)
-    aceita ARK-008#p038 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 14 A comida está pronta! Como devemos servi-la? O que fazer? Deixe a área das mesas e cadeiras bem limpa e organizada. Os equipamentos (estufas, balcões, buffets
-    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: FONTE: Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação. 3ª edição. PÁGINA FÍSICA: 33. CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada e
-- D15 n3 (posição 6) precisa: Cozinhar não resgata alimento mal conservado
-    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: FONTE: FDA. Food and Water Safety During Power Outages and Floods. Data de edição não confirmada; captura em 22/10/2026. SEÇÃO: Once Power is Restored. URL: https://www.f
-    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: FONTE: Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação. 3ª edição. PÁGINA FÍSICA: 33. CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada e
-- D17 n3 (posição 6) precisa: Descartar fruta com mofo, mau cheiro ou mudança de textura
-    aceita ARK-018#UMD-Conservacao-hortalicas [University of Maryland Extension.]: FONTE: University of Maryland Extension. URL OFICIAL: https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables EDIÇÃO: atualizado em 20/02/2023. CONSUL
-    top-1  ARK-024#NLM-FoodHero-Banana-seca-forno [MedlinePlus / US National Library of Medicine; receita Food ]: FONTE: MedlinePlus / US National Library of Medicine; receita Food Hero / Oregon State University Extension. Dried Bananas. URL OFICIAL: https://medlineplus.gov/recipes/d
-- D18 n3 (posição 6) precisa: Sem refrigeração, preparar só para consumo imediato
-    aceita ARK-009#PDFp010-Trecho-sobras-sem-geladeira [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 10. Data de criação do arquivo:
-    top-1  ARK-018#UMD-Conservacao-hortalicas [University of Maryland Extension.]: FONTE: University of Maryland Extension. URL OFICIAL: https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables EDIÇÃO: atualizado em 20/02/2023. CONSUL
-- D20 n1 (posição 6) precisa: Sem torneira, montar estação temporária com galão; lavar por pelo menos 20 s; álcool 60% só sem água e sabão e não funciona bem com mãos sujas
-    aceita ARK-012#CDC-Higiene-emergencias-maos-2024 [CDC. Guidelines for Personal Hygiene During an Emergency.]: FONTE OFICIAL: CDC. Guidelines for Personal Hygiene During an Emergency. URL: https://www.cdc.gov/water-emergency/safety/guidelines-for-personal-hygiene-during-an-emergen
-    top-1  ARK-001#p016 [Água tratada em casa: alternativas para o tratamento da água]: QUE MATERIAL PRECISO? Recipientes seguros Usar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes limpos e com tampa. Se possível, usar recipientes co
-- D21 n3 (posição 10) precisa: Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou detergente nos alimentos
-    aceita ARK-021#FDA-Vegetais-preparo [US Food and Drug Administration.]: FONTE: US Food and Drug Administration. URL OFICIAL: https://www.fda.gov/food/buy-store-serve-safe-food/selecting-and-serving-produce-safely EDIÇÃO: data de edição não ex
-    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higienizados, tendo em vista que esses podem ser consumidos crus. A correta higienização elimina os micróbi
-- D22 n3 (posição 17) precisa: Usar só água potável/tratada no preparo dos alimentos
-    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Os estabelecimentos devem ser abastecidos com água corrente tratada (proveniente do abastecimento púb
-    top-1  ARK-009#p005 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 1 FILTRAR E DESINFETAR 1º Filtrar ou coar a água com filtro doméstico, coador de papel ou pano limpo. 2º Após a filtração, adicionar 2 gotas de hipoclorito de sódio
-- D23 n2 (posição 13) precisa: Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não bastam
-    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: FONTE: FDA. Food and Water Safety During Power Outages and Floods. Data de edição não confirmada; captura em 22/10/2026. SEÇÃO: Once Power is Restored. URL: https://www.f
-    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
-
-Turno primeiro: R@5 47/71 (conferência com a rodada oficial); 15 necessidades no top-20 mas fora do top-5:
-- D03 n2 (posição 13) precisa: Embalagens PET abertas ou danificadas: descarte (regra escrita para alimentos, aplicar com cuidado de escopo)
-    aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 9. Data de criação do arquivo: 
-    top-1  ARK-001#p006 [Água tratada em casa: alternativas para o tratamento da água]: QUANDO A ÁGUA NÃO É PRÓPRIA PARA CONSUMO Nem toda água que se vê é própria para beber. Dependendo da sua origem, ela pode trazer impurezas, microrganismos infecciosos com
-- D05 n2 (posição 17) precisa: Água de superfície precisa ser filtrada antes da cloração; água sanitária só sem alvejante e sem perfume, 2,0 a 2,5% de cloro ativo
-    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
-    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
-- D05 n3 (posição 7) precisa: Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em 24 h
-    aceita ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
-    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
-- D07 n3 (posição 14) precisa: Manter fechado, em lugar limpo, longe de sol, poeira e animais
-    aceita ARK-001#p016 [Água tratada em casa: alternativas para o tratamento da água]: QUE MATERIAL PRECISO? Recipientes seguros Usar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes limpos e com tampa. Se possível, usar recipientes co
-    top-1  ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
-- D10 n3 (posição 13) precisa: Latas só se íntegras, sem estufamento, ferrugem ou vazamento
-    aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 9. Data de criação do arquivo: 
-    top-1  ARK-011#Illinois-Planejamento-alimentos-pouco-preparo [Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Fo]: FONTE: Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Food. URL OFICIAL: https://ready.illinois.gov/plan/food.html CONSULTA: 22/10/2026. Data de publicação e e
-- D11 n2 (posição 11) precisa: Validade vencida: descartar
-    aceita ARK-009#p008 [Ministério da Saúde. Evite mais riscos em situações de desas]: NESSAS SITUAÇÕES É IMPORTANTE DESCARTAR E NÃO CONSUMIR: Qualquer alimento que tenha entrado em contato com a água de enchentes/inundações/alagamentos/lama. Alimentos cons
-    top-1  ARK-009#p010 [Ministério da Saúde. Evite mais riscos em situações de desas]: ALIMENTOS QUE PODEM SER REAPROVEITADOS APÓS CONTATO COM ÁGUA DE ENCHENTE: São seguros apenas os alimentos industrializados e embalados em latas de metal herméticas e sela
-- D12 n2 (posição 7) precisa: Embalagem amassada, esmagada, enferrujada ou com outro dano: não usar, mesmo sem vazamento
-    aceita ARK-009#p009 [Ministério da Saúde. Evite mais riscos em situações de desas]: Alimentos com embalagens em latas, PET, vidros e caixa tipo "longa vida" que apresentem sinais de alteração, como inchaço, esmagamento, vazamento, ferrugem, buracos, tamp
-    top-1  ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 10. Data de criação do PDF: set
-- D12 n3 (posição 16) precisa: Lata íntegra: conferir a validade e limpar a embalagem antes de abrir
-    aceita ARK-008#p031 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Verifique cuidadosamente a condição dos alimentos que entram na sua cozinha! Produtos com prazo de validade vencido não devem ser utilizados no preparo de alimen
-    top-1  ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 10. Data de criação do PDF: set
-- D13 n2 (posição 10) precisa: Usar só água potável no preparo dos alimentos
-    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Os estabelecimentos devem ser abastecidos com água corrente tratada (proveniente do abastecimento púb
-    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
-- D15 n2 (posição 13) precisa: Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo)
-    aceita ARK-008#p038 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 14 A comida está pronta! Como devemos servi-la? O que fazer? Deixe a área das mesas e cadeiras bem limpa e organizada. Os equipamentos (estufas, balcões, buffets
-    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: FONTE: Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação. 3ª edição. PÁGINA FÍSICA: 33. CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada e
-- D17 n3 (posição 7) precisa: Descartar fruta com mofo, mau cheiro ou mudança de textura
-    aceita ARK-018#UMD-Conservacao-hortalicas [University of Maryland Extension.]: FONTE: University of Maryland Extension. URL OFICIAL: https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables EDIÇÃO: atualizado em 20/02/2023. CONSUL
-    top-1  ARK-024#NLM-FoodHero-Banana-seca-forno [MedlinePlus / US National Library of Medicine; receita Food ]: FONTE: MedlinePlus / US National Library of Medicine; receita Food Hero / Oregon State University Extension. Dried Bananas. URL OFICIAL: https://medlineplus.gov/recipes/d
-- D21 n2 (posição 6) precisa: Água sanitária com alvejante ou perfume não serve (regra escrita para água de consumo)
-    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
-    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higienizados, tendo em vista que esses podem ser consumidos crus. A correta higienização elimina os micróbi
-- D21 n3 (posição 9) precisa: Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou detergente nos alimentos
-    aceita ARK-021#FDA-Vegetais-preparo [US Food and Drug Administration.]: FONTE: US Food and Drug Administration. URL OFICIAL: https://www.fda.gov/food/buy-store-serve-safe-food/selecting-and-serving-produce-safely EDIÇÃO: data de edição não ex
-    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higienizados, tendo em vista que esses podem ser consumidos crus. A correta higienização elimina os micróbi
-- D22 n3 (posição 17) precisa: Usar só água potável/tratada no preparo dos alimentos
-    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Os estabelecimentos devem ser abastecidos com água corrente tratada (proveniente do abastecimento púb
-    top-1  ARK-009#p005 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 1 FILTRAR E DESINFETAR 1º Filtrar ou coar a água com filtro doméstico, coador de papel ou pano limpo. 2º Após a filtração, adicionar 2 gotas de hipoclorito de sódio
-- D23 n2 (posição 11) precisa: Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não bastam
-    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: FONTE: FDA. Food and Water Safety During Power Outages and Floods. Data de edição não confirmada; captura em 22/10/2026. SEÇÃO: Once Power is Restored. URL: https://www.f
-    top-1  ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
+ARK v2 - fase 3c: PDFs sem -layout, --limpar com rótulos editoriais, cache de vetores por hash do texto
+Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB. Branch v2/fase-1-gabarito, base 46bf74a.
+Corpus remontado: 345 passagens, 967 trechos, nenhum título vazio. O BM25 roda sem ID inexistente (27/71 e 46/71, igual a antes).
+  Comparado à 3b: mesmos IDs; o texto mudou em 51 passagens (ARK-008: 41; ARK-009: 10), por causa do pdftotext sem -layout.
+  As colunas da Anvisa agora saem legíveis (ex.: ARK-008#p030: "O que fazer? Não use e não compre produtos com
+  embalagens amassadas, estufadas…"). O cache por hash refez sozinho os vetores dos textos alterados.
+Busca: bge-m3 denso (Ollama 127.0.0.1:11435, encerrado ao fim). Reranker bge-reranker-v2-m3 fp16, max_length 1024.
+
+Resumo: R@5 / R@10 / R@20 (necessidades de 71)
+                                                       turno último     turno primeiro   soma R@5
+3b h) passagem, rerank 20, +título                     48 / 55 / 62     47 / 54 / 63     95
+3b i) passagem, limpar, rerank 20, +título             49 / 57 / 63     46 / 54 / 61     95
+3b k) trecho, limpar, rerank 40, +título               47 / 61 / 66     43 / 58 / 65     90
+p) = h, corpus novo                                    46 / 53 / 62     47 / 53 / 62     93
+q) = i, corpus novo                                    48 / 56 / 63     42 / 56 / 62     90
+r) = k, corpus novo                                    50 / 57 / 67     40 / 57 / 65     90
+
+R@5 por caso que mudou entre a 3b e a 3c (mesmas flags):
+  h->p último   -2: D01 -1, D18 -1                     primeiro  0: D01 -1, D15 +1
+  i->q último   -1: D14 -1, D16 -1, D18 +1             primeiro -4: D06 -1, D11 -1, D12 -1, D16 -1
+  k->r último   +3: D02, D18, D21, D24 +1; D14 -1      primeiro -3: D12 -1, D14 -1, D17 -2, D24 +1
+
+Leitura
+- As correções melhoram o dado (o texto da Anvisa fica legível, os rótulos editoriais saem), mas não melhoram o R@5.
+  Na soma dos turnos, nenhuma das três configurações supera a 3b, e as mudanças são de ±1 espalhadas por casos diferentes.
+- r) bate o recorde no turno último (50/71 no R@5, 67/71 no R@20), mas tem o pior R@5 do turno primeiro (40).
+  A instabilidade entre turnos é maior que o ganho.
+- Os alvos que eu atribuía às duas colunas (D13, D15 e D22 -> ARK-008#p018/p038) continuam fora do top-5 em p):
+  a extração não era a causa principal.
+- Conclusão: o gabarito atual tem um ruído de cerca de ±3 necessidades no R@5 entre variações razoáveis. Ajuste fino de
+  preparo do texto já não aparece na métrica. O padrão 1 (disputa entre necessidades do mesmo caso pelas 5 vagas)
+  segue como a causa dominante das perdas (ex.: D05, D07, D11, D14, D23 em todas as rodadas).
+- Melhor configuração pela soma do R@5 nesta rodada: p) (passagem, rerank 20, +título, sem limpar). A lista abaixo é dela.
+
+Saídas completas abaixo; no fim, a lista da configuração p).
+
+======================================================================
+[p] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   1/3   1/3   n1,n3
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   1/3   3/3   
+D06   parcial     2/3   2/3   3/3   
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 53/71 = 75%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 27,7 s)
+
+======================================================================
+[q] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --limpar --rerank 20 --titulo-rerank
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem-limpo, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   1/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   2/3   2/3   n2
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   2/3   3/3   
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 48/71 = 68%
+Recall@10: 56/71 = 79%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 25,1 s)
+
+======================================================================
+[r] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-limpo, rerank top-40 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   3/3   
+D10   parcial     1/3   1/3   3/3   
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   2/3   3/3   
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     3/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 50/71 = 70%
+Recall@10: 57/71 = 80%
+Recall@20: 67/71 = 94%
+(tempo total da execução: 33,6 s)
+
+======================================================================
+[p] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   1/3   1/3   n1,n3
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%
+Recall@10: 53/71 = 75%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 17,9 s)
+
+======================================================================
+[q] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --limpar --rerank 20 --titulo-rerank --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem-limpo, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     1/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   2/3   2/3   n2
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  0/3   2/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   2/3   2/3   n1
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 42/71 = 59%
+Recall@10: 56/71 = 79%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 17,6 s)
+
+======================================================================
+[r] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-limpo, rerank top-40 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   1/3   3/3   
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  0/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      1/3   3/3   3/3   
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     1/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 40/71 = 56%
+Recall@10: 57/71 = 80%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 19,6 s)
+
+======================================================================
+Configuração p) (passagem, rerank 20, +título, fp16, sem limpar): necessidades no top-20 mas fora do top-5
+(script à parte que reproduz a lógica do retrieval_eval; os totais de R@5 conferem com a rodada oficial: 46 e 47)
+
+Turno ultimo: R@5 46/71 (conferência com a rodada oficial); 16 necessidades no top-20 mas fora do top-5:
+- D05 n2 (posição 16) precisa: Água de superfície precisa ser filtrada antes da cloração; água sanitária só sem alvejante e sem perfume, 2,0 a 2,5% de cloro ativo
+    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
+    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
+- D05 n3 (posição 11) precisa: Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em 24 h
+    aceita ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
+    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
+- D06 n3 (posição 20) precisa: Nunca usar carvão ou churrasqueira dentro de casa ou perto de portas e janelas (monóxido de carbono)
+    aceita ARK-012#CDC-Churrasqueira-dentro-de-casa [CDC. Avoiding Carbon Monoxide Poisoning.]: FONTE: CDC. Avoiding Carbon Monoxide Poisoning. Publicada em 15/05/2024; página informa revisão em 26/08/2026. SEÇÃO: Key points / Script. URL: https://www.cdc.gov/natura
+    top-1  ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
+- D07 n3 (posição 14) precisa: Manter fechado, em lugar limpo, longe de sol, poeira e animais
+    aceita ARK-001#p016 [Água tratada em casa: alternativas para o tratamento da água]: QUE MATERIAL PRECISO? Recipientes seguros Usar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes limpos e com tampa. Se possível, usar recipientes co
+    top-1  ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
+- D10 n3 (posição 13) precisa: Latas só se íntegras, sem estufamento, ferrugem ou vazamento
+    aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 9. Data de criação do arquivo: 
+    top-1  ARK-011#Illinois-Planejamento-alimentos-pouco-preparo [Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Fo]: FONTE: Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Food. URL OFICIAL: https://ready.illinois.gov/plan/food.html CONSULTA: 22/10/2026. Data de publicação e e
+- D11 n2 (posição 9) precisa: Validade vencida: descartar
+    aceita ARK-008#p031 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Verifique cuidadosamente a condição dos alimentos que entram na sua cozinha! Produtos com prazo de validade vencido não devem ser utilizados no preparo de alimen
+    top-1  ARK-008#p030 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: O que fazer? Não use e não compre produtos com embalagens amassadas, estufadas, enferrujadas, trincadas, com furos ou vazamentos, rasgadas, abertas ou com outro tipo de d
+- D13 n2 (posição 10) precisa: Usar só água potável no preparo dos alimentos
+    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Os estabelecimentos devem ser abastecidos com água corrente tratada (proveniente do abastecimento púb
+    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
+- D14 n2 (posição 12) precisa: Com combustível limitado, priorizar pequenas quantidades de água para beber e cozinhar
+    aceita ARK-001#p028 [Água tratada em casa: alternativas para o tratamento da água]: QUANTA ÁGUA POSSO CONSEGUIR? A quantidade de água vai depender do tamanho do recipiente e da quantidade de calor ou combustível disponíveis Se o combustível for limitado,
+    top-1  ARK-001#p015 [Água tratada em casa: alternativas para o tratamento da água]: ARMAZENAMENTO ADEQUADO DA ÁGUA O QUE É O ARMAZENAMENTO ADEQUADO DA ÁGUA? Armazenar a água de forma adequada significa guardar a água tratada em recipientes limpos e bem p
+- D15 n2 (posição 11) precisa: Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo)
+    aceita ARK-008#p038 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 14 A comida está pronta! Como devemos servi-la? O que fazer? Deixe a área das mesas e cadeiras bem limpa e organizada. Os equipamentos (estufas, balcões, buffets
+    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: FONTE: Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação. 3ª edição. PÁGINA FÍSICA: 33. CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada e
+- D15 n3 (posição 6) precisa: Cozinhar não resgata alimento mal conservado
+    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: FONTE: FDA. Food and Water Safety During Power Outages and Floods. Data de edição não confirmada; captura em 22/10/2026. SEÇÃO: Once Power is Restored. URL: https://www.f
+    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: FONTE: Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação. 3ª edição. PÁGINA FÍSICA: 33. CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada e
+- D17 n3 (posição 6) precisa: Descartar fruta com mofo, mau cheiro ou mudança de textura
+    aceita ARK-018#UMD-Conservacao-hortalicas [University of Maryland Extension.]: FONTE: University of Maryland Extension. URL OFICIAL: https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables EDIÇÃO: atualizado em 20/02/2023. CONSUL
+    top-1  ARK-024#NLM-FoodHero-Banana-seca-forno [MedlinePlus / US National Library of Medicine; receita Food ]: FONTE: MedlinePlus / US National Library of Medicine; receita Food Hero / Oregon State University Extension. Dried Bananas. URL OFICIAL: https://medlineplus.gov/recipes/d
+- D18 n3 (posição 6) precisa: Sem refrigeração, preparar só para consumo imediato
+    aceita ARK-009#PDFp010-Trecho-sobras-sem-geladeira [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 10. Data de criação do arquivo:
+    top-1  ARK-018#UMD-Conservacao-hortalicas [University of Maryland Extension.]: FONTE: University of Maryland Extension. URL OFICIAL: https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables EDIÇÃO: atualizado em 20/02/2023. CONSUL
+- D20 n1 (posição 6) precisa: Sem torneira, montar estação temporária com galão; lavar por pelo menos 20 s; álcool 60% só sem água e sabão e não funciona bem com mãos sujas
+    aceita ARK-012#CDC-Higiene-emergencias-maos-2024 [CDC. Guidelines for Personal Hygiene During an Emergency.]: FONTE OFICIAL: CDC. Guidelines for Personal Hygiene During an Emergency. URL: https://www.cdc.gov/water-emergency/safety/guidelines-for-personal-hygiene-during-an-emergen
+    top-1  ARK-001#p016 [Água tratada em casa: alternativas para o tratamento da água]: QUE MATERIAL PRECISO? Recipientes seguros Usar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes limpos e com tampa. Se possível, usar recipientes co
+- D21 n3 (posição 10) precisa: Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou detergente nos alimentos
+    aceita ARK-021#FDA-Vegetais-preparo [US Food and Drug Administration.]: FONTE: US Food and Drug Administration. URL OFICIAL: https://www.fda.gov/food/buy-store-serve-safe-food/selecting-and-serving-produce-safely EDIÇÃO: data de edição não ex
+    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higienizados, tendo em vista que esses podem ser consumidos crus. A correta higienização elimina os micróbi
+- D22 n3 (posição 17) precisa: Usar só água potável/tratada no preparo dos alimentos
+    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Os estabelecimentos devem ser abastecidos com água corrente tratada (proveniente do abastecimento púb
+    top-1  ARK-009#p005 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 1 FILTRAR E DESINFETAR 1º Filtrar ou coar a água com filtro doméstico, coador de papel ou pano limpo. 2º Após a filtração, adicionar 2 gotas de hipoclorito de sódio
+- D23 n2 (posição 13) precisa: Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não bastam
+    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: FONTE: FDA. Food and Water Safety During Power Outages and Floods. Data de edição não confirmada; captura em 22/10/2026. SEÇÃO: Once Power is Restored. URL: https://www.f
+    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
+
+Turno primeiro: R@5 47/71 (conferência com a rodada oficial); 15 necessidades no top-20 mas fora do top-5:
+- D03 n2 (posição 13) precisa: Embalagens PET abertas ou danificadas: descarte (regra escrita para alimentos, aplicar com cuidado de escopo)
+    aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 9. Data de criação do arquivo: 
+    top-1  ARK-001#p006 [Água tratada em casa: alternativas para o tratamento da água]: QUANDO A ÁGUA NÃO É PRÓPRIA PARA CONSUMO Nem toda água que se vê é própria para beber. Dependendo da sua origem, ela pode trazer impurezas, microrganismos infecciosos com
+- D05 n2 (posição 17) precisa: Água de superfície precisa ser filtrada antes da cloração; água sanitária só sem alvejante e sem perfume, 2,0 a 2,5% de cloro ativo
+    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
+    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
+- D05 n3 (posição 7) precisa: Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em 24 h
+    aceita ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
+    top-1  ARK-001#p013 [Água tratada em casa: alternativas para o tratamento da água]: COMO TRATAR A ÁGUA PARA BEBER EM CASA? Quando a água não chega tratada por meio da rede de abastecimento, é necessário realizar o tratamento dela em casa. Afinal, é essa 
+- D07 n3 (posição 14) precisa: Manter fechado, em lugar limpo, longe de sol, poeira e animais
+    aceita ARK-001#p016 [Água tratada em casa: alternativas para o tratamento da água]: QUE MATERIAL PRECISO? Recipientes seguros Usar baldes, galões, bombonas, caixas-d’água ou outros. Utilize recipientes limpos e com tampa. Se possível, usar recipientes co
+    top-1  ARK-001#p024 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare a água Recomenda-se que a água tenha sido filtrada. Se a água disponível estiver barrenta e não seja possível realizar a filtração, deixe descansar até
+- D10 n3 (posição 13) precisa: Latas só se íntegras, sem estufamento, ferrugem ou vazamento
+    aceita ARK-009#PDFp009-Trecho-latas-estufadas-descarte [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 9. Data de criação do arquivo: 
+    top-1  ARK-011#Illinois-Planejamento-alimentos-pouco-preparo [Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Fo]: FONTE: Governo do Estado de Illinois, Ready Illinois / IEMA-OHS. Food. URL OFICIAL: https://ready.illinois.gov/plan/food.html CONSULTA: 22/10/2026. Data de publicação e e
+- D11 n2 (posição 11) precisa: Validade vencida: descartar
+    aceita ARK-009#p008 [Ministério da Saúde. Evite mais riscos em situações de desas]: NESSAS SITUAÇÕES É IMPORTANTE DESCARTAR E NÃO CONSUMIR: Qualquer alimento que tenha entrado em contato com a água de enchentes/inundações/alagamentos/lama. Alimentos cons
+    top-1  ARK-009#p010 [Ministério da Saúde. Evite mais riscos em situações de desas]: ALIMENTOS QUE PODEM SER REAPROVEITADOS APÓS CONTATO COM ÁGUA DE ENCHENTE: São seguros apenas os alimentos industrializados e embalados em latas de metal herméticas e sela
+- D12 n2 (posição 7) precisa: Embalagem amassada, esmagada, enferrujada ou com outro dano: não usar, mesmo sem vazamento
+    aceita ARK-009#p009 [Ministério da Saúde. Evite mais riscos em situações de desas]: Alimentos com embalagens em latas, PET, vidros e caixa tipo "longa vida" que apresentem sinais de alteração, como inchaço, esmagamento, vazamento, ferrugem, buracos, tamp
+    top-1  ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 10. Data de criação do PDF: set
+- D12 n3 (posição 16) precisa: Lata íntegra: conferir a validade e limpar a embalagem antes de abrir
+    aceita ARK-008#p031 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Verifique cuidadosamente a condição dos alimentos que entram na sua cozinha! Produtos com prazo de validade vencido não devem ser utilizados no preparo de alimen
+    top-1  ARK-009#PDFp010-Trecho-Excecao-latas-metal-seladas [Ministério da Saúde. Evite mais riscos em situações de desas]: FONTE: Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências: cuidados com a água e os alimentos. PÁGINA FÍSICA: 10. Data de criação do PDF: set
+- D13 n2 (posição 10) precisa: Usar só água potável no preparo dos alimentos
+    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Os estabelecimentos devem ser abastecidos com água corrente tratada (proveniente do abastecimento púb
+    top-1  ARK-001#p027 [Água tratada em casa: alternativas para o tratamento da água]: COMO USAR? Prepare o combustível Antes de começar, é importante conferir se você tem combustível suficiente, como lenha ou gás para aquecer a água. 2 Filtre a água Filtre
+- D15 n2 (posição 13) precisa: Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo)
+    aceita ARK-008#p038 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 14 A comida está pronta! Como devemos servi-la? O que fazer? Deixe a área das mesas e cadeiras bem limpa e organizada. Os equipamentos (estufas, balcões, buffets
+    top-1  ARK-008#PDFp033-Trecho-utensilios-crus-cozidos [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: FONTE: Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação. 3ª edição. PÁGINA FÍSICA: 33. CONTEXTO EDITORIAL: Utensílios de cozinha e contaminação cruzada e
+- D17 n3 (posição 7) precisa: Descartar fruta com mofo, mau cheiro ou mudança de textura
+    aceita ARK-018#UMD-Conservacao-hortalicas [University of Maryland Extension.]: FONTE: University of Maryland Extension. URL OFICIAL: https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables EDIÇÃO: atualizado em 20/02/2023. CONSUL
+    top-1  ARK-024#NLM-FoodHero-Banana-seca-forno [MedlinePlus / US National Library of Medicine; receita Food ]: FONTE: MedlinePlus / US National Library of Medicine; receita Food Hero / Oregon State University Extension. Dried Bananas. URL OFICIAL: https://medlineplus.gov/recipes/d
+- D21 n2 (posição 6) precisa: Água sanitária com alvejante ou perfume não serve (regra escrita para água de consumo)
+    aceita ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 
+    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higienizados, tendo em vista que esses podem ser consumidos crus. A correta higienização elimina os micróbi
+- D21 n3 (posição 9) precisa: Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou detergente nos alimentos
+    aceita ARK-021#FDA-Vegetais-preparo [US Food and Drug Administration.]: FONTE: US Food and Drug Administration. URL OFICIAL: https://www.fda.gov/food/buy-store-serve-safe-food/selecting-and-serving-produce-safely EDIÇÃO: data de edição não ex
+    top-1  ARK-008#p035 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Atenção! Alimentos como frutas, legumes e hortaliças devem ser higienizados, tendo em vista que esses podem ser consumidos crus. A correta higienização elimina os micróbi
+- D22 n3 (posição 17) precisa: Usar só água potável/tratada no preparo dos alimentos
+    aceita ARK-008#p018 [Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimen]: Capítulo 7 Quais cuidados devem ser tomados com a água? O que fazer? Os estabelecimentos devem ser abastecidos com água corrente tratada (proveniente do abastecimento púb
+    top-1  ARK-009#p005 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 1 FILTRAR E DESINFETAR 1º Filtrar ou coar a água com filtro doméstico, coador de papel ou pano limpo. 2º Após a filtração, adicionar 2 gotas de hipoclorito de sódio
+- D23 n2 (posição 11) precisa: Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não bastam
+    aceita ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao [FDA. Food and Water Safety During Power Outages and Floods.]: FONTE: FDA. Food and Water Safety During Power Outages and Floods. Data de edição não confirmada; captura em 22/10/2026. SEÇÃO: Once Power is Restored. URL: https://www.f
+    top-1  ARK-009#p006 [Ministério da Saúde. Evite mais riscos em situações de desas]: OPÇÃO 2 FILTRAR E FERVER Atenção! Na falta do hipoclorito de sódio a 2,5%, é necessário filtrar e ferver a água por cinco minutos antes de beber e/ou lavar alimentos. 1º 

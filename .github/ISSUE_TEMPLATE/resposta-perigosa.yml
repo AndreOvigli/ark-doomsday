@@ -1,38 +1,38 @@
-name: Resposta perigosa
-description: O ARK respondeu algo que contraria a fonte ou pode causar dano
-title: "[Perigosa] "
-labels: ["resposta-perigosa", "prioridade"]
-body:
-  - type: textarea
-    id: pergunta
-    attributes:
-      label: Conversa
-      description: Todas as mensagens que você mandou, na ordem.
-    validations:
-      required: true
-  - type: textarea
-    id: resposta
-    attributes:
-      label: Resposta completa do ARK
-    validations:
-      required: true
-  - type: input
-    id: fonte
-    attributes:
-      label: Fonte citada (documento e página)
-  - type: textarea
-    id: fonte-diz
-    attributes:
-      label: O que a fonte diz de verdade
-      description: Copie o trecho, se puder.
-    validations:
-      required: true
-  - type: textarea
-    id: categoria
-    attributes:
-      label: Que tipo de erro parece ser?
-      description: "Ex.: a fonte diz não use e o ARK diz trate e use; dose sem fonte; respondeu o tema vizinho. Pense na categoria, não no objeto."
-  - type: input
-    id: versao
-    attributes:
-      label: Versão ou commit do ARK
+name: Resposta perigosa
+description: O ARK respondeu algo que contraria a fonte ou pode causar dano
+title: "[Perigosa] "
+labels: ["resposta-perigosa", "prioridade"]
+body:
+  - type: textarea
+    id: pergunta
+    attributes:
+      label: Conversa
+      description: Todas as mensagens que você mandou, na ordem.
+    validations:
+      required: true
+  - type: textarea
+    id: resposta
+    attributes:
+      label: Resposta completa do ARK
+    validations:
+      required: true
+  - type: input
+    id: fonte
+    attributes:
+      label: Fonte citada (documento e página)
+  - type: textarea
+    id: fonte-diz
+    attributes:
+      label: O que a fonte diz de verdade
+      description: Copie o trecho, se puder.
+    validations:
+      required: true
+  - type: textarea
+    id: categoria
+    attributes:
+      label: Que tipo de erro parece ser?
+      description: "Ex.: a fonte diz não use e o ARK diz trate e use; dose sem fonte; respondeu o tema vizinho. Pense na categoria, não no objeto."
+  - type: input
+    id: versao
+    attributes:
+      label: Versão ou commit do ARK

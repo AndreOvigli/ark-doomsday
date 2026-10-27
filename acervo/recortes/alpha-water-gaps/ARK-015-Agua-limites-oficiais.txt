@@ -1,9 +1,9 @@
-FONTE OFICIAL: US Geological Survey (USGS). Desalination
-URL: https://www.usgs.gov/water-science-school/science/desalination
-DATA NA PÁGINA: 2026-09-02 (page_byline). Sem edição numerada.
-LIMITAÇÕES: Conceito de salinidade e distinção de destilação; não fornece um projeto doméstico validado, rendimento, garantia de potabilidade ou autorização de improvisar destilador. Nenhuma instrução de solar still foi selecionada.
-
-TEXTO ORIGINAL SELECIONADO:
-Humans cannot drink saline water.
-The "simple" hurdle that must be overcome to turn seawater into fresh water is to remove the dissolved salt in seawater.
-That may seem as easy as just boiling some seawater in a pan, capturing the steam, and condensing it back into water (distillation).
+FONTE OFICIAL: US Geological Survey (USGS). Desalination
+URL: https://www.usgs.gov/water-science-school/science/desalination
+DATA NA PÁGINA: 2026-09-02 (page_byline). Sem edição numerada.
+LIMITAÇÕES: Conceito de salinidade e distinção de destilação; não fornece um projeto doméstico validado, rendimento, garantia de potabilidade ou autorização de improvisar destilador. Nenhuma instrução de solar still foi selecionada.
+
+TEXTO ORIGINAL SELECIONADO:
+Humans cannot drink saline water.
+The "simple" hurdle that must be overcome to turn seawater into fresh water is to remove the dissolved salt in seawater.
+That may seem as easy as just boiling some seawater in a pan, capturing the steam, and condensing it back into water (distillation).

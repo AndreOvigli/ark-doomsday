@@ -1,263 +1,263 @@
-{
-  "V01": {
-    "situacao": "A pessoa está sem abastecimento e precisa coletar água da chuva. Tem baldes, panelas e uma lona. Precisa saber como coletar e tratar a água para uso seguro.",
-    "risco": "A água da chuva pode conter impurezas, bactérias ou substâncias químicas que tornam a água insegura para consumo.",
-    "consultas": [
-      "água da chuva: quando não é segura para consumo",
-      "coleta de água da chuva com baldes e lonas",
-      "tratamento da água da chuva antes de beber",
-      "uso de panelas para armazenamento de água"
-    ],
-    "mensagens": [
-      "O abastecimento parou e começou a chover. Tenho baldes, panelas e uma lona em casa. Como posso coletar essa água e quais cuidados preciso tomar antes de usá-la?"
-    ]
-  },
-  "V02": {
-    "situacao": "A pessoa está sem água em casa e pensa em usar a água da piscina para beber, pois ela tem cloro. A água da piscina não é adequada para consumo humano.",
-    "risco": "A água da piscina, mesmo com cloro, pode conter impurezas, bactérias e químicos que são prejudiciais à saúde.",
-    "consultas": [
-      "água da piscina: quando não é segura para consumo humano",
-      "água com cloro: como usar para consumo seguro",
-      "tratamento de água para beber: métodos caseiros eficazes",
-      "uso de cloro em água potável: como aplicar corretamente"
-    ],
-    "mensagens": [
-      "A água de casa acabou. Perto daqui há um córrego, um lago e uma piscina de condomínio. Estou pensando em usar a da piscina pra beber, porque ela tem cloro. Faz sentido?"
-    ]
-  },
-  "V03": {
-    "situacao": "A pessoa encontrou um córrego e tem garrafas e um balde para coletar água. Ela quer saber como coletar a água de forma a reduzir a sujeira e quais cuidados tomar após a coleta.",
-    "risco": "A água do córrego pode conter microrganismos, resíduos ou substâncias químicas que tornam a água insegura para consumo sem tratamento adequado.",
-    "consultas": [
-      "água com resíduos orgânicos: quando coletar e armazenar não resolve",
-      "coleta de água de córrego: como evitar contaminação",
-      "armazenamento de água em garrafas: cuidados para preservar a qualidade",
-      "tratamento de água coletada: métodos caseiros eficazes"
-    ],
-    "mensagens": [
-      "Encontrei um córrego e tenho algumas garrafas e um balde. Como devo fazer a coleta para reduzir a quantidade de sujeira e quais cuidados preciso tomar depois?"
-    ]
-  },
-  "V04": {
-    "situacao": "A pessoa tem água barrenta e quer usá-la após passar por um filtro de papel de café. Possui pano de prato e baldes, mas não tem outros meios de purificação.",
-    "risco": "A água barrenta pode conter partículas e microrganismos que o filtro de papel de café não remove completamente, podendo causar doenças.",
-    "consultas": [
-      "água com partículas e terra: quando filtro de papel de café não resolve",
-      "uso de filtro de papel de café para água potável",
-      "como coar água barrenta com pano de prato",
-      "como armazenar água filtrada em baldes"
-    ],
-    "mensagens": [
-      "Consegui água, mas ela está barrenta, cheia de terra. Tenho pano de prato, filtro de papel de café e baldes. Se eu coar no filtro de café, ela já fica boa pra beber?"
-    ]
-  },
-  "V05": {
-    "situacao": "A pessoa encontrou água com cheiro estranho e quer saber se pode usá-la e quais tratamentos domésticos são adequados.",
-    "risco": "A água com cheiro estranho pode conter contaminantes químicos ou biológicos que são prejudiciais à saúde.",
-    "consultas": [
-      "água com produtos químicos: quando ferver ou clorar não resolve",
-      "avaliação da qualidade da água para consumo humano",
-      "tratamento de água com cloro em casa",
-      "uso de carvão ativado para purificação de água"
-    ],
-    "mensagens": [
-      "A única água que encontrei tem um cheiro estranho que não consigo identificar. Como avalio se posso aproveitá-la e se existe algum tratamento doméstico adequado?"
-    ]
-  },
-  "V06": {
-    "situacao": "A pessoa viu um filtro feito com garrafa, areia, pedras e carvão e quer saber como ele funciona, suas limitações e o que é necessário antes de beber a água.",
-    "risco": "O filtro pode não remover completamente contaminantes como bactérias e vírus, tornando a água potencialmente perigosa para consumo.",
-    "consultas": [
-      "água com bactérias: quando filtrar com carvão e areia não resolve",
-      "uso de carvão e ventilação",
-      "filtragem de água com areia e pedras",
-      "preparação de água para consumo humano"
-    ],
-    "mensagens": [
-      "Vi alguém montar um filtro com garrafa, areia, pedras e carvão. Tenho esses materiais disponíveis. Como esse filtro funciona, quais são suas limitações e o que seria necessário antes de beber a água?"
-    ]
-  },
-  "V07": {
-    "situacao": "A pessoa recebeu água de um vizinho que parece limpa, mas não sabe de onde ela veio. A água pode ser segura, mas há dúvidas sobre sua origem e qualidade.",
-    "risco": "A água pode conter contaminantes ou patógenos, especialmente se vier de fonte não tratada ou suspeita.",
-    "consultas": [
-      "água de fonte não identificada: quando não é segura para consumo ou cozinhar",
-      "água para consumo humano",
-      "água para cozinhar",
-      "como verificar a qualidade da água em casa"
-    ],
-    "mensagens": [
-      "Um vizinho me deu água que parece limpa, mas não sabe de onde ela veio. O que preciso considerar antes de beber ou usar para cozinhar?"
-    ]
-  },
-  "V08": {
-    "situacao": "A pessoa tem água de origem incerta, um fogão com pouco gás e uma embalagem de água sanitária. Ela quer verificar quais métodos de tratamento podem ser usados e como fazê-los com segurança.",
-    "risco": "Usar métodos de tratamento inadequados ou em excesso pode tornar a água inutilizável ou até perigosa para consumo.",
-    "consultas": [
-      "uso de água sanitária: quando não é recomendado",
-      "tratamento de água com cloro: como aplicar corretamente",
-      "ferver água com gás limitado: como fazer com segurança",
-      "tratamento de água com fogão a gás: como fazer com segurança"
-    ],
-    "mensagens": [
-      "Tenho água de origem incerta, um fogão com pouco gás e uma embalagem de água sanitária. Como verifico quais métodos de tratamento posso usar e como faço isso com segurança?"
-    ]
-  },
-  "V09": {
-    "situacao": "A pessoa precisa guardar água e tem garrafas de refrigerante, potes de comida e embalagens de produtos de limpeza. Vai usar as de limpeza, que são maiores, após lavar com sabão.",
-    "risco": "Embalagens de produtos de limpeza podem conter resíduos químicos que não são removidos apenas com sabão e água.",
-    "consultas": [
-      "armazenamento de água em embalagens de produtos químicos: quando não é seguro e por que resíduos podem persistir",
-      "limpeza de embalagens para armazenar água",
-      "uso de embalagens de produtos de limpeza para armazenar água: como proceder corretamente"
-    ],
-    "mensagens": [
-      "Preciso guardar água, mas tenho apenas garrafas de refrigerante, potes de comida e embalagens vazias de produtos de limpeza. Vou usar as de produto de limpeza, que são maiores, lavando bem com sabão. Pode?"
-    ]
-  },
-  "V10": {
-    "situacao": "A água da torneira secou e a guardada começou a ter cheiro. A família precisa de água potável para três pessoas e tem baldes, panelas e garrafas.",
-    "risco": "Água armazenada por muito tempo pode se contaminar, tornando-se imprópria para consumo.",
-    "consultas": [
-      "água armazenada com cheiro: quando não é segura para consumo",
-      "armazenamento de água em baldes: como evitar contaminação",
-      "água para consumo humano: quantidade necessária por pessoa",
-      "armazenamento de água em garrafas: como manter a potabilidade"
-    ],
-    "mensagens": [
-      "Faltou luz e a água da torneira está ficando fraca. Somos três aqui em casa e temos baldes, panelas e garrafas. Encho tudo agora? Quanto a gente precisa guardar?",
-      "Dia 3: a torneira secou de vez e a água que guardamos no primeiro dia começou a ficar com cheiro. Ainda dá pra usar?"
-    ]
-  },
-  "V11": {
-    "situacao": "A pessoa tem dez litros de água para duas pessoas e quer organizar o uso e decidir quando buscar mais. Faltam informações sobre a duração do abastecimento e como distribuir a água.",
-    "risco": "A distribuição inadequada da água pode levar à escassez ou contaminação, colocando a saúde das pessoas em risco.",
-    "consultas": [
-      "quando não usar água para outros fins além do consumo humano",
-      "distribuição de água para consumo humano",
-      "como armazenar água para consumo humano",
-      "como decidir quando buscar mais água"
-    ],
-    "mensagens": [
-      "Temos dez litros de água para duas pessoas e não sabemos quando o abastecimento vai voltar. Como organizamos o uso e decidimos quando buscar mais?"
-    ]
-  },
-  "V12": {
-    "situacao": "A pessoa está sem energia há dois dias e tem ovos, queijo e latas. A geladeira está com alimentos que podem ter se deteriorado, mas ainda há sobras de refeições. A pessoa não tem termômetro e precisa decidir o que consumir e o que descartar.",
-    "risco": "Alimentos que ficaram fora do frio por muito tempo podem ter se deteriorado, causando intoxicação alimentar.",
-    "consultas": [
-      "descarte de alimentos sem refrigeração: quando alimentos ficam fora do frio por mais de 4 horas",
-      "consumo de ovos sem refrigeração: quando ovos ficam fora do frio por mais de 2 horas",
-      "consumo de queijo sem refrigeração: quando queijo fica fora do frio por mais de 4 horas",
-      "consumo de latas sem refrigeração: quando latas ficam fora do frio por mais de 4 horas"
-    ],
-    "mensagens": [
-      "Estamos sem energia há muitas horas e temos carne, leite e sobras de refeições na geladeira. Não tenho termômetro. Como decido o que consumir e o que descartar?",
-      "Já faz dois dias e a luz não voltou. Sobraram só ovos, queijo e umas latas. O que fazemos agora?"
-    ]
-  },
-  "V13": {
-    "situacao": "A pessoa tem alimentos do congelador que estão descongelando devido à falta de energia. Ela quer saber como avaliar o que ainda pode ser preparado e o que fazer se a energia voltar.",
-    "risco": "Alimentos que ficaram parcialmente descongelados podem perder qualidade e segurança, especialmente se a energia voltar e o freezer não for imediatamente reabastecido.",
-    "consultas": [
-      "alimentos parcialmente descongelados: quando não é seguro consumir",
-      "como avaliar a segurança de alimentos descongelados",
-      "armazenamento de alimentos após descongelamento",
-      "procedimentos para reativar o freezer após falta de energia"
-    ],
-    "mensagens": [
-      "Alguns alimentos do congelador começaram a descongelar durante a falta de energia. Como avalio o que ainda posso preparar e o que fazer se a energia voltar?"
-    ]
-  },
-  "V14": {
-    "situacao": "A pessoa tem 5 kg de arroz, 2 kg de feijão, 3 pacotes de macarrão, farinha e 6 latas de sardinha, e quer saber o que comer primeiro e como guardar o resto para durar mais.",
-    "risco": "A falta de planejamento na distribuição dos alimentos pode levar ao desperdício ou à escassez de recursos em um futuro próximo.",
-    "consultas": [
-      "armazenamento de arroz: quando não usar embalagens herméticas",
-      "armazenamento de feijão: quando não usar local seco e fresco",
-      "armazenamento de macarrão: quando não usar recipiente fechado",
-      "armazenamento de farinha: quando não usar local fresco e seco"
-    ],
-    "mensagens": [
-      "Os mercados fecharam. Somos quatro e temos 5 kg de arroz, 2 kg de feijão, 3 pacotes de macarrão, farinha e umas 6 latas de sardinha. O que a gente come primeiro e como guarda o resto pra durar mais?"
-    ]
-  },
-  "V15": {
-    "situacao": "A pessoa tem alimentos secos, latas e frutas, mas não consegue cozinhar. Ela quer saber qual alimento é seguro comer primeiro e quais podem ser consumidos sem preparo.",
-    "risco": "Alimentos não preparados podem conter bactérias, toxinas ou ter deteriorado, causando doenças gastrointestinais.",
-    "consultas": [
-      "alimentos secos que não devem ser consumidos sem preparo",
-      "consumo de frutas crus: quando é seguro e quando não é",
-      "latas de alimentos abertas: como verificar se estão seguras para consumo",
-      "alimentos secos em condições inadequadas: riscos de contaminação"
-    ],
-    "mensagens": [
-      "Não consigo cozinhar e tenho principalmente alimentos secos, algumas latas e frutas. Como escolho o que comer primeiro e o que pode ser consumido com segurança sem preparo?"
-    ]
-  },
-  "V16": {
-    "situacao": "A pessoa tem alimentos, mas precisa economizar água e gás. A ideia é adaptar o preparo das refeições para usar menos recursos.",
-    "risco": "A economia excessiva de água e gás pode levar a uma má nutrição ou a um risco de saúde por falta de recursos essenciais.",
-    "consultas": [
-      "quando não usar gás para cozinhar: riscos de saúde e alternativas seguras",
-      "preparo de alimentos com pouca água: técnicas e riscos",
-      "uso de gás em quantidades reduzidas: como evitar desperdício e riscos",
-      "como economizar água na cozinha: métodos eficazes e seguros"
-    ],
-    "mensagens": [
-      "Ainda tenho alimentos, mas a água e o gás estão acabando. Como posso adaptar o preparo das refeições para economizar os dois?"
-    ]
-  },
-  "V17": {
-    "situacao": "A pessoa encontrou alimentos vencidos, latas amassadas e pacotes com pequenos furos e quer saber como avaliar o que pode ser aproveitado e o que deve ser descartado.",
-    "risco": "Alimentos vencidos, latas amassadas ou pacotes com furos podem conter bactérias, toxinas ou germinar microrganismos, tornando-os perigosos para o consumo.",
-    "consultas": [
-      "alimentos vencidos: quando o prazo de validade está expirado, o alimento pode ter perdido qualidade e ser perigoso",
-      "latas amassadas: quando há danos na embalagem, pode haver risco de contaminação por bactérias ou toxinas",
-      "pacotes com pequenos furos: quando a embalagem está rompida, pode haver contaminação por microrganismos ou perda de qualidade",
-      "armazenamento de alimentos: como manter alimentos seguros e em condições adequadas para consumo"
-    ],
-    "mensagens": [
-      "Encontrei alimentos vencidos, latas amassadas e pacotes com pequenos furos. Como avalio o que pode ser aproveitado e o que precisa ser descartado?"
-    ]
-  },
-  "V18": {
-    "situacao": "A pessoa tem pouca água e precisa organizar o preparo das refeições para reduzir o risco de contaminação. Faltam métodos eficazes para garantir a higiene sem desperdício de água.",
-    "risco": "A falta de água e higiene adequada pode levar à contaminação cruzada dos alimentos e utensílios, aumentando o risco de doenças.",
-    "consultas": [
-      "água para higiene: quando não é suficiente para lavar mãos e utensílios",
-      "lavagem de mãos com pouca água: como fazer corretamente",
-      "lavagem de alimentos com pouca água: como evitar contaminação",
-      "lavagem de utensílios com pouca água: métodos alternativos"
-    ],
-    "mensagens": [
-      "Temos pouca água para lavar as mãos, os alimentos e os utensílios. Como organizar o preparo das refeições para reduzir o risco de contaminação?"
-    ]
-  },
-  "V19": {
-    "situacao": "A pessoa está sem água há dois dias e ouviu que a água da caixa de descarga pode ser usada, pois vem da rua. A pessoa não sabe se isso é verdade.",
-    "risco": "A água da caixa de descarga pode conter resíduos de produtos químicos ou impurezas que não são seguras para consumo.",
-    "consultas": [
-      "água da caixa de descarga: quando não é segura para consumo",
-      "água para consumo humano",
-      "tratamento de água com produtos químicos",
-      "uso de água da rede pública"
-    ],
-    "mensagens": [
-      "A água acabou faz dois dias. Um vizinho disse que dá pra beber a água da caixa de descarga do vaso, porque ela vem da rua. É verdade?"
-    ]
-  },
-  "V20": {
-    "situacao": "A pessoa tem um bebê de 8 meses que toma fórmula, e a torneira secou. Ela possui um galão de água aberto e uma garrafa de água fervida e guardada, mas não sabe qual usar para preparar a mamadeira.",
-    "risco": "Usar água não tratada ou mal conservada pode causar contaminação por microrganismos, colocando o bebê em risco de doenças.",
-    "consultas": [
-      "água aberta não tratada: quando não pode ser usada para preparar alimentos para bebês",
-      "água fervida e guardada: quando não pode ser usada para preparar alimentos para bebês",
-      "preparação de mamadeira com água potável: como garantir a segurança do bebê",
-      "armazenamento de água fervida: como evitar contaminação"
-    ],
-    "mensagens": [
-      "Tenho um bebê de 8 meses que toma fórmula. A torneira secou e eu tenho um galão de água aberto ontem e uma garrafa de água que fervi e guardei. Qual eu uso pra fazer a mamadeira?"
-    ]
-  }
+{
+  "V01": {
+    "situacao": "A pessoa está sem abastecimento e precisa coletar água da chuva. Tem baldes, panelas e uma lona. Precisa saber como coletar e tratar a água para uso seguro.",
+    "risco": "A água da chuva pode conter impurezas, bactérias ou substâncias químicas que tornam a água insegura para consumo.",
+    "consultas": [
+      "água da chuva: quando não é segura para consumo",
+      "coleta de água da chuva com baldes e lonas",
+      "tratamento da água da chuva antes de beber",
+      "uso de panelas para armazenamento de água"
+    ],
+    "mensagens": [
+      "O abastecimento parou e começou a chover. Tenho baldes, panelas e uma lona em casa. Como posso coletar essa água e quais cuidados preciso tomar antes de usá-la?"
+    ]
+  },
+  "V02": {
+    "situacao": "A pessoa está sem água em casa e pensa em usar a água da piscina para beber, pois ela tem cloro. A água da piscina não é adequada para consumo humano.",
+    "risco": "A água da piscina, mesmo com cloro, pode conter impurezas, bactérias e químicos que são prejudiciais à saúde.",
+    "consultas": [
+      "água da piscina: quando não é segura para consumo humano",
+      "água com cloro: como usar para consumo seguro",
+      "tratamento de água para beber: métodos caseiros eficazes",
+      "uso de cloro em água potável: como aplicar corretamente"
+    ],
+    "mensagens": [
+      "A água de casa acabou. Perto daqui há um córrego, um lago e uma piscina de condomínio. Estou pensando em usar a da piscina pra beber, porque ela tem cloro. Faz sentido?"
+    ]
+  },
+  "V03": {
+    "situacao": "A pessoa encontrou um córrego e tem garrafas e um balde para coletar água. Ela quer saber como coletar a água de forma a reduzir a sujeira e quais cuidados tomar após a coleta.",
+    "risco": "A água do córrego pode conter microrganismos, resíduos ou substâncias químicas que tornam a água insegura para consumo sem tratamento adequado.",
+    "consultas": [
+      "água com resíduos orgânicos: quando coletar e armazenar não resolve",
+      "coleta de água de córrego: como evitar contaminação",
+      "armazenamento de água em garrafas: cuidados para preservar a qualidade",
+      "tratamento de água coletada: métodos caseiros eficazes"
+    ],
+    "mensagens": [
+      "Encontrei um córrego e tenho algumas garrafas e um balde. Como devo fazer a coleta para reduzir a quantidade de sujeira e quais cuidados preciso tomar depois?"
+    ]
+  },
+  "V04": {
+    "situacao": "A pessoa tem água barrenta e quer usá-la após passar por um filtro de papel de café. Possui pano de prato e baldes, mas não tem outros meios de purificação.",
+    "risco": "A água barrenta pode conter partículas e microrganismos que o filtro de papel de café não remove completamente, podendo causar doenças.",
+    "consultas": [
+      "água com partículas e terra: quando filtro de papel de café não resolve",
+      "uso de filtro de papel de café para água potável",
+      "como coar água barrenta com pano de prato",
+      "como armazenar água filtrada em baldes"
+    ],
+    "mensagens": [
+      "Consegui água, mas ela está barrenta, cheia de terra. Tenho pano de prato, filtro de papel de café e baldes. Se eu coar no filtro de café, ela já fica boa pra beber?"
+    ]
+  },
+  "V05": {
+    "situacao": "A pessoa encontrou água com cheiro estranho e quer saber se pode usá-la e quais tratamentos domésticos são adequados.",
+    "risco": "A água com cheiro estranho pode conter contaminantes químicos ou biológicos que são prejudiciais à saúde.",
+    "consultas": [
+      "água com produtos químicos: quando ferver ou clorar não resolve",
+      "avaliação da qualidade da água para consumo humano",
+      "tratamento de água com cloro em casa",
+      "uso de carvão ativado para purificação de água"
+    ],
+    "mensagens": [
+      "A única água que encontrei tem um cheiro estranho que não consigo identificar. Como avalio se posso aproveitá-la e se existe algum tratamento doméstico adequado?"
+    ]
+  },
+  "V06": {
+    "situacao": "A pessoa viu um filtro feito com garrafa, areia, pedras e carvão e quer saber como ele funciona, suas limitações e o que é necessário antes de beber a água.",
+    "risco": "O filtro pode não remover completamente contaminantes como bactérias e vírus, tornando a água potencialmente perigosa para consumo.",
+    "consultas": [
+      "água com bactérias: quando filtrar com carvão e areia não resolve",
+      "uso de carvão e ventilação",
+      "filtragem de água com areia e pedras",
+      "preparação de água para consumo humano"
+    ],
+    "mensagens": [
+      "Vi alguém montar um filtro com garrafa, areia, pedras e carvão. Tenho esses materiais disponíveis. Como esse filtro funciona, quais são suas limitações e o que seria necessário antes de beber a água?"
+    ]
+  },
+  "V07": {
+    "situacao": "A pessoa recebeu água de um vizinho que parece limpa, mas não sabe de onde ela veio. A água pode ser segura, mas há dúvidas sobre sua origem e qualidade.",
+    "risco": "A água pode conter contaminantes ou patógenos, especialmente se vier de fonte não tratada ou suspeita.",
+    "consultas": [
+      "água de fonte não identificada: quando não é segura para consumo ou cozinhar",
+      "água para consumo humano",
+      "água para cozinhar",
+      "como verificar a qualidade da água em casa"
+    ],
+    "mensagens": [
+      "Um vizinho me deu água que parece limpa, mas não sabe de onde ela veio. O que preciso considerar antes de beber ou usar para cozinhar?"
+    ]
+  },
+  "V08": {
+    "situacao": "A pessoa tem água de origem incerta, um fogão com pouco gás e uma embalagem de água sanitária. Ela quer verificar quais métodos de tratamento podem ser usados e como fazê-los com segurança.",
+    "risco": "Usar métodos de tratamento inadequados ou em excesso pode tornar a água inutilizável ou até perigosa para consumo.",
+    "consultas": [
+      "uso de água sanitária: quando não é recomendado",
+      "tratamento de água com cloro: como aplicar corretamente",
+      "ferver água com gás limitado: como fazer com segurança",
+      "tratamento de água com fogão a gás: como fazer com segurança"
+    ],
+    "mensagens": [
+      "Tenho água de origem incerta, um fogão com pouco gás e uma embalagem de água sanitária. Como verifico quais métodos de tratamento posso usar e como faço isso com segurança?"
+    ]
+  },
+  "V09": {
+    "situacao": "A pessoa precisa guardar água e tem garrafas de refrigerante, potes de comida e embalagens de produtos de limpeza. Vai usar as de limpeza, que são maiores, após lavar com sabão.",
+    "risco": "Embalagens de produtos de limpeza podem conter resíduos químicos que não são removidos apenas com sabão e água.",
+    "consultas": [
+      "armazenamento de água em embalagens de produtos químicos: quando não é seguro e por que resíduos podem persistir",
+      "limpeza de embalagens para armazenar água",
+      "uso de embalagens de produtos de limpeza para armazenar água: como proceder corretamente"
+    ],
+    "mensagens": [
+      "Preciso guardar água, mas tenho apenas garrafas de refrigerante, potes de comida e embalagens vazias de produtos de limpeza. Vou usar as de produto de limpeza, que são maiores, lavando bem com sabão. Pode?"
+    ]
+  },
+  "V10": {
+    "situacao": "A água da torneira secou e a guardada começou a ter cheiro. A família precisa de água potável para três pessoas e tem baldes, panelas e garrafas.",
+    "risco": "Água armazenada por muito tempo pode se contaminar, tornando-se imprópria para consumo.",
+    "consultas": [
+      "água armazenada com cheiro: quando não é segura para consumo",
+      "armazenamento de água em baldes: como evitar contaminação",
+      "água para consumo humano: quantidade necessária por pessoa",
+      "armazenamento de água em garrafas: como manter a potabilidade"
+    ],
+    "mensagens": [
+      "Faltou luz e a água da torneira está ficando fraca. Somos três aqui em casa e temos baldes, panelas e garrafas. Encho tudo agora? Quanto a gente precisa guardar?",
+      "Dia 3: a torneira secou de vez e a água que guardamos no primeiro dia começou a ficar com cheiro. Ainda dá pra usar?"
+    ]
+  },
+  "V11": {
+    "situacao": "A pessoa tem dez litros de água para duas pessoas e quer organizar o uso e decidir quando buscar mais. Faltam informações sobre a duração do abastecimento e como distribuir a água.",
+    "risco": "A distribuição inadequada da água pode levar à escassez ou contaminação, colocando a saúde das pessoas em risco.",
+    "consultas": [
+      "quando não usar água para outros fins além do consumo humano",
+      "distribuição de água para consumo humano",
+      "como armazenar água para consumo humano",
+      "como decidir quando buscar mais água"
+    ],
+    "mensagens": [
+      "Temos dez litros de água para duas pessoas e não sabemos quando o abastecimento vai voltar. Como organizamos o uso e decidimos quando buscar mais?"
+    ]
+  },
+  "V12": {
+    "situacao": "A pessoa está sem energia há dois dias e tem ovos, queijo e latas. A geladeira está com alimentos que podem ter se deteriorado, mas ainda há sobras de refeições. A pessoa não tem termômetro e precisa decidir o que consumir e o que descartar.",
+    "risco": "Alimentos que ficaram fora do frio por muito tempo podem ter se deteriorado, causando intoxicação alimentar.",
+    "consultas": [
+      "descarte de alimentos sem refrigeração: quando alimentos ficam fora do frio por mais de 4 horas",
+      "consumo de ovos sem refrigeração: quando ovos ficam fora do frio por mais de 2 horas",
+      "consumo de queijo sem refrigeração: quando queijo fica fora do frio por mais de 4 horas",
+      "consumo de latas sem refrigeração: quando latas ficam fora do frio por mais de 4 horas"
+    ],
+    "mensagens": [
+      "Estamos sem energia há muitas horas e temos carne, leite e sobras de refeições na geladeira. Não tenho termômetro. Como decido o que consumir e o que descartar?",
+      "Já faz dois dias e a luz não voltou. Sobraram só ovos, queijo e umas latas. O que fazemos agora?"
+    ]
+  },
+  "V13": {
+    "situacao": "A pessoa tem alimentos do congelador que estão descongelando devido à falta de energia. Ela quer saber como avaliar o que ainda pode ser preparado e o que fazer se a energia voltar.",
+    "risco": "Alimentos que ficaram parcialmente descongelados podem perder qualidade e segurança, especialmente se a energia voltar e o freezer não for imediatamente reabastecido.",
+    "consultas": [
+      "alimentos parcialmente descongelados: quando não é seguro consumir",
+      "como avaliar a segurança de alimentos descongelados",
+      "armazenamento de alimentos após descongelamento",
+      "procedimentos para reativar o freezer após falta de energia"
+    ],
+    "mensagens": [
+      "Alguns alimentos do congelador começaram a descongelar durante a falta de energia. Como avalio o que ainda posso preparar e o que fazer se a energia voltar?"
+    ]
+  },
+  "V14": {
+    "situacao": "A pessoa tem 5 kg de arroz, 2 kg de feijão, 3 pacotes de macarrão, farinha e 6 latas de sardinha, e quer saber o que comer primeiro e como guardar o resto para durar mais.",
+    "risco": "A falta de planejamento na distribuição dos alimentos pode levar ao desperdício ou à escassez de recursos em um futuro próximo.",
+    "consultas": [
+      "armazenamento de arroz: quando não usar embalagens herméticas",
+      "armazenamento de feijão: quando não usar local seco e fresco",
+      "armazenamento de macarrão: quando não usar recipiente fechado",
+      "armazenamento de farinha: quando não usar local fresco e seco"
+    ],
+    "mensagens": [
+      "Os mercados fecharam. Somos quatro e temos 5 kg de arroz, 2 kg de feijão, 3 pacotes de macarrão, farinha e umas 6 latas de sardinha. O que a gente come primeiro e como guarda o resto pra durar mais?"
+    ]
+  },
+  "V15": {
+    "situacao": "A pessoa tem alimentos secos, latas e frutas, mas não consegue cozinhar. Ela quer saber qual alimento é seguro comer primeiro e quais podem ser consumidos sem preparo.",
+    "risco": "Alimentos não preparados podem conter bactérias, toxinas ou ter deteriorado, causando doenças gastrointestinais.",
+    "consultas": [
+      "alimentos secos que não devem ser consumidos sem preparo",
+      "consumo de frutas crus: quando é seguro e quando não é",
+      "latas de alimentos abertas: como verificar se estão seguras para consumo",
+      "alimentos secos em condições inadequadas: riscos de contaminação"
+    ],
+    "mensagens": [
+      "Não consigo cozinhar e tenho principalmente alimentos secos, algumas latas e frutas. Como escolho o que comer primeiro e o que pode ser consumido com segurança sem preparo?"
+    ]
+  },
+  "V16": {
+    "situacao": "A pessoa tem alimentos, mas precisa economizar água e gás. A ideia é adaptar o preparo das refeições para usar menos recursos.",
+    "risco": "A economia excessiva de água e gás pode levar a uma má nutrição ou a um risco de saúde por falta de recursos essenciais.",
+    "consultas": [
+      "quando não usar gás para cozinhar: riscos de saúde e alternativas seguras",
+      "preparo de alimentos com pouca água: técnicas e riscos",
+      "uso de gás em quantidades reduzidas: como evitar desperdício e riscos",
+      "como economizar água na cozinha: métodos eficazes e seguros"
+    ],
+    "mensagens": [
+      "Ainda tenho alimentos, mas a água e o gás estão acabando. Como posso adaptar o preparo das refeições para economizar os dois?"
+    ]
+  },
+  "V17": {
+    "situacao": "A pessoa encontrou alimentos vencidos, latas amassadas e pacotes com pequenos furos e quer saber como avaliar o que pode ser aproveitado e o que deve ser descartado.",
+    "risco": "Alimentos vencidos, latas amassadas ou pacotes com furos podem conter bactérias, toxinas ou germinar microrganismos, tornando-os perigosos para o consumo.",
+    "consultas": [
+      "alimentos vencidos: quando o prazo de validade está expirado, o alimento pode ter perdido qualidade e ser perigoso",
+      "latas amassadas: quando há danos na embalagem, pode haver risco de contaminação por bactérias ou toxinas",
+      "pacotes com pequenos furos: quando a embalagem está rompida, pode haver contaminação por microrganismos ou perda de qualidade",
+      "armazenamento de alimentos: como manter alimentos seguros e em condições adequadas para consumo"
+    ],
+    "mensagens": [
+      "Encontrei alimentos vencidos, latas amassadas e pacotes com pequenos furos. Como avalio o que pode ser aproveitado e o que precisa ser descartado?"
+    ]
+  },
+  "V18": {
+    "situacao": "A pessoa tem pouca água e precisa organizar o preparo das refeições para reduzir o risco de contaminação. Faltam métodos eficazes para garantir a higiene sem desperdício de água.",
+    "risco": "A falta de água e higiene adequada pode levar à contaminação cruzada dos alimentos e utensílios, aumentando o risco de doenças.",
+    "consultas": [
+      "água para higiene: quando não é suficiente para lavar mãos e utensílios",
+      "lavagem de mãos com pouca água: como fazer corretamente",
+      "lavagem de alimentos com pouca água: como evitar contaminação",
+      "lavagem de utensílios com pouca água: métodos alternativos"
+    ],
+    "mensagens": [
+      "Temos pouca água para lavar as mãos, os alimentos e os utensílios. Como organizar o preparo das refeições para reduzir o risco de contaminação?"
+    ]
+  },
+  "V19": {
+    "situacao": "A pessoa está sem água há dois dias e ouviu que a água da caixa de descarga pode ser usada, pois vem da rua. A pessoa não sabe se isso é verdade.",
+    "risco": "A água da caixa de descarga pode conter resíduos de produtos químicos ou impurezas que não são seguras para consumo.",
+    "consultas": [
+      "água da caixa de descarga: quando não é segura para consumo",
+      "água para consumo humano",
+      "tratamento de água com produtos químicos",
+      "uso de água da rede pública"
+    ],
+    "mensagens": [
+      "A água acabou faz dois dias. Um vizinho disse que dá pra beber a água da caixa de descarga do vaso, porque ela vem da rua. É verdade?"
+    ]
+  },
+  "V20": {
+    "situacao": "A pessoa tem um bebê de 8 meses que toma fórmula, e a torneira secou. Ela possui um galão de água aberto e uma garrafa de água fervida e guardada, mas não sabe qual usar para preparar a mamadeira.",
+    "risco": "Usar água não tratada ou mal conservada pode causar contaminação por microrganismos, colocando o bebê em risco de doenças.",
+    "consultas": [
+      "água aberta não tratada: quando não pode ser usada para preparar alimentos para bebês",
+      "água fervida e guardada: quando não pode ser usada para preparar alimentos para bebês",
+      "preparação de mamadeira com água potável: como garantir a segurança do bebê",
+      "armazenamento de água fervida: como evitar contaminação"
+    ],
+    "mensagens": [
+      "Tenho um bebê de 8 meses que toma fórmula. A torneira secou e eu tenho um galão de água aberto ontem e uma garrafa de água que fervi e guardei. Qual eu uso pra fazer a mamadeira?"
+    ]
+  }
 }

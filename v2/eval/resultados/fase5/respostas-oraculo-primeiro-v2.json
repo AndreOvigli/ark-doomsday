@@ -1,865 +1,865 @@
-{
-  "D01": {
-    "modo": "resposta",
-    "texto": "A água do rio é mais arriscada por causa da barrenta. A água da chuva é melhor, mas precisa ser tratada.",
-    "orientacoes": [
-      {
-        "frase": "Filtre a água da chuva antes de desinfetar.",
-        "fontes": [
-          2
-        ]
-      },
-      {
-        "frase": "Desinfete a água da chuva com hipoclorito de sódio a 2,5%.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Misture 2 colheres de chá de hipoclorito de sódio a 2,5% em 1 litro de água.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Espere 30 minutos antes de beber.",
-        "fontes": [
-          1
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1935,
-    "_tokens_saida": 186,
-    "_segundos": 4.6,
-    "_ids": [
-      "ARK-001#p023",
-      "ARK-001#p013"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D02": {
-    "modo": "resposta",
-    "texto": "A água do poço pode não ser potável. Use o galão apenas se a água for tratada e armazenada corretamente.",
-    "orientacoes": [
-      {
-        "frase": "Lave o galão por dentro e por fora com água, usando escova e sabão.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Desinfete o galão com água sanitária a 2,0% ou 2,5%, adicionando 1 mL do produto para cada 1 L de água.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Após 30 minutos, descarte a solução e enxágue bem o galão com água tratada.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Use o galão apenas para armazenar água tratada e não para guardar água bruta.",
-        "fontes": [
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 2238,
-    "_tokens_saida": 236,
-    "_segundos": 5.9,
-    "_ids": [
-      "ARK-001#p016",
-      "ARK-010#CDC-2024-Agua-com-combustivel",
-      "ARK-001#p015"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D03": {
-    "modo": "resposta",
-    "texto": "A água mineral pode não ser potável, por isso é necessário tratá-la antes de beber.",
-    "orientacoes": [
-      {
-        "frase": "Filtre a água para remover resíduos e microrganismos maiores.",
-        "fontes": [
-          3
-        ]
-      },
-      {
-        "frase": "Desinfete a água para eliminar microrganismos que não se consegue ver, como vírus e bactérias.",
-        "fontes": [
-          3
-        ]
-      },
-      {
-        "frase": "Não beba a água sem tratar, pois pode causar doenças.",
-        "fontes": [
-          1
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 2079,
-    "_tokens_saida": 146,
-    "_segundos": 3.8,
-    "_ids": [
-      "ARK-001#p006",
-      "ARK-009#p009",
-      "ARK-001#p013"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D04": {
-    "modo": "resposta",
-    "texto": "A água de poço pode conter microrganismos que causam doenças. Use o pano de prato limpo para filtrar a água antes de desinfetar. Depois, leve a água à fervura por pelo menos 5 minutos.",
-    "orientacoes": [
-      {
-        "frase": "Filtre a água usando um pano limpo.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Leve a água à fervura por pelo menos 5 minutos.",
-        "fontes": [
-          2
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1606,
-    "_tokens_saida": 131,
-    "_segundos": 3.2,
-    "_ids": [
-      "ARK-001#p014",
-      "ARK-001#p027"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D05": {
-    "modo": "resposta",
-    "texto": "A água precisa ser filtrada e desinfetada para reduzir riscos de contaminação por microrganismos.",
-    "orientacoes": [
-      {
-        "frase": "Filtre a água para remover resíduos visíveis e alguns microrganismos.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Deixe a água em repouso por um tempo se estiver barrenta ou turva para que o resíduo se deposite.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Para cada litro de água, adicione duas gotas de hipoclorito de sódio a 2,5%.",
-        "fontes": [
-          3
-        ]
-      },
-      {
-        "frase": "Misture bem a água com uma colher limpa para que o cloro se misture em toda a água.",
-        "fontes": [
-          3
-        ]
-      },
-      {
-        "frase": "Deixe a água descansar por 30 minutos antes de consumir.",
-        "fontes": [
-          3
-        ]
-      },
-      {
-        "frase": "Guarde a água tratada em um recipiente limpo e tampado.",
-        "fontes": [
-          3
-        ]
-      },
-      {
-        "frase": "Consuma a água em até 24 horas.",
-        "fontes": [
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 2179,
-    "_tokens_saida": 337,
-    "_segundos": 8.0,
-    "_ids": [
-      "ARK-001#p013",
-      "ARK-001#p023",
-      "ARK-001#p024"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D06": {
-    "modo": "resposta",
-    "texto": "A água do rio pode conter microrganismos que não são removidos apenas com um pano. Ferva a água até que comece a formar bolhas grandes e constantes. Mantenha a fervura por pelo menos 5 minutos. Depois, espere a água esfriar e transfira para um recipiente limpo.",
-    "orientacoes": [
-      {
-        "frase": "Ferva a água até que comece a formar bolhas grandes e constantes.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Mantenha a fervura por pelo menos 5 minutos.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Espere a água esfriar antes de mudar para outro recipiente.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Transfira a água fervida para um pote ou garrafa com tampa.",
-        "fontes": [
-          1
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1608,
-    "_tokens_saida": 215,
-    "_segundos": 5.1,
-    "_ids": [
-      "ARK-001#p027",
-      "ARK-001#p028",
-      "ARK-012#CDC-Churrasqueira-dentro-de-casa"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D07": {
-    "modo": "resposta",
-    "texto": "A água tratada com hipoclorito deve ser armazenada em recipientes limpos, fechados e protegidos da luz solar. Ela pode ser consumida em até 24 horas.",
-    "orientacoes": [
-      {
-        "frase": "Use recipientes limpos, com tampa e fechados quando não estiverem em uso.",
-        "fontes": [
-          1,
-          2
-        ]
-      },
-      {
-        "frase": "Armazene em local limpo, longe da luz solar e do alcance de animais.",
-        "fontes": [
-          1,
-          2
-        ]
-      },
-      {
-        "frase": "A água tratada com hipoclorito de sódio 2,5% deve ser consumida em até 24 horas.",
-        "fontes": [
-          1
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 2058,
-    "_tokens_saida": 207,
-    "_segundos": 5.1,
-    "_ids": [
-      "ARK-001#p015",
-      "ARK-001#p016"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D08": {
-    "modo": "resposta",
-    "texto": "O balde pode ser usado para armazenar água tratada, mas é necessário verificar se é limpo e adequado.",
-    "orientacoes": [
-      {
-        "frase": "Lave o balde por dentro e por fora com água, utilizando uma escova ou esponja macia.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Desinfete o balde com água sanitária a 2,0% ou 2,5% (sem alvejante e sem perfume), adicionando 1 mL do produto para cada 1 L de água.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Após 30 minutos, descarte a solução e enxágue bem o balde com água tratada.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Guarde o balde sempre fechado e em um lugar limpo, protegido da poeira, luz solar direta e longe do alcance de animais.",
-        "fontes": [
-          1
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1414,
-    "_tokens_saida": 233,
-    "_segundos": 5.3,
-    "_ids": [
-      "ARK-001#p016"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D09": {
-    "modo": "resposta",
-    "texto": "A água fervida pode se contaminar se deixada em temperatura ambiente por muito tempo.",
-    "orientacoes": [
-      {
-        "frase": "Não deixe a água fervida em temperatura ambiente por mais de 24 horas.",
-        "fontes": [
-          1,
-          3
-        ]
-      },
-      {
-        "frase": "Guarde a água fervida em um recipiente limpo e com tampa.",
-        "fontes": [
-          1,
-          3
-        ]
-      },
-      {
-        "frase": "Se a água ficar muito tempo em temperatura ambiente, descarte-a e faça nova fervura.",
-        "fontes": [
-          1,
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 2446,
-    "_tokens_saida": 144,
-    "_segundos": 4.0,
-    "_ids": [
-      "ARK-001#p015",
-      "ARK-001#p016",
-      "ARK-001#p027"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D10": {
-    "modo": "resposta",
-    "texto": "Priorize alimentos não-perecíveis e com embalagem intacta.",
-    "orientacoes": [
-      {
-        "frase": "Consuma primeiro arroz cru, biscoito e sardinha em lata com embalagem intacta.",
-        "fontes": [
-          2
-        ]
-      },
-      {
-        "frase": "Descarte sardinha em lata com embalagem danificada, aberta ou com sinais de alteração.",
-        "fontes": [
-          3
-        ]
-      },
-      {
-        "frase": "Evite leite em pó e feijão cru sem água tratada.",
-        "fontes": [
-          2
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1463,
-    "_tokens_saida": 143,
-    "_segundos": 3.5,
-    "_ids": [
-      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
-      "ARK-008#p012",
-      "ARK-009#p009"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D11": {
-    "modo": "resposta",
-    "texto": "As latas sem rótulo devem ser descartadas.",
-    "orientacoes": [
-      {
-        "frase": "Descarte as latas sem rótulo, pois podem ter se deteriorado e causar intoxicação alimentar.",
-        "fontes": [
-          1,
-          2,
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1455,
-    "_tokens_saida": 81,
-    "_segundos": 2.1,
-    "_ids": [
-      "ARK-009#p009",
-      "ARK-009#p008",
-      "ARK-009#p010"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D12": {
-    "modo": "pergunta",
-    "texto": "As latas estão abertas, vencidas ou em condições danificadas?",
-    "orientacoes": [],
-    "sem_evidencia": [
-      "condições das latas"
-    ],
-    "_tokens_entrada": 1135,
-    "_tokens_saida": 48,
-    "_segundos": 1.3,
-    "_ids": [
-      "ARK-009#p009",
-      "ARK-008#p030"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D13": {
-    "modo": "resposta",
-    "texto": "Ferva a água por 1 minuto antes de cozinhar o arroz.",
-    "orientacoes": [
-      {
-        "frase": "Ferva a água por 1 minuto antes de cozinhar o arroz.",
-        "fontes": [
-          2
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1325,
-    "_tokens_saida": 73,
-    "_segundos": 1.9,
-    "_ids": [
-      "ARK-009#p010",
-      "ARK-008#p018"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": [
-      "Inventar proporção de água ou tempo de cozimento"
-    ]
-  },
-  "D14": {
-    "modo": "resposta",
-    "texto": "A falta de gás e água pode dificultar o cozimento adequado dos alimentos e aumentar o risco de desperdício ou contaminação.",
-    "orientacoes": [
-      {
-        "frase": "Use água tratada e armazene-a em recipientes limpos e fechados.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Cozinhe pequenas quantidades de água para evitar desperdício.",
-        "fontes": [
-          2
-        ]
-      },
-      {
-        "frase": "Não use água bruta para cozinhar ou beber.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Evite cozinhar alimentos que não estão em condições adequadas.",
-        "fontes": [
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1788,
-    "_tokens_saida": 167,
-    "_segundos": 4.1,
-    "_ids": [
-      "ARK-001#p015",
-      "ARK-001#p028",
-      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D15": {
-    "modo": "resposta",
-    "texto": "O feijão pode ter ficado em temperatura perigosa por muito tempo e pode não ser seguro. Não deve consumi-lo.",
-    "orientacoes": [
-      {
-        "frase": "Descarte o feijão.",
-        "fontes": [
-          1,
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1621,
-    "_tokens_saida": 75,
-    "_segundos": 2.1,
-    "_ids": [
-      "ARK-009#p008",
-      "ARK-008#p012",
-      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D16": {
-    "modo": "resposta",
-    "texto": "Evite que ratos e bichos ataquem os alimentos.",
-    "orientacoes": [
-      {
-        "frase": "Armazene os alimentos em prateleiras, afastados do piso para permitir a limpeza.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Use embalagens fechadas, limpas e identificadas.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Guarde os alimentos apenas em recipientes de plástico espesso, metal ou vidro com tampas que fechem firmemente.",
-        "fontes": [
-          2
-        ]
-      },
-      {
-        "frase": "Retire prontamente alimentos derramados e lave pratos e utensílios após o uso.",
-        "fonta": [
-          2
-        ]
-      },
-      {
-        "frase": "Armazene imediatamente os produtos congelados e refrigerados e depois os produtos não-perecíveis.",
-        "fontes": [
-          3
-        ]
-      },
-      {
-        "frase": "Os locais de armazenamento devem ser limpos, organizados, ventilados e protegidos de insetos e outros animais.",
-        "fontes": [
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1543,
-    "_tokens_saida": 302,
-    "_segundos": 6.9,
-    "_ids": [
-      "ARK-017#Argentina-Conservacao-secos",
-      "ARK-023#CDC-Protecao-mantimentos-roedores",
-      "ARK-008#p029"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D17": {
-    "modo": "pergunta",
-    "texto": "Você tem forno com controle de temperatura e termômetro para medir?",
-    "orientacoes": [],
-    "sem_evidencia": [
-      "Controle de temperatura",
-      "Termômetro adequado"
-    ],
-    "_tokens_entrada": 1616,
-    "_tokens_saida": 52,
-    "_segundos": 1.6,
-    "_ids": [
-      "ARK-024#NLM-FoodHero-Banana-seca-forno",
-      "ARK-019#UMN-Secagem-limites",
-      "ARK-018#UMD-Conservacao-hortalicas"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D18": {
-    "modo": "resposta",
-    "texto": "Use primeiro os tomates maduros, pois têm menor tempo de validade. Preserve as abóboras inteiras em local fresco e seco. Batatas devem ficar em local fresco, seco e ventilado.",
-    "orientacoes": [
-      {
-        "frase": "Use primeiro os tomates maduros.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Preserve as abóboras inteiras em local fresco e seco.",
-        "fontes": [
-          1,
-          2
-        ]
-      },
-      {
-        "frase": "Batatas devem ficar em local fresco, seco e ventilado.",
-        "fontes": [
-          2
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1451,
-    "_tokens_saida": 155,
-    "_segundos": 3.7,
-    "_ids": [
-      "ARK-022#UMN-Prioridade-hortalicas",
-      "ARK-018#UMD-Conservacao-hortalicas",
-      "ARK-009#p010"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D19": {
-    "modo": "resposta",
-    "texto": "A limpeza inadequada das garrafas pode contaminar a água tratada. Lave e desinfete os recipientes antes de usá-los.",
-    "orientacoes": [
-      {
-        "frase": "Lave o recipiente por dentro e por fora com água, utilizando uma escova ou esponja macia.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Realize a desinfecção do recipiente com água sanitária a 2,0% ou 2,5% (sem alvejante e sem perfume), adicionando 1 mL do produto para cada 1 L de água.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Após 30 minutos, descarte a solução e enxágue bem o recipiente com água tratada para eliminar os resíduos.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Já o recipiente no qual será guardada a água tratada (filtrada e/ou desinfetada) deve ser lavado somente com água tratada para evitar contaminações.",
-        "fontes": [
-          1
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 2082,
-    "_tokens_saida": 256,
-    "_segundos": 6.2,
-    "_ids": [
-      "ARK-001#p016",
-      "ARK-001#p015"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D20": {
-    "modo": "resposta",
-    "texto": "Use água de outra fonte para lavar as mãos com sabão por 20 segundos.",
-    "orientacoes": [
-      {
-        "frase": "Crie uma estação temporária com água em um recipiente.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Lave as mãos com sabão por 20 segundos.",
-        "fontes": [
-          2
-        ]
-      },
-      {
-        "frase": "Enxugue com um pano limpo.",
-        "fontes": [
-          2
-        ]
-      }
-    ],
-    "sem_evidencia": [
-      "Como verificar se a água é limpa",
-      "Como fazer sabonete em casa"
-    ],
-    "_tokens_entrada": 1232,
-    "_tokens_saida": 138,
-    "_segundos": 3.2,
-    "_ids": [
-      "ARK-012#CDC-Higiene-emergencias-maos-2024",
-      "ARK-013#CDC-Lavagem-maos-cinco-passos-2024"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D21": {
-    "modo": "resposta",
-    "texto": "A higienização inadequada pode deixar resíduos químicos nos alimentos, causando risco à saúde.",
-    "orientacoes": [
-      {
-        "frase": "Retire folhas e partes deterioradas dos alimentos.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Lave em água corrente folha a folha e um a um.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Coloque de molho por 10 minutos em água clorada (1 colher de sopa para 1 litro).",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Enxague em água corrente folha a folha e um a um.",
-        "fontes": [
-          1
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1703,
-    "_tokens_saida": 174,
-    "_segundos": 4.2,
-    "_ids": [
-      "ARK-008#p035",
-      "ARK-009#p006",
-      "ARK-021#FDA-Vegetais-preparo"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D22": {
-    "modo": "resposta",
-    "texto": "A água turva pode conter microrganismos. Trate-a antes de beber ou cozinhar.",
-    "orientacoes": [
-      {
-        "frase": "Deixe a água descansar até que a sujeira desça para o fundo do recipiente.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Use o pano limpo para coar a água.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Para cada litro de água, adicione duas gotas de hipoclorito de sódio (2,5%).",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Mexe a água com uma colher limpa para que o cloro se misture em toda a água.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Deixe a água descansar por 30 minutos antes de consumir.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Guarde a água tratada em um recipiente limpo e tampado.",
-        "fontes": [
-          1
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 2066,
-    "_tokens_saida": 284,
-    "_segundos": 6.8,
-    "_ids": [
-      "ARK-001#p024",
-      "ARK-008#p018",
-      "ARK-008#p024",
-      "ARK-009#p005"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": [
-      "Cozinhar com a água do poço sem tratar"
-    ]
-  },
-  "D23": {
-    "modo": "resposta",
-    "texto": "Descarte a comida da geladeira e trate a água para beber.",
-    "orientacoes": [
-      {
-        "frase": "Descarte todos os alimentos que ficaram fora da geladeira por mais de uma hora ou dentro da geladeira fechada por mais de quatro horas sem energia.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Trate a água para beber com filtração e desinfecção.",
-        "fontes": [
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1837,
-    "_tokens_saida": 138,
-    "_segundos": 3.5,
-    "_ids": [
-      "ARK-009#p008",
-      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
-      "ARK-001#p013"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  },
-  "D24": {
-    "modo": "resposta",
-    "texto": "Não use a churrasqueira a carvão dentro de casa, na garagem ou perto de aberturas de ventilação. Isso pode causar intoxicação por monóxido de carbono.",
-    "orientacoes": [
-      {
-        "frase": "Não use a churrasqueira a carvão dentro de casa, na garagem ou perto de aberturas de ventilação.",
-        "fontes": [
-          1
-        ]
-      },
-      {
-        "frase": "Cozinhe os alimentos em altas temperaturas, garantindo que atinjam no mínimo 70ºC.",
-        "fontes": [
-          3
-        ]
-      }
-    ],
-    "sem_evidencia": [],
-    "_tokens_entrada": 1384,
-    "_tokens_saida": 152,
-    "_segundos": 3.6,
-    "_ids": [
-      "ARK-012#CDC-Churrasqueira-dentro-de-casa",
-      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
-      "ARK-008#p032"
-    ],
-    "_fallback": [],
-    "_erros_proibidos": []
-  }
+{
+  "D01": {
+    "modo": "resposta",
+    "texto": "A água do rio é mais arriscada por causa da barrenta. A água da chuva é melhor, mas precisa ser tratada.",
+    "orientacoes": [
+      {
+        "frase": "Filtre a água da chuva antes de desinfetar.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Desinfete a água da chuva com hipoclorito de sódio a 2,5%.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Misture 2 colheres de chá de hipoclorito de sódio a 2,5% em 1 litro de água.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Espere 30 minutos antes de beber.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1935,
+    "_tokens_saida": 186,
+    "_segundos": 4.6,
+    "_ids": [
+      "ARK-001#p023",
+      "ARK-001#p013"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D02": {
+    "modo": "resposta",
+    "texto": "A água do poço pode não ser potável. Use o galão apenas se a água for tratada e armazenada corretamente.",
+    "orientacoes": [
+      {
+        "frase": "Lave o galão por dentro e por fora com água, usando escova e sabão.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Desinfete o galão com água sanitária a 2,0% ou 2,5%, adicionando 1 mL do produto para cada 1 L de água.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Após 30 minutos, descarte a solução e enxágue bem o galão com água tratada.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Use o galão apenas para armazenar água tratada e não para guardar água bruta.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2238,
+    "_tokens_saida": 236,
+    "_segundos": 5.9,
+    "_ids": [
+      "ARK-001#p016",
+      "ARK-010#CDC-2024-Agua-com-combustivel",
+      "ARK-001#p015"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D03": {
+    "modo": "resposta",
+    "texto": "A água mineral pode não ser potável, por isso é necessário tratá-la antes de beber.",
+    "orientacoes": [
+      {
+        "frase": "Filtre a água para remover resíduos e microrganismos maiores.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Desinfete a água para eliminar microrganismos que não se consegue ver, como vírus e bactérias.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Não beba a água sem tratar, pois pode causar doenças.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2079,
+    "_tokens_saida": 146,
+    "_segundos": 3.8,
+    "_ids": [
+      "ARK-001#p006",
+      "ARK-009#p009",
+      "ARK-001#p013"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D04": {
+    "modo": "resposta",
+    "texto": "A água de poço pode conter microrganismos que causam doenças. Use o pano de prato limpo para filtrar a água antes de desinfetar. Depois, leve a água à fervura por pelo menos 5 minutos.",
+    "orientacoes": [
+      {
+        "frase": "Filtre a água usando um pano limpo.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Leve a água à fervura por pelo menos 5 minutos.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1606,
+    "_tokens_saida": 131,
+    "_segundos": 3.2,
+    "_ids": [
+      "ARK-001#p014",
+      "ARK-001#p027"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D05": {
+    "modo": "resposta",
+    "texto": "A água precisa ser filtrada e desinfetada para reduzir riscos de contaminação por microrganismos.",
+    "orientacoes": [
+      {
+        "frase": "Filtre a água para remover resíduos visíveis e alguns microrganismos.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Deixe a água em repouso por um tempo se estiver barrenta ou turva para que o resíduo se deposite.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Para cada litro de água, adicione duas gotas de hipoclorito de sódio a 2,5%.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Misture bem a água com uma colher limpa para que o cloro se misture em toda a água.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Deixe a água descansar por 30 minutos antes de consumir.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Guarde a água tratada em um recipiente limpo e tampado.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Consuma a água em até 24 horas.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2179,
+    "_tokens_saida": 337,
+    "_segundos": 8.0,
+    "_ids": [
+      "ARK-001#p013",
+      "ARK-001#p023",
+      "ARK-001#p024"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D06": {
+    "modo": "resposta",
+    "texto": "A água do rio pode conter microrganismos que não são removidos apenas com um pano. Ferva a água até que comece a formar bolhas grandes e constantes. Mantenha a fervura por pelo menos 5 minutos. Depois, espere a água esfriar e transfira para um recipiente limpo.",
+    "orientacoes": [
+      {
+        "frase": "Ferva a água até que comece a formar bolhas grandes e constantes.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Mantenha a fervura por pelo menos 5 minutos.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Espere a água esfriar antes de mudar para outro recipiente.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Transfira a água fervida para um pote ou garrafa com tampa.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1608,
+    "_tokens_saida": 215,
+    "_segundos": 5.1,
+    "_ids": [
+      "ARK-001#p027",
+      "ARK-001#p028",
+      "ARK-012#CDC-Churrasqueira-dentro-de-casa"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D07": {
+    "modo": "resposta",
+    "texto": "A água tratada com hipoclorito deve ser armazenada em recipientes limpos, fechados e protegidos da luz solar. Ela pode ser consumida em até 24 horas.",
+    "orientacoes": [
+      {
+        "frase": "Use recipientes limpos, com tampa e fechados quando não estiverem em uso.",
+        "fontes": [
+          1,
+          2
+        ]
+      },
+      {
+        "frase": "Armazene em local limpo, longe da luz solar e do alcance de animais.",
+        "fontes": [
+          1,
+          2
+        ]
+      },
+      {
+        "frase": "A água tratada com hipoclorito de sódio 2,5% deve ser consumida em até 24 horas.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2058,
+    "_tokens_saida": 207,
+    "_segundos": 5.1,
+    "_ids": [
+      "ARK-001#p015",
+      "ARK-001#p016"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D08": {
+    "modo": "resposta",
+    "texto": "O balde pode ser usado para armazenar água tratada, mas é necessário verificar se é limpo e adequado.",
+    "orientacoes": [
+      {
+        "frase": "Lave o balde por dentro e por fora com água, utilizando uma escova ou esponja macia.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Desinfete o balde com água sanitária a 2,0% ou 2,5% (sem alvejante e sem perfume), adicionando 1 mL do produto para cada 1 L de água.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Após 30 minutos, descarte a solução e enxágue bem o balde com água tratada.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Guarde o balde sempre fechado e em um lugar limpo, protegido da poeira, luz solar direta e longe do alcance de animais.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1414,
+    "_tokens_saida": 233,
+    "_segundos": 5.3,
+    "_ids": [
+      "ARK-001#p016"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D09": {
+    "modo": "resposta",
+    "texto": "A água fervida pode se contaminar se deixada em temperatura ambiente por muito tempo.",
+    "orientacoes": [
+      {
+        "frase": "Não deixe a água fervida em temperatura ambiente por mais de 24 horas.",
+        "fontes": [
+          1,
+          3
+        ]
+      },
+      {
+        "frase": "Guarde a água fervida em um recipiente limpo e com tampa.",
+        "fontes": [
+          1,
+          3
+        ]
+      },
+      {
+        "frase": "Se a água ficar muito tempo em temperatura ambiente, descarte-a e faça nova fervura.",
+        "fontes": [
+          1,
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2446,
+    "_tokens_saida": 144,
+    "_segundos": 4.0,
+    "_ids": [
+      "ARK-001#p015",
+      "ARK-001#p016",
+      "ARK-001#p027"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D10": {
+    "modo": "resposta",
+    "texto": "Priorize alimentos não-perecíveis e com embalagem intacta.",
+    "orientacoes": [
+      {
+        "frase": "Consuma primeiro arroz cru, biscoito e sardinha em lata com embalagem intacta.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Descarte sardinha em lata com embalagem danificada, aberta ou com sinais de alteração.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Evite leite em pó e feijão cru sem água tratada.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1463,
+    "_tokens_saida": 143,
+    "_segundos": 3.5,
+    "_ids": [
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+      "ARK-008#p012",
+      "ARK-009#p009"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D11": {
+    "modo": "resposta",
+    "texto": "As latas sem rótulo devem ser descartadas.",
+    "orientacoes": [
+      {
+        "frase": "Descarte as latas sem rótulo, pois podem ter se deteriorado e causar intoxicação alimentar.",
+        "fontes": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1455,
+    "_tokens_saida": 81,
+    "_segundos": 2.1,
+    "_ids": [
+      "ARK-009#p009",
+      "ARK-009#p008",
+      "ARK-009#p010"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D12": {
+    "modo": "pergunta",
+    "texto": "As latas estão abertas, vencidas ou em condições danificadas?",
+    "orientacoes": [],
+    "sem_evidencia": [
+      "condições das latas"
+    ],
+    "_tokens_entrada": 1135,
+    "_tokens_saida": 48,
+    "_segundos": 1.3,
+    "_ids": [
+      "ARK-009#p009",
+      "ARK-008#p030"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D13": {
+    "modo": "resposta",
+    "texto": "Ferva a água por 1 minuto antes de cozinhar o arroz.",
+    "orientacoes": [
+      {
+        "frase": "Ferva a água por 1 minuto antes de cozinhar o arroz.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1325,
+    "_tokens_saida": 73,
+    "_segundos": 1.9,
+    "_ids": [
+      "ARK-009#p010",
+      "ARK-008#p018"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": [
+      "Inventar proporção de água ou tempo de cozimento"
+    ]
+  },
+  "D14": {
+    "modo": "resposta",
+    "texto": "A falta de gás e água pode dificultar o cozimento adequado dos alimentos e aumentar o risco de desperdício ou contaminação.",
+    "orientacoes": [
+      {
+        "frase": "Use água tratada e armazene-a em recipientes limpos e fechados.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Cozinhe pequenas quantidades de água para evitar desperdício.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Não use água bruta para cozinhar ou beber.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Evite cozinhar alimentos que não estão em condições adequadas.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1788,
+    "_tokens_saida": 167,
+    "_segundos": 4.1,
+    "_ids": [
+      "ARK-001#p015",
+      "ARK-001#p028",
+      "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D15": {
+    "modo": "resposta",
+    "texto": "O feijão pode ter ficado em temperatura perigosa por muito tempo e pode não ser seguro. Não deve consumi-lo.",
+    "orientacoes": [
+      {
+        "frase": "Descarte o feijão.",
+        "fontes": [
+          1,
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1621,
+    "_tokens_saida": 75,
+    "_segundos": 2.1,
+    "_ids": [
+      "ARK-009#p008",
+      "ARK-008#p012",
+      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D16": {
+    "modo": "resposta",
+    "texto": "Evite que ratos e bichos ataquem os alimentos.",
+    "orientacoes": [
+      {
+        "frase": "Armazene os alimentos em prateleiras, afastados do piso para permitir a limpeza.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Use embalagens fechadas, limpas e identificadas.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Guarde os alimentos apenas em recipientes de plástico espesso, metal ou vidro com tampas que fechem firmemente.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Retire prontamente alimentos derramados e lave pratos e utensílios após o uso.",
+        "fonta": [
+          2
+        ]
+      },
+      {
+        "frase": "Armazene imediatamente os produtos congelados e refrigerados e depois os produtos não-perecíveis.",
+        "fontes": [
+          3
+        ]
+      },
+      {
+        "frase": "Os locais de armazenamento devem ser limpos, organizados, ventilados e protegidos de insetos e outros animais.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1543,
+    "_tokens_saida": 302,
+    "_segundos": 6.9,
+    "_ids": [
+      "ARK-017#Argentina-Conservacao-secos",
+      "ARK-023#CDC-Protecao-mantimentos-roedores",
+      "ARK-008#p029"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D17": {
+    "modo": "pergunta",
+    "texto": "Você tem forno com controle de temperatura e termômetro para medir?",
+    "orientacoes": [],
+    "sem_evidencia": [
+      "Controle de temperatura",
+      "Termômetro adequado"
+    ],
+    "_tokens_entrada": 1616,
+    "_tokens_saida": 52,
+    "_segundos": 1.6,
+    "_ids": [
+      "ARK-024#NLM-FoodHero-Banana-seca-forno",
+      "ARK-019#UMN-Secagem-limites",
+      "ARK-018#UMD-Conservacao-hortalicas"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D18": {
+    "modo": "resposta",
+    "texto": "Use primeiro os tomates maduros, pois têm menor tempo de validade. Preserve as abóboras inteiras em local fresco e seco. Batatas devem ficar em local fresco, seco e ventilado.",
+    "orientacoes": [
+      {
+        "frase": "Use primeiro os tomates maduros.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Preserve as abóboras inteiras em local fresco e seco.",
+        "fontes": [
+          1,
+          2
+        ]
+      },
+      {
+        "frase": "Batatas devem ficar em local fresco, seco e ventilado.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1451,
+    "_tokens_saida": 155,
+    "_segundos": 3.7,
+    "_ids": [
+      "ARK-022#UMN-Prioridade-hortalicas",
+      "ARK-018#UMD-Conservacao-hortalicas",
+      "ARK-009#p010"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D19": {
+    "modo": "resposta",
+    "texto": "A limpeza inadequada das garrafas pode contaminar a água tratada. Lave e desinfete os recipientes antes de usá-los.",
+    "orientacoes": [
+      {
+        "frase": "Lave o recipiente por dentro e por fora com água, utilizando uma escova ou esponja macia.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Realize a desinfecção do recipiente com água sanitária a 2,0% ou 2,5% (sem alvejante e sem perfume), adicionando 1 mL do produto para cada 1 L de água.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Após 30 minutos, descarte a solução e enxágue bem o recipiente com água tratada para eliminar os resíduos.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Já o recipiente no qual será guardada a água tratada (filtrada e/ou desinfetada) deve ser lavado somente com água tratada para evitar contaminações.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2082,
+    "_tokens_saida": 256,
+    "_segundos": 6.2,
+    "_ids": [
+      "ARK-001#p016",
+      "ARK-001#p015"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D20": {
+    "modo": "resposta",
+    "texto": "Use água de outra fonte para lavar as mãos com sabão por 20 segundos.",
+    "orientacoes": [
+      {
+        "frase": "Crie uma estação temporária com água em um recipiente.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Lave as mãos com sabão por 20 segundos.",
+        "fontes": [
+          2
+        ]
+      },
+      {
+        "frase": "Enxugue com um pano limpo.",
+        "fontes": [
+          2
+        ]
+      }
+    ],
+    "sem_evidencia": [
+      "Como verificar se a água é limpa",
+      "Como fazer sabonete em casa"
+    ],
+    "_tokens_entrada": 1232,
+    "_tokens_saida": 138,
+    "_segundos": 3.2,
+    "_ids": [
+      "ARK-012#CDC-Higiene-emergencias-maos-2024",
+      "ARK-013#CDC-Lavagem-maos-cinco-passos-2024"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D21": {
+    "modo": "resposta",
+    "texto": "A higienização inadequada pode deixar resíduos químicos nos alimentos, causando risco à saúde.",
+    "orientacoes": [
+      {
+        "frase": "Retire folhas e partes deterioradas dos alimentos.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Lave em água corrente folha a folha e um a um.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Coloque de molho por 10 minutos em água clorada (1 colher de sopa para 1 litro).",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Enxague em água corrente folha a folha e um a um.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1703,
+    "_tokens_saida": 174,
+    "_segundos": 4.2,
+    "_ids": [
+      "ARK-008#p035",
+      "ARK-009#p006",
+      "ARK-021#FDA-Vegetais-preparo"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D22": {
+    "modo": "resposta",
+    "texto": "A água turva pode conter microrganismos. Trate-a antes de beber ou cozinhar.",
+    "orientacoes": [
+      {
+        "frase": "Deixe a água descansar até que a sujeira desça para o fundo do recipiente.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Use o pano limpo para coar a água.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Para cada litro de água, adicione duas gotas de hipoclorito de sódio (2,5%).",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Mexe a água com uma colher limpa para que o cloro se misture em toda a água.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Deixe a água descansar por 30 minutos antes de consumir.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Guarde a água tratada em um recipiente limpo e tampado.",
+        "fontes": [
+          1
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 2066,
+    "_tokens_saida": 284,
+    "_segundos": 6.8,
+    "_ids": [
+      "ARK-001#p024",
+      "ARK-008#p018",
+      "ARK-008#p024",
+      "ARK-009#p005"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": [
+      "Cozinhar com a água do poço sem tratar"
+    ]
+  },
+  "D23": {
+    "modo": "resposta",
+    "texto": "Descarte a comida da geladeira e trate a água para beber.",
+    "orientacoes": [
+      {
+        "frase": "Descarte todos os alimentos que ficaram fora da geladeira por mais de uma hora ou dentro da geladeira fechada por mais de quatro horas sem energia.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Trate a água para beber com filtração e desinfecção.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1837,
+    "_tokens_saida": 138,
+    "_segundos": 3.5,
+    "_ids": [
+      "ARK-009#p008",
+      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
+      "ARK-001#p013"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  },
+  "D24": {
+    "modo": "resposta",
+    "texto": "Não use a churrasqueira a carvão dentro de casa, na garagem ou perto de aberturas de ventilação. Isso pode causar intoxicação por monóxido de carbono.",
+    "orientacoes": [
+      {
+        "frase": "Não use a churrasqueira a carvão dentro de casa, na garagem ou perto de aberturas de ventilação.",
+        "fontes": [
+          1
+        ]
+      },
+      {
+        "frase": "Cozinhe os alimentos em altas temperaturas, garantindo que atinjam no mínimo 70ºC.",
+        "fontes": [
+          3
+        ]
+      }
+    ],
+    "sem_evidencia": [],
+    "_tokens_entrada": 1384,
+    "_tokens_saida": 152,
+    "_segundos": 3.6,
+    "_ids": [
+      "ARK-012#CDC-Churrasqueira-dentro-de-casa",
+      "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
+      "ARK-008#p032"
+    ],
+    "_fallback": [],
+    "_erros_proibidos": []
+  }
 }

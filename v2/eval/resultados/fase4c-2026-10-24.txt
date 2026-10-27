@@ -1,422 +1,422 @@
-ARK v2 - fase 4c: prompt v3 de decomposição (uma consulta por item distinto, de 2 a 4, tema neutro)
-Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB. Branch v2/fase-1-gabarito, base ac22e1a.
-Corpus: o da 3c. Busca: bge-m3 denso (Ollama 127.0.0.1:11435, encerrado ao fim). Reranker fp16. Qwen: qwen3:8b do
-  Ollama da v1 (127.0.0.1:11434), só leitura, think=false, temperature 0. Decomposições v3 geradas antes, só com o Qwen
-  na GPU; depois o Qwen foi descarregado com keep_alive 0.
-Todas as rodadas: passagem, rerank 20, +título, fp16, --k 5 6 8 10 20.
-
-Resumo: R@k (P@k), necessidades de 71
-turno último           R@5      R@6      R@8      R@10     R@20     | R@adaptativo
-ref) conversa          46 (44%) 50 (43%) 50 (33%) 53 (29%) 62 (18%)
-a3) v3 + sub-conversa  46 (50%) 50 (47%) 54 (38%) 59 (34%) 63 (19%)
-b3) a3 + k adapt 5,8   = a3                                          | 53, média 7,6 passagens -> k fixo 8: R@8 54
-c3) v3 + com-conversa  50 (45%) 50 (42%) 52 (36%) 57 (32%) 64 (19%)
-turno primeiro
-ref) conversa          47 (44%) 48 (38%) 51 (32%) 53 (29%) 62 (18%)
-a3) v3 + sub-conversa  47 (47%) 49 (42%) 54 (36%) 58 (31%) 62 (19%)
-b3) a3 + k adapt 5,8   = a3                                          | 51, média 7,5 passagens -> k fixo 8: R@8 54
-c3) v3 + com-conversa  47 (45%) 47 (39%) 49 (32%) 51 (28%) 63 (18%)
-
-Soma do R@5 nos dois turnos: ref 93 | a3 93 | c3 97 | (4b: y 92, s 93)
-
-Leitura
-- c3) é a primeira configuração que supera a conversa pura no R@5: 97 contra 93 (+4 no turno último, empate no primeiro).
-- a3) empata no R@5 (93), mas tem a melhor precisão (P@5 de 50% e 47%, contra 44% da ref) e o melhor R@8/R@10
-  (54/59 e 54/58, contra 50/53 e 51/53 da ref). Ou seja, traz menos passagens erradas no top-5 e mais certas logo depois.
-- k adaptativo: a v3 gera 3-4 consultas em quase todos os casos (3,6 e 3,5 em média), então o k vai para cerca de 7,5 e o
-  adaptativo perde para o k fixo de 8 (53 contra 54 e 51 contra 54). Com a v3, todo caso parece "composto", e o
-  detector deixa de discriminar.
-- Consultas por caso: v3 = 3,58 no último turno (3 consultas: 10 casos, 4: 14) e 3,50 no primeiro (2: 1, 3: 10, 4: 13).
-  O mínimo de 2 é respeitado; ninguém fica com 1.
-- Itens distintos agora viram consultas separadas (D18: abóbora, tomate e batata; D16 e D21 também).
-- Redação "tema neutro" ajuda, mas não elimina o enquadramento inseguro: D22 tem "como cozinhar macarrão com água não
-  potável"; D23 tem "cozimento de alimentos com fogão a gás". No D24, o monóxido de carbono sumiu do turno último
-  ("uso de carvão e ventilação", "segurança em ambientes fechados durante a queima de carvão"), mas segue no primeiro.
-- No turno primeiro, algumas consultas saíram sem acento ("higienizacao", "intoxicao", "carvao"). O bge-m3 tolera, mas
-  é ruído de geração.
-
-Latência e VRAM: decomposição v3 em 3,0 s/conversa no último turno (2,6-3,6) e 2,7 s no primeiro (1,6-3,5); carga + 1ª
-  chamada em 4,7 s. GPU de 1,4 GB para 6,9 GB com o Qwen (igual à fase 4). Com 3-4 subconsultas, a busca + rerank volta
-  a cerca de 1 s por caso, e c3) faz uma busca a mais (a da conversa).
-
-Decomposições v3 ilustrativas e casos que pioram contra a y) da 4b (R@5 por caso)
-
-### turno ultimo: consultas por caso v3 3.58 (por quantidade: {1: 0, 2: 0, 3: 10, 4: 14})
-R@5 y(4b) -> a3 (v3+sub-conversa): soma 47 -> 46; piora em {'D03': '3->1', 'D05': '3->1'}; melhora em {'D13': '0->1', 'D18': '2->3', 'D23': '1->2'}
-R@5 y(4b) -> c3 (v3+com-conversa): soma 47 -> 50; piora em {'D03': '3->1', 'D05': '3->2'}; melhora em {'D02': '2->3', 'D09': '1->2', 'D13': '0->1', 'D15': '1->3', 'D18': '2->3'}
-
-D05 R@5 conversa=1 y(v2+sub)=3 a3(v3+sub)=1 c3(v3+com)=2
-  situação: A pessoa tem água de um açude turva e deseja tratá-la. Faltam informações sobre o método de tratamento e a quantidade de água sanitária a usar.
-  - tratamento de água turva
-  - uso de água sanitária para desinfecção
-  - quantidade de água sanitária por litro de água
-  - como filtrar água de açude
-
-D18 R@5 conversa=2 y(v2+sub)=2 a3(v3+sub)=3 c3(v3+com)=3
-  situação: A pessoa tem tomates maduros, uma abóbora inteira e batatas, mas está sem geladeira. Cortou metade da abóbora ontem e a outra metade ficou na bancada.
-  - armazenamento de abóbora cortada sem refrigeração
-  - armazenamento de tomates maduros sem refrigeração
-  - armazenamento de batatas sem refrigeração
-
-D24 R@5 conversa=2 y(v2+sub)=2 a3(v3+sub)=2 c3(v3+com)=2
-  situação: A pessoa está sem luz e gás, e pretende fazer a janta na churrasqueira a carvão na garagem, deixando o portão meio aberto por causa da chuva.
-  - uso de carvão e ventilação
-  - preparação de alimentos com churrasqueira a carvão
-  - segurança em ambientes fechados durante a queima de carvão
-  - manuseio de portões e segurança em áreas de preparo de alimentos
-
-D23 R@5 conversa=2 y(v2+sub)=1 a3(v3+sub)=2 c3(v3+com)=1
-  situação: A pessoa está sem luz e água, mas tem água da caixa d'água e fogão a gás. A geladeira ficou fechada por 6 horas, então a comida pode estar em perigo.
-  - risco de intoxicação alimentar por alimentos deteriorados
-  - armazenamento de alimentos após a geladeira ficar fechada
-  - preparação de água potável para consumo humano
-  - cozimento de alimentos com fogão a gás
-
-D22 R@5 conversa=3 y(v2+sub)=3 a3(v3+sub)=3 c3(v3+com)=3
-  situação: A pessoa tem água de poço turva e precisa usá-la para beber, cozinhar macarrão e guardar o restante. Faltam métodos para tratar a água de forma segura.
-  - tratamento de água com hipoclorito de sódio
-  - como cozinhar macarrão com água não potável
-  - armazenamento de água para consumo futuro
-
-Consultas v2 -> v3 nos casos em que a3 ou c3 piora contra y (turno ultimo):
-D03 (y=3 a3=1 c3=1) v2: ['Como identificar e evitar a ingestão de água contaminada por lacre rompido?']
-      v3: ['água contaminada por lacre rompido', 'armazenamento de água mineral', 'uso de água para consumo humano', 'identificação de lacre rompido']
-D05 (y=3 a3=1 c3=2) v2: ['Como tratar água turva antes de usar cloro?', 'Como usar água sanitária para desinfetar água potável?']
-      v3: ['tratamento de água turva', 'uso de água sanitária para desinfecção', 'quantidade de água sanitária por litro de água', 'como filtrar água de açude']
-
-### turno primeiro: consultas por caso v3 3.50 (por quantidade: {1: 0, 2: 1, 3: 10, 4: 13})
-R@5 y(4b) -> a3 (v3+sub-conversa): soma 45 -> 47; piora em {'D03': '2->1', 'D21': '2->1', 'D24': '2->1'}; melhora em {'D05': '1->2', 'D11': '1->3', 'D14': '2->3', 'D17': '2->3'}
-R@5 y(4b) -> c3 (v3+com-conversa): soma 45 -> 47; piora em {'D03': '2->1', 'D15': '1->0', 'D21': '2->1'}; melhora em {'D05': '1->2', 'D11': '1->3', 'D12': '1->2', 'D17': '2->3'}
-
-Consultas v2 -> v3 nos casos em que a3 ou c3 piora contra y (turno primeiro):
-D03 (y=2 a3=1 c3=1) v2: ['Como verificar a qualidade e a segurança da água mineral armazenada?']
-      v3: ['potabilidade da água mineral', 'armazenamento adequado de água', 'consumo de água mineral para beber']
-D15 (y=1 a3=1 c3=0) v2: ['Como evitar que o feijão fique muito cozido quando o gás acaba']
-      v3: ['cozimento de feijão sem gás', 'como cozinhar feijão com panela de pressão', 'como verificar se o feijão está pronto']
-D21 (y=2 a3=1 c3=1) v2: ['Como utilizar corretamente a água sanitária para higienizar alimentos crudos']
-      v3: ['higienizacao de alimentos com agua sanitaria', 'higienizacao de alface para consumo crudo', 'higienizacao de couve para consumo crudo']
-D24 (y=2 a3=1 c3=2) v2: ['Como prevenir e identificar a intoxicação por monóxido de carbono ao usar churrasqueiras a carvão?']
-      v3: ['prevencao contra intoxicao por monoxido de carbono', 'uso de carvao e ventilação', 'preparo de alimentos com churrasqueira a carvao']
-
-Saídas completas abaixo.
-
-======================================================================
-[a3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --sub-conversa
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), prompt v3, cache em decomposicoes-v3-ultimo.json
-caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
-D02   sustentado  2/3   3/3   3/3   3/3   3/3   
-D03   parcial     1/3   2/3   3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   3/3   3/3   
-D05   sustentado  1/3   2/3   2/3   2/3   2/3   n2
-D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   2/2   
-D09   parcial     1/3   1/3   3/3   3/3   3/3   
-D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
-D11   parcial     2/3   2/3   2/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   3/3   3/3   
-D13   lacuna      1/2   1/2   1/2   1/2   1/2   n1
-D14   lacuna      1/3   1/3   1/3   1/3   2/3   n3
-D15   lacuna      1/3   1/3   1/3   3/3   3/3   
-D16   sustentado  2/3   2/3   2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   3/3   
-D20   sustentado  1/2   1/2   2/2   2/2   2/2   
-D21   parcial     2/3   2/3   2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   2/3   3/3   
-D24   parcial     2/3   3/3   3/3   3/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 46/71 = 65%   Precision@5: 50%
-Recall@6: 50/71 = 70%   Precision@6: 47%
-Recall@8: 54/71 = 76%   Precision@8: 38%
-Recall@10: 59/71 = 83%   Precision@10: 34%
-Recall@20: 63/71 = 89%   Precision@20: 19%
-(tempo total da execução: 35,4 s)
-
-======================================================================
-[b3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --sub-conversa --k-adaptativo 5,8
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), prompt v3, cache em decomposicoes-v3-ultimo.json
-caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
-D02   sustentado  2/3   3/3   3/3   3/3   3/3   
-D03   parcial     1/3   2/3   3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   3/3   3/3   
-D05   sustentado  1/3   2/3   2/3   2/3   2/3   n2
-D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   2/2   
-D09   parcial     1/3   1/3   3/3   3/3   3/3   
-D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
-D11   parcial     2/3   2/3   2/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   3/3   3/3   
-D13   lacuna      1/2   1/2   1/2   1/2   1/2   n1
-D14   lacuna      1/3   1/3   1/3   1/3   2/3   n3
-D15   lacuna      1/3   1/3   1/3   3/3   3/3   
-D16   sustentado  2/3   2/3   2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   3/3   
-D20   sustentado  1/2   1/2   2/2   2/2   2/2   
-D21   parcial     2/3   2/3   2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   2/3   3/3   
-D24   parcial     2/3   3/3   3/3   3/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 46/71 = 65%   Precision@5: 50%
-Recall@6: 50/71 = 70%   Precision@6: 47%
-Recall@8: 54/71 = 76%   Precision@8: 38%
-Recall@10: 59/71 = 83%   Precision@10: 34%
-Recall@20: 63/71 = 89%   Precision@20: 19%
-Recall@adaptativo (5,8): 53/71 = 75%, média de 7.6 passagens por caso (compare com R@k fixo de mesma média)
-(tempo total da execução: 34,8 s)
-
-======================================================================
-[c3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --com-conversa
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), prompt v3, + conversa, cache em decomposicoes-v3-ultimo.json
-caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
-D02   sustentado  3/3   3/3   3/3   3/3   3/3   
-D03   parcial     1/3   1/3   1/3   1/3   3/3   
-D04   sustentado  3/3   3/3   3/3   3/3   3/3   
-D05   sustentado  2/3   2/3   2/3   2/3   3/3   
-D06   parcial     2/3   2/3   2/3   3/3   3/3   
-D07   sustentado  2/3   2/3   2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   2/2   
-D09   parcial     2/3   2/3   2/3   3/3   3/3   
-D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
-D11   parcial     2/3   2/3   2/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   3/3   3/3   
-D13   lacuna      1/2   1/2   1/2   1/2   1/2   n1
-D14   lacuna      1/3   1/3   1/3   1/3   2/3   n2
-D15   lacuna      3/3   3/3   3/3   3/3   3/3   
-D16   sustentado  2/3   2/3   2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   3/3   
-D20   sustentado  1/2   1/2   2/2   2/2   2/2   
-D21   parcial     2/3   2/3   2/3   2/3   3/3   
-D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
-D23   parcial     1/3   1/3   1/3   2/3   2/3   n2
-D24   parcial     2/3   2/3   3/3   3/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 50/71 = 70%   Precision@5: 45%
-Recall@6: 50/71 = 70%   Precision@6: 42%
-Recall@8: 52/71 = 73%   Precision@8: 36%
-Recall@10: 57/71 = 80%   Precision@10: 32%
-Recall@20: 64/71 = 90%   Precision@20: 19%
-(tempo total da execução: 59,4 s)
-
-======================================================================
-[ref] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas conversa
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  1/3   1/3   1/3   1/3   1/3   n1,n3
-D02   sustentado  3/3   3/3   3/3   3/3   3/3   
-D03   parcial     3/3   3/3   3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   3/3   3/3   
-D05   sustentado  1/3   1/3   1/3   1/3   3/3   
-D06   parcial     2/3   2/3   2/3   2/3   3/3   
-D07   sustentado  2/3   2/3   2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   2/2   
-D09   parcial     1/3   1/3   1/3   1/3   1/3   n1,n2
-D10   parcial     1/3   1/3   1/3   1/3   2/3   n2
-D11   parcial     2/3   2/3   2/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   3/3   3/3   
-D13   lacuna      0/2   0/2   0/2   1/2   1/2   n1
-D14   lacuna      1/3   1/3   1/3   1/3   2/3   n3
-D15   lacuna      1/3   2/3   2/3   2/3   3/3   
-D16   sustentado  3/3   3/3   3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   3/3   3/3   
-D18   sustentado  2/3   3/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   3/3   
-D20   sustentado  1/2   2/2   2/2   2/2   2/2   
-D21   parcial     2/3   2/3   2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 46/71 = 65%   Precision@5: 44%
-Recall@6: 50/71 = 70%   Precision@6: 43%
-Recall@8: 50/71 = 70%   Precision@8: 33%
-Recall@10: 53/71 = 75%   Precision@10: 29%
-Recall@20: 62/71 = 87%   Precision@20: 18%
-(tempo total da execução: 18,2 s)
-
-======================================================================
-[a3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --sub-conversa --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), prompt v3, cache em decomposicoes-v3-primeiro.json
-caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   2/3   2/3   n2
-D03   parcial     1/3   1/3   2/3   2/3   2/3   n2
-D04   sustentado  3/3   3/3   3/3   3/3   3/3   
-D05   sustentado  2/3   3/3   3/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   2/2   
-D09   parcial     2/3   3/3   3/3   3/3   3/3   
-D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
-D11   parcial     3/3   3/3   3/3   3/3   3/3   
-D12   sustentado  1/3   1/3   3/3   3/3   3/3   
-D13   lacuna      0/2   0/2   0/2   0/2   1/2   n1
-D14   lacuna      3/3   3/3   3/3   3/3   3/3   
-D15   lacuna      1/3   1/3   2/3   3/3   3/3   
-D16   sustentado  2/3   2/3   2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   2/2   2/2   
-D21   parcial     1/3   1/3   2/3   2/3   3/3   
-D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   2/3   2/3   n2
-D24   parcial     1/3   1/3   1/3   3/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 47/71 = 66%   Precision@5: 47%
-Recall@6: 49/71 = 69%   Precision@6: 42%
-Recall@8: 54/71 = 76%   Precision@8: 36%
-Recall@10: 58/71 = 82%   Precision@10: 31%
-Recall@20: 62/71 = 87%   Precision@20: 19%
-(tempo total da execução: 33,9 s)
-
-======================================================================
-[b3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --sub-conversa --k-adaptativo 5,8 --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), prompt v3, cache em decomposicoes-v3-primeiro.json
-caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   2/3   2/3   n2
-D03   parcial     1/3   1/3   2/3   2/3   2/3   n2
-D04   sustentado  3/3   3/3   3/3   3/3   3/3   
-D05   sustentado  2/3   3/3   3/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   2/2   
-D09   parcial     2/3   3/3   3/3   3/3   3/3   
-D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
-D11   parcial     3/3   3/3   3/3   3/3   3/3   
-D12   sustentado  1/3   1/3   3/3   3/3   3/3   
-D13   lacuna      0/2   0/2   0/2   0/2   1/2   n1
-D14   lacuna      3/3   3/3   3/3   3/3   3/3   
-D15   lacuna      1/3   1/3   2/3   3/3   3/3   
-D16   sustentado  2/3   2/3   2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   2/2   2/2   
-D21   parcial     1/3   1/3   2/3   2/3   3/3   
-D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   2/3   2/3   n2
-D24   parcial     1/3   1/3   1/3   3/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 47/71 = 66%   Precision@5: 47%
-Recall@6: 49/71 = 69%   Precision@6: 42%
-Recall@8: 54/71 = 76%   Precision@8: 36%
-Recall@10: 58/71 = 82%   Precision@10: 31%
-Recall@20: 62/71 = 87%   Precision@20: 19%
-Recall@adaptativo (5,8): 51/71 = 72%, média de 7.5 passagens por caso (compare com R@k fixo de mesma média)
-(tempo total da execução: 33,6 s)
-
-======================================================================
-[c3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --com-conversa --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), prompt v3, + conversa, cache em decomposicoes-v3-primeiro.json
-caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   2/3   2/3   n2
-D03   parcial     1/3   1/3   1/3   2/3   2/3   n2
-D04   sustentado  3/3   3/3   3/3   3/3   3/3   
-D05   sustentado  2/3   2/3   2/3   2/3   3/3   
-D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   2/2   
-D09   parcial     2/3   2/3   3/3   3/3   3/3   
-D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
-D11   parcial     3/3   3/3   3/3   3/3   3/3   
-D12   sustentado  2/3   2/3   2/3   2/3   3/3   
-D13   lacuna      0/2   0/2   0/2   0/2   1/2   n1
-D14   lacuna      2/3   2/3   2/3   2/3   3/3   
-D15   lacuna      0/3   0/3   1/3   1/3   3/3   
-D16   sustentado  2/3   2/3   2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   2/2   2/2   
-D21   parcial     1/3   1/3   1/3   1/3   3/3   
-D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   2/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 47/71 = 66%   Precision@5: 45%
-Recall@6: 47/71 = 66%   Precision@6: 39%
-Recall@8: 49/71 = 69%   Precision@8: 32%
-Recall@10: 51/71 = 72%   Precision@10: 28%
-Recall@20: 63/71 = 89%   Precision@20: 18%
-(tempo total da execução: 43,5 s)
-
-======================================================================
-[ref] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas conversa --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  1/3   1/3   1/3   1/3   1/3   n1,n3
-D02   sustentado  2/3   2/3   2/3   2/3   2/3   n2
-D03   parcial     2/3   2/3   2/3   2/3   3/3   
-D04   sustentado  3/3   3/3   3/3   3/3   3/3   
-D05   sustentado  1/3   1/3   2/3   2/3   3/3   
-D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   3/3   3/3   
-D10   parcial     1/3   1/3   1/3   1/3   2/3   n2
-D11   parcial     2/3   2/3   2/3   2/3   3/3   
-D12   sustentado  1/3   1/3   2/3   2/3   3/3   
-D13   lacuna      0/2   0/2   0/2   1/2   1/2   n1
-D14   lacuna      2/3   2/3   2/3   2/3   2/3   n1
-D15   lacuna      2/3   2/3   2/3   2/3   3/3   
-D16   sustentado  3/3   3/3   3/3   3/3   3/3   
-D17   parcial     2/3   2/3   3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   2/2   2/2   
-D21   parcial     1/3   2/3   2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 47/71 = 66%   Precision@5: 44%
-Recall@6: 48/71 = 68%   Precision@6: 38%
-Recall@8: 51/71 = 72%   Precision@8: 32%
-Recall@10: 53/71 = 75%   Precision@10: 29%
-Recall@20: 62/71 = 87%   Precision@20: 18%
-(tempo total da execução: 18,2 s)
-
+ARK v2 - fase 4c: prompt v3 de decomposição (uma consulta por item distinto, de 2 a 4, tema neutro)
+Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB. Branch v2/fase-1-gabarito, base ac22e1a.
+Corpus: o da 3c. Busca: bge-m3 denso (Ollama 127.0.0.1:11435, encerrado ao fim). Reranker fp16. Qwen: qwen3:8b do
+  Ollama da v1 (127.0.0.1:11434), só leitura, think=false, temperature 0. Decomposições v3 geradas antes, só com o Qwen
+  na GPU; depois o Qwen foi descarregado com keep_alive 0.
+Todas as rodadas: passagem, rerank 20, +título, fp16, --k 5 6 8 10 20.
+
+Resumo: R@k (P@k), necessidades de 71
+turno último           R@5      R@6      R@8      R@10     R@20     | R@adaptativo
+ref) conversa          46 (44%) 50 (43%) 50 (33%) 53 (29%) 62 (18%)
+a3) v3 + sub-conversa  46 (50%) 50 (47%) 54 (38%) 59 (34%) 63 (19%)
+b3) a3 + k adapt 5,8   = a3                                          | 53, média 7,6 passagens -> k fixo 8: R@8 54
+c3) v3 + com-conversa  50 (45%) 50 (42%) 52 (36%) 57 (32%) 64 (19%)
+turno primeiro
+ref) conversa          47 (44%) 48 (38%) 51 (32%) 53 (29%) 62 (18%)
+a3) v3 + sub-conversa  47 (47%) 49 (42%) 54 (36%) 58 (31%) 62 (19%)
+b3) a3 + k adapt 5,8   = a3                                          | 51, média 7,5 passagens -> k fixo 8: R@8 54
+c3) v3 + com-conversa  47 (45%) 47 (39%) 49 (32%) 51 (28%) 63 (18%)
+
+Soma do R@5 nos dois turnos: ref 93 | a3 93 | c3 97 | (4b: y 92, s 93)
+
+Leitura
+- c3) é a primeira configuração que supera a conversa pura no R@5: 97 contra 93 (+4 no turno último, empate no primeiro).
+- a3) empata no R@5 (93), mas tem a melhor precisão (P@5 de 50% e 47%, contra 44% da ref) e o melhor R@8/R@10
+  (54/59 e 54/58, contra 50/53 e 51/53 da ref). Ou seja, traz menos passagens erradas no top-5 e mais certas logo depois.
+- k adaptativo: a v3 gera 3-4 consultas em quase todos os casos (3,6 e 3,5 em média), então o k vai para cerca de 7,5 e o
+  adaptativo perde para o k fixo de 8 (53 contra 54 e 51 contra 54). Com a v3, todo caso parece "composto", e o
+  detector deixa de discriminar.
+- Consultas por caso: v3 = 3,58 no último turno (3 consultas: 10 casos, 4: 14) e 3,50 no primeiro (2: 1, 3: 10, 4: 13).
+  O mínimo de 2 é respeitado; ninguém fica com 1.
+- Itens distintos agora viram consultas separadas (D18: abóbora, tomate e batata; D16 e D21 também).
+- Redação "tema neutro" ajuda, mas não elimina o enquadramento inseguro: D22 tem "como cozinhar macarrão com água não
+  potável"; D23 tem "cozimento de alimentos com fogão a gás". No D24, o monóxido de carbono sumiu do turno último
+  ("uso de carvão e ventilação", "segurança em ambientes fechados durante a queima de carvão"), mas segue no primeiro.
+- No turno primeiro, algumas consultas saíram sem acento ("higienizacao", "intoxicao", "carvao"). O bge-m3 tolera, mas
+  é ruído de geração.
+
+Latência e VRAM: decomposição v3 em 3,0 s/conversa no último turno (2,6-3,6) e 2,7 s no primeiro (1,6-3,5); carga + 1ª
+  chamada em 4,7 s. GPU de 1,4 GB para 6,9 GB com o Qwen (igual à fase 4). Com 3-4 subconsultas, a busca + rerank volta
+  a cerca de 1 s por caso, e c3) faz uma busca a mais (a da conversa).
+
+Decomposições v3 ilustrativas e casos que pioram contra a y) da 4b (R@5 por caso)
+
+### turno ultimo: consultas por caso v3 3.58 (por quantidade: {1: 0, 2: 0, 3: 10, 4: 14})
+R@5 y(4b) -> a3 (v3+sub-conversa): soma 47 -> 46; piora em {'D03': '3->1', 'D05': '3->1'}; melhora em {'D13': '0->1', 'D18': '2->3', 'D23': '1->2'}
+R@5 y(4b) -> c3 (v3+com-conversa): soma 47 -> 50; piora em {'D03': '3->1', 'D05': '3->2'}; melhora em {'D02': '2->3', 'D09': '1->2', 'D13': '0->1', 'D15': '1->3', 'D18': '2->3'}
+
+D05 R@5 conversa=1 y(v2+sub)=3 a3(v3+sub)=1 c3(v3+com)=2
+  situação: A pessoa tem água de um açude turva e deseja tratá-la. Faltam informações sobre o método de tratamento e a quantidade de água sanitária a usar.
+  - tratamento de água turva
+  - uso de água sanitária para desinfecção
+  - quantidade de água sanitária por litro de água
+  - como filtrar água de açude
+
+D18 R@5 conversa=2 y(v2+sub)=2 a3(v3+sub)=3 c3(v3+com)=3
+  situação: A pessoa tem tomates maduros, uma abóbora inteira e batatas, mas está sem geladeira. Cortou metade da abóbora ontem e a outra metade ficou na bancada.
+  - armazenamento de abóbora cortada sem refrigeração
+  - armazenamento de tomates maduros sem refrigeração
+  - armazenamento de batatas sem refrigeração
+
+D24 R@5 conversa=2 y(v2+sub)=2 a3(v3+sub)=2 c3(v3+com)=2
+  situação: A pessoa está sem luz e gás, e pretende fazer a janta na churrasqueira a carvão na garagem, deixando o portão meio aberto por causa da chuva.
+  - uso de carvão e ventilação
+  - preparação de alimentos com churrasqueira a carvão
+  - segurança em ambientes fechados durante a queima de carvão
+  - manuseio de portões e segurança em áreas de preparo de alimentos
+
+D23 R@5 conversa=2 y(v2+sub)=1 a3(v3+sub)=2 c3(v3+com)=1
+  situação: A pessoa está sem luz e água, mas tem água da caixa d'água e fogão a gás. A geladeira ficou fechada por 6 horas, então a comida pode estar em perigo.
+  - risco de intoxicação alimentar por alimentos deteriorados
+  - armazenamento de alimentos após a geladeira ficar fechada
+  - preparação de água potável para consumo humano
+  - cozimento de alimentos com fogão a gás
+
+D22 R@5 conversa=3 y(v2+sub)=3 a3(v3+sub)=3 c3(v3+com)=3
+  situação: A pessoa tem água de poço turva e precisa usá-la para beber, cozinhar macarrão e guardar o restante. Faltam métodos para tratar a água de forma segura.
+  - tratamento de água com hipoclorito de sódio
+  - como cozinhar macarrão com água não potável
+  - armazenamento de água para consumo futuro
+
+Consultas v2 -> v3 nos casos em que a3 ou c3 piora contra y (turno ultimo):
+D03 (y=3 a3=1 c3=1) v2: ['Como identificar e evitar a ingestão de água contaminada por lacre rompido?']
+      v3: ['água contaminada por lacre rompido', 'armazenamento de água mineral', 'uso de água para consumo humano', 'identificação de lacre rompido']
+D05 (y=3 a3=1 c3=2) v2: ['Como tratar água turva antes de usar cloro?', 'Como usar água sanitária para desinfetar água potável?']
+      v3: ['tratamento de água turva', 'uso de água sanitária para desinfecção', 'quantidade de água sanitária por litro de água', 'como filtrar água de açude']
+
+### turno primeiro: consultas por caso v3 3.50 (por quantidade: {1: 0, 2: 1, 3: 10, 4: 13})
+R@5 y(4b) -> a3 (v3+sub-conversa): soma 45 -> 47; piora em {'D03': '2->1', 'D21': '2->1', 'D24': '2->1'}; melhora em {'D05': '1->2', 'D11': '1->3', 'D14': '2->3', 'D17': '2->3'}
+R@5 y(4b) -> c3 (v3+com-conversa): soma 45 -> 47; piora em {'D03': '2->1', 'D15': '1->0', 'D21': '2->1'}; melhora em {'D05': '1->2', 'D11': '1->3', 'D12': '1->2', 'D17': '2->3'}
+
+Consultas v2 -> v3 nos casos em que a3 ou c3 piora contra y (turno primeiro):
+D03 (y=2 a3=1 c3=1) v2: ['Como verificar a qualidade e a segurança da água mineral armazenada?']
+      v3: ['potabilidade da água mineral', 'armazenamento adequado de água', 'consumo de água mineral para beber']
+D15 (y=1 a3=1 c3=0) v2: ['Como evitar que o feijão fique muito cozido quando o gás acaba']
+      v3: ['cozimento de feijão sem gás', 'como cozinhar feijão com panela de pressão', 'como verificar se o feijão está pronto']
+D21 (y=2 a3=1 c3=1) v2: ['Como utilizar corretamente a água sanitária para higienizar alimentos crudos']
+      v3: ['higienizacao de alimentos com agua sanitaria', 'higienizacao de alface para consumo crudo', 'higienizacao de couve para consumo crudo']
+D24 (y=2 a3=1 c3=2) v2: ['Como prevenir e identificar a intoxicação por monóxido de carbono ao usar churrasqueiras a carvão?']
+      v3: ['prevencao contra intoxicao por monoxido de carbono', 'uso de carvao e ventilação', 'preparo de alimentos com churrasqueira a carvao']
+
+Saídas completas abaixo.
+
+======================================================================
+[a3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --sub-conversa
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), prompt v3, cache em decomposicoes-v3-ultimo.json
+caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
+D02   sustentado  2/3   3/3   3/3   3/3   3/3   
+D03   parcial     1/3   2/3   3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   2/3   2/3   2/3   n2
+D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   2/2   
+D09   parcial     1/3   1/3   3/3   3/3   3/3   
+D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
+D11   parcial     2/3   2/3   2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   3/3   3/3   
+D13   lacuna      1/2   1/2   1/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   1/3   1/3   2/3   n3
+D15   lacuna      1/3   1/3   1/3   3/3   3/3   
+D16   sustentado  2/3   2/3   2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   3/3   
+D20   sustentado  1/2   1/2   2/2   2/2   2/2   
+D21   parcial     2/3   2/3   2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   2/3   3/3   
+D24   parcial     2/3   3/3   3/3   3/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%   Precision@5: 50%
+Recall@6: 50/71 = 70%   Precision@6: 47%
+Recall@8: 54/71 = 76%   Precision@8: 38%
+Recall@10: 59/71 = 83%   Precision@10: 34%
+Recall@20: 63/71 = 89%   Precision@20: 19%
+(tempo total da execução: 35,4 s)
+
+======================================================================
+[b3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --sub-conversa --k-adaptativo 5,8
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), prompt v3, cache em decomposicoes-v3-ultimo.json
+caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
+D02   sustentado  2/3   3/3   3/3   3/3   3/3   
+D03   parcial     1/3   2/3   3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   2/3   2/3   2/3   n2
+D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   2/2   
+D09   parcial     1/3   1/3   3/3   3/3   3/3   
+D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
+D11   parcial     2/3   2/3   2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   3/3   3/3   
+D13   lacuna      1/2   1/2   1/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   1/3   1/3   2/3   n3
+D15   lacuna      1/3   1/3   1/3   3/3   3/3   
+D16   sustentado  2/3   2/3   2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   3/3   
+D20   sustentado  1/2   1/2   2/2   2/2   2/2   
+D21   parcial     2/3   2/3   2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   2/3   3/3   
+D24   parcial     2/3   3/3   3/3   3/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%   Precision@5: 50%
+Recall@6: 50/71 = 70%   Precision@6: 47%
+Recall@8: 54/71 = 76%   Precision@8: 38%
+Recall@10: 59/71 = 83%   Precision@10: 34%
+Recall@20: 63/71 = 89%   Precision@20: 19%
+Recall@adaptativo (5,8): 53/71 = 75%, média de 7.6 passagens por caso (compare com R@k fixo de mesma média)
+(tempo total da execução: 34,8 s)
+
+======================================================================
+[c3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --com-conversa
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), prompt v3, + conversa, cache em decomposicoes-v3-ultimo.json
+caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
+D02   sustentado  3/3   3/3   3/3   3/3   3/3   
+D03   parcial     1/3   1/3   1/3   1/3   3/3   
+D04   sustentado  3/3   3/3   3/3   3/3   3/3   
+D05   sustentado  2/3   2/3   2/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   3/3   3/3   
+D07   sustentado  2/3   2/3   2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   2/2   
+D09   parcial     2/3   2/3   2/3   3/3   3/3   
+D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
+D11   parcial     2/3   2/3   2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   3/3   3/3   
+D13   lacuna      1/2   1/2   1/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   1/3   1/3   2/3   n2
+D15   lacuna      3/3   3/3   3/3   3/3   3/3   
+D16   sustentado  2/3   2/3   2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   3/3   
+D20   sustentado  1/2   1/2   2/2   2/2   2/2   
+D21   parcial     2/3   2/3   2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
+D23   parcial     1/3   1/3   1/3   2/3   2/3   n2
+D24   parcial     2/3   2/3   3/3   3/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 50/71 = 70%   Precision@5: 45%
+Recall@6: 50/71 = 70%   Precision@6: 42%
+Recall@8: 52/71 = 73%   Precision@8: 36%
+Recall@10: 57/71 = 80%   Precision@10: 32%
+Recall@20: 64/71 = 90%   Precision@20: 19%
+(tempo total da execução: 59,4 s)
+
+======================================================================
+[ref] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas conversa
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   1/3   1/3   1/3   1/3   n1,n3
+D02   sustentado  3/3   3/3   3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   3/3   3/3   
+D05   sustentado  1/3   1/3   1/3   1/3   3/3   
+D06   parcial     2/3   2/3   2/3   2/3   3/3   
+D07   sustentado  2/3   2/3   2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   1/3   1/3   1/3   2/3   n2
+D11   parcial     2/3   2/3   2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   0/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   1/3   1/3   2/3   n3
+D15   lacuna      1/3   2/3   2/3   2/3   3/3   
+D16   sustentado  3/3   3/3   3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   2/2   2/2   
+D21   parcial     2/3   2/3   2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%   Precision@5: 44%
+Recall@6: 50/71 = 70%   Precision@6: 43%
+Recall@8: 50/71 = 70%   Precision@8: 33%
+Recall@10: 53/71 = 75%   Precision@10: 29%
+Recall@20: 62/71 = 87%   Precision@20: 18%
+(tempo total da execução: 18,2 s)
+
+======================================================================
+[a3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --sub-conversa --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), prompt v3, cache em decomposicoes-v3-primeiro.json
+caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   2/3   2/3   n2
+D03   parcial     1/3   1/3   2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   2/2   
+D09   parcial     2/3   3/3   3/3   3/3   3/3   
+D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
+D11   parcial     3/3   3/3   3/3   3/3   3/3   
+D12   sustentado  1/3   1/3   3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   0/2   0/2   1/2   n1
+D14   lacuna      3/3   3/3   3/3   3/3   3/3   
+D15   lacuna      1/3   1/3   2/3   3/3   3/3   
+D16   sustentado  2/3   2/3   2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   2/2   2/2   
+D21   parcial     1/3   1/3   2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   2/3   2/3   n2
+D24   parcial     1/3   1/3   1/3   3/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%   Precision@5: 47%
+Recall@6: 49/71 = 69%   Precision@6: 42%
+Recall@8: 54/71 = 76%   Precision@8: 36%
+Recall@10: 58/71 = 82%   Precision@10: 31%
+Recall@20: 62/71 = 87%   Precision@20: 19%
+(tempo total da execução: 33,9 s)
+
+======================================================================
+[b3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --sub-conversa --k-adaptativo 5,8 --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), prompt v3, cache em decomposicoes-v3-primeiro.json
+caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   2/3   2/3   n2
+D03   parcial     1/3   1/3   2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   2/2   
+D09   parcial     2/3   3/3   3/3   3/3   3/3   
+D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
+D11   parcial     3/3   3/3   3/3   3/3   3/3   
+D12   sustentado  1/3   1/3   3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   0/2   0/2   1/2   n1
+D14   lacuna      3/3   3/3   3/3   3/3   3/3   
+D15   lacuna      1/3   1/3   2/3   3/3   3/3   
+D16   sustentado  2/3   2/3   2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   2/2   2/2   
+D21   parcial     1/3   1/3   2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   2/3   2/3   n2
+D24   parcial     1/3   1/3   1/3   3/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%   Precision@5: 47%
+Recall@6: 49/71 = 69%   Precision@6: 42%
+Recall@8: 54/71 = 76%   Precision@8: 36%
+Recall@10: 58/71 = 82%   Precision@10: 31%
+Recall@20: 62/71 = 87%   Precision@20: 19%
+Recall@adaptativo (5,8): 51/71 = 72%, média de 7.5 passagens por caso (compare com R@k fixo de mesma média)
+(tempo total da execução: 33,6 s)
+
+======================================================================
+[c3] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --prompt v3 --com-conversa --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), prompt v3, + conversa, cache em decomposicoes-v3-primeiro.json
+caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   2/3   2/3   n2
+D03   parcial     1/3   1/3   1/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   3/3   3/3   
+D05   sustentado  2/3   2/3   2/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   2/2   
+D09   parcial     2/3   2/3   3/3   3/3   3/3   
+D10   parcial     1/3   1/3   1/3   1/3   1/3   n2,n3
+D11   parcial     3/3   3/3   3/3   3/3   3/3   
+D12   sustentado  2/3   2/3   2/3   2/3   3/3   
+D13   lacuna      0/2   0/2   0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   2/3   3/3   
+D15   lacuna      0/3   0/3   1/3   1/3   3/3   
+D16   sustentado  2/3   2/3   2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   2/2   2/2   
+D21   parcial     1/3   1/3   1/3   1/3   3/3   
+D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   2/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%   Precision@5: 45%
+Recall@6: 47/71 = 66%   Precision@6: 39%
+Recall@8: 49/71 = 69%   Precision@8: 32%
+Recall@10: 51/71 = 72%   Precision@10: 28%
+Recall@20: 63/71 = 89%   Precision@20: 18%
+(tempo total da execução: 43,5 s)
+
+======================================================================
+[ref] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 6 8 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas conversa --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@6    R@8    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   1/3   1/3   1/3   1/3   n1,n3
+D02   sustentado  2/3   2/3   2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   3/3   3/3   
+D05   sustentado  1/3   1/3   2/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   3/3   3/3   
+D10   parcial     1/3   1/3   1/3   1/3   2/3   n2
+D11   parcial     2/3   2/3   2/3   2/3   3/3   
+D12   sustentado  1/3   1/3   2/3   2/3   3/3   
+D13   lacuna      0/2   0/2   0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   2/3   2/3   3/3   
+D16   sustentado  3/3   3/3   3/3   3/3   3/3   
+D17   parcial     2/3   2/3   3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   2/2   2/2   
+D21   parcial     1/3   2/3   2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%   Precision@5: 44%
+Recall@6: 48/71 = 68%   Precision@6: 38%
+Recall@8: 51/71 = 72%   Precision@8: 32%
+Recall@10: 53/71 = 75%   Precision@10: 29%
+Recall@20: 62/71 = 87%   Precision@20: 18%
+(tempo total da execução: 18,2 s)
+

@@ -1,2 +1,2 @@
-# Instale antes o PyTorch com CUDA, se tiver GPU NVIDIA: https://pytorch.org/get-started/locally/
-sentence-transformers>=3.0
+# Instale antes o PyTorch com CUDA, se tiver GPU NVIDIA: https://pytorch.org/get-started/locally/
+sentence-transformers>=3.0

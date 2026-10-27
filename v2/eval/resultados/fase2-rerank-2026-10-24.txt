@@ -1,341 +1,341 @@
-ARK v2 - fase 2: reranker (cross-encoder BAAI/bge-reranker-v2-m3) sobre o bge-m3
-Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB (driver 617.14). Branch v2/fase-1-gabarito, base 37e9fc7.
-Corpus: 345 passagens (v2\corpus\build, o mesmo da rodada anterior). O cache emb-bge-m3.json foi reaproveitado.
-Gabarito: v2\eval\dev-cases.json, 24 casos, 71 necessidades.
-
-Ambiente
-- venv: %USERPROFILE%\ark-v2-venv (Python 3.12.10), torch 2.14.1+cu126 (CUDA ok), sentence-transformers 6.2.0
-- reranker: BAAI/bge-reranker-v2-m3 no cache padrão do HF (%USERPROFILE%\.cache\huggingface), device cuda:0,
-  precisão padrão do CrossEncoder (fp32), max_length 1024, batch 8
-- bge-m3: segundo Ollama em 127.0.0.1:11435 (OLLAMA_MODELS=%USERPROFILE%\ollama-v2), encerrado ao fim
-
-Resumo (necessidades cobertas de 71; o pool é quantos candidatos o reranker reordena)
-                                         turno último                turno primeiro
-configuração                       R@5      R@10     R@20        R@5      R@10     R@20
-denso bge-m3, sem rerank           38 54%   53 75%   62 87%      41 58%   55 77%   63 89%
-  (teto do pool 30 = R@30)                           66 93%                        65 92%
-denso bge-m3 + rerank 20           44 62%   56 79%   62 87%      46 65%   54 76%   63 89%
-denso bge-m3 + rerank 30           44 62%   54 76%   62 87%      45 63%   53 75%   62 87%
-híbrido bge-m3 + rerank 30         43 61%   53 75%   61 86%      43 61%   51 72%   60 85%
-
-Leitura: o rerank sobe o R@5 em +6 (último) e +5 (primeiro) com pool 20. Isso é 44 de um teto de 62:
-ainda sobram 18 necessidades que estão no top-20 mas não chegam ao top-5. Ampliar o pool para 30 não
-ajuda, embora o teto suba para 66. O híbrido + rerank fica abaixo do denso + rerank.
-Com pool 20, o R@20 é igual ao sem rerank por definição, porque o conjunto do top-20 não muda.
-
-Tempos (script à parte; reranker já carregado e aquecido; torch.cuda.synchronize em volta de cada chamada)
-- rerank pool 20: média 754 ms/consulta no último turno (547-1050) e 766 ms no primeiro (474-1088)
-- rerank pool 30: média 1105 ms/consulta no último turno (768-1500) e 1112 ms no primeiro (742-1530)
-- embed da consulta no bge-m3: cerca de 30 ms (rodada anterior)
-- carga do reranker: 52 s na primeira vez (inclui o download de cerca de 2,2 GB); cerca de 10 s depois,
-  com o cache. O "tempo total da execução" de cada rodada abaixo inclui essa carga quando há --rerank.
-
-VRAM (RTX 4060, 8188 MiB)
-- em uso antes do reranker (desktop + Ollamas): 1416 MiB
-- com o reranker carregado: 3684 MiB (cerca de +2,3 GB)
-- pico alocado pelo torch durante o rerank: 2534 MiB (reservado: 3912 MiB)
-- em uso ao fim das consultas (inclui o bge-m3 carregado no Ollama 11435): 6217 MiB
-ATENÇÃO: o qwen3:8b Q4_K_M ocupa cerca de 5-6 GB. Ele não cabe junto com o reranker em fp32 (cerca de 4 GB
-reservados) e o bge-m3 nos 8 GB, então em produção o Ollama descarregaria ou dividiria modelos com a CPU.
-Opções a testar: reranker em fp16 (cerca de metade da VRAM e mais rápido), max_length menor, ou rerank na CPU.
-
-Saídas completas abaixo.
-
-======================================================================
-$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 30   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
-
-método: denso (bge-m3), turno: ultimo
-
-caso  cobertura   R@5    R@10   R@20   R@30   necessidades perdidas no top-30
-D01   sustentado  1/3   1/3   2/3   2/3   n1
-D02   sustentado  3/3   3/3   3/3   3/3   
-D03   parcial     1/3   2/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   3/3   
-D05   sustentado  0/3   1/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   3/3   
-D07   sustentado  1/3   3/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   
-D09   parcial     0/3   0/3   1/3   1/3   n1,n2
-D10   parcial     0/3   0/3   2/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   3/3   
-D12   sustentado  2/3   3/3   3/3   3/3   
-D13   lacuna      1/2   1/2   1/2   2/2   
-D14   lacuna      1/3   2/3   2/3   3/3   
-D15   lacuna      0/3   2/3   3/3   3/3   
-D16   sustentado  1/3   3/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   3/3   
-D18   sustentado  2/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   
-D20   sustentado  1/2   1/2   2/2   2/2   
-D21   parcial     2/3   3/3   3/3   3/3   
-D22   sustentado  3/5   4/5   4/5   5/5   
-D23   parcial     2/3   3/3   3/3   3/3   
-D24   parcial     2/3   2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 38/71 = 54%
-Recall@10: 53/71 = 75%
-Recall@20: 62/71 = 87%
-Recall@30: 66/71 = 93%
-(tempo total da execução: 1,3 s)
-
-======================================================================
-$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --rerank 20   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
-
-método: denso (bge-m3), turno: ultimo, rerank top-20
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   3/3   3/3   
-D03   parcial     3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   2/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   1/3   1/3   n1,n2
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  2/3   3/3   3/3   
-D13   lacuna      0/2   1/2   1/2   n1
-D14   lacuna      1/3   1/3   2/3   n3
-D15   lacuna      1/3   3/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  2/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  1/2   2/2   2/2   
-D21   parcial     2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 44/71 = 62%
-Recall@10: 56/71 = 79%
-Recall@20: 62/71 = 87%
-(tempo total da execução: 30,6 s)
-
-======================================================================
-$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --rerank 30   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
-
-método: denso (bge-m3), turno: ultimo, rerank top-30
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   3/3   3/3   
-D03   parcial     2/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   1/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   1/3   1/3   n1,n2
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  2/3   3/3   3/3   
-D13   lacuna      0/2   0/2   1/2   n1
-D14   lacuna      2/3   2/3   3/3   
-D15   lacuna      1/3   3/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  2/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  1/2   2/2   2/2   
-D21   parcial     2/3   2/3   3/3   
-D22   sustentado  3/5   3/5   3/5   n3,n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 44/71 = 62%
-Recall@10: 54/71 = 76%
-Recall@20: 62/71 = 87%
-(tempo total da execução: 38,7 s)
-
-======================================================================
-$ python v2\eval\retrieval_eval.py --metodo hibrido --modelo bge-m3 --k 5 10 20 --rerank 30   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
-
-método: hibrido (bge-m3), turno: ultimo, rerank top-30
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     1/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   2/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   3/3   3/3   
-D10   parcial     1/3   2/3   2/3   n3
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  2/3   3/3   3/3   
-D13   lacuna      0/2   0/2   1/2   n1
-D14   lacuna      2/3   2/3   3/3   
-D15   lacuna      1/3   1/3   2/3   n3
-D16   sustentado  1/3   2/3   2/3   n3
-D17   parcial     3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  1/2   1/2   1/2   n1
-D21   parcial     2/3   2/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   n2
-D24   parcial     1/3   2/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 43/71 = 61%
-Recall@10: 53/71 = 75%
-Recall@20: 61/71 = 86%
-(tempo total da execução: 43,3 s)
-
-======================================================================
-$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 30 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
-
-método: denso (bge-m3), turno: primeiro
-
-caso  cobertura   R@5    R@10   R@20   R@30   necessidades perdidas no top-30
-D01   sustentado  1/3   1/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   2/3   n2
-D03   parcial     1/3   3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   3/3   
-D05   sustentado  0/3   2/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   2/3   n3
-D07   sustentado  1/3   3/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   2/2   
-D09   parcial     1/3   1/3   3/3   3/3   
-D10   parcial     0/3   0/3   2/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   3/3   
-D12   sustentado  2/3   3/3   3/3   3/3   
-D13   lacuna      1/2   1/2   1/2   2/2   
-D14   lacuna      2/3   2/3   2/3   2/3   n1
-D15   lacuna      2/3   2/3   3/3   3/3   
-D16   sustentado  1/3   3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   3/3   
-D18   sustentado  2/3   3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   2/2   
-D21   parcial     2/3   2/3   3/3   3/3   
-D22   sustentado  3/5   4/5   4/5   5/5   
-D23   parcial     2/3   3/3   3/3   3/3   
-D24   parcial     2/3   2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 41/71 = 58%
-Recall@10: 55/71 = 77%
-Recall@20: 63/71 = 89%
-Recall@30: 65/71 = 92%
-(tempo total da execução: 1,1 s)
-
-======================================================================
-$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --rerank 20 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
-
-método: denso (bge-m3), turno: primeiro, rerank top-20
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     1/3   2/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   2/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  1/3   2/3   3/3   
-D13   lacuna      0/2   1/2   1/2   n1
-D14   lacuna      2/3   2/3   2/3   n1
-D15   lacuna      2/3   2/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     1/3   2/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 46/71 = 65%
-Recall@10: 54/71 = 76%
-Recall@20: 63/71 = 89%
-(tempo total da execução: 30,7 s)
-
-======================================================================
-$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --rerank 30 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
-
-método: denso (bge-m3), turno: primeiro, rerank top-30
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     1/3   2/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   2/3   3/3   
-D12   sustentado  1/3   2/3   3/3   
-D13   lacuna      0/2   0/2   1/2   n1
-D14   lacuna      2/3   2/3   2/3   n1
-D15   lacuna      1/3   2/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     2/3   2/3   3/3   
-D22   sustentado  3/5   3/5   3/5   n3,n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     1/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 45/71 = 63%
-Recall@10: 53/71 = 75%
-Recall@20: 62/71 = 87%
-(tempo total da execução: 38,9 s)
-
-======================================================================
-$ python v2\eval\retrieval_eval.py --metodo hibrido --modelo bge-m3 --k 5 10 20 --rerank 30 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
-
-método: hibrido (bge-m3), turno: primeiro, rerank top-30
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     1/3   2/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   
-D10   parcial     1/3   2/3   2/3   n3
-D11   parcial     1/3   2/3   3/3   
-D12   sustentado  1/3   2/3   3/3   
-D13   lacuna      0/2   0/2   1/2   n1
-D14   lacuna      2/3   2/3   2/3   n1
-D15   lacuna      1/3   2/3   2/3   n2
-D16   sustentado  1/3   2/3   2/3   n3
-D17   parcial     2/3   2/3   2/3   n2
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     2/3   2/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   2/3   n2
-D24   parcial     1/3   1/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 43/71 = 61%
-Recall@10: 51/71 = 72%
-Recall@20: 60/71 = 85%
-(tempo total da execução: 43,2 s)
-
+ARK v2 - fase 2: reranker (cross-encoder BAAI/bge-reranker-v2-m3) sobre o bge-m3
+Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB (driver 617.14). Branch v2/fase-1-gabarito, base 37e9fc7.
+Corpus: 345 passagens (v2\corpus\build, o mesmo da rodada anterior). O cache emb-bge-m3.json foi reaproveitado.
+Gabarito: v2\eval\dev-cases.json, 24 casos, 71 necessidades.
+
+Ambiente
+- venv: %USERPROFILE%\ark-v2-venv (Python 3.12.10), torch 2.14.1+cu126 (CUDA ok), sentence-transformers 6.2.0
+- reranker: BAAI/bge-reranker-v2-m3 no cache padrão do HF (%USERPROFILE%\.cache\huggingface), device cuda:0,
+  precisão padrão do CrossEncoder (fp32), max_length 1024, batch 8
+- bge-m3: segundo Ollama em 127.0.0.1:11435 (OLLAMA_MODELS=%USERPROFILE%\ollama-v2), encerrado ao fim
+
+Resumo (necessidades cobertas de 71; o pool é quantos candidatos o reranker reordena)
+                                         turno último                turno primeiro
+configuração                       R@5      R@10     R@20        R@5      R@10     R@20
+denso bge-m3, sem rerank           38 54%   53 75%   62 87%      41 58%   55 77%   63 89%
+  (teto do pool 30 = R@30)                           66 93%                        65 92%
+denso bge-m3 + rerank 20           44 62%   56 79%   62 87%      46 65%   54 76%   63 89%
+denso bge-m3 + rerank 30           44 62%   54 76%   62 87%      45 63%   53 75%   62 87%
+híbrido bge-m3 + rerank 30         43 61%   53 75%   61 86%      43 61%   51 72%   60 85%
+
+Leitura: o rerank sobe o R@5 em +6 (último) e +5 (primeiro) com pool 20. Isso é 44 de um teto de 62:
+ainda sobram 18 necessidades que estão no top-20 mas não chegam ao top-5. Ampliar o pool para 30 não
+ajuda, embora o teto suba para 66. O híbrido + rerank fica abaixo do denso + rerank.
+Com pool 20, o R@20 é igual ao sem rerank por definição, porque o conjunto do top-20 não muda.
+
+Tempos (script à parte; reranker já carregado e aquecido; torch.cuda.synchronize em volta de cada chamada)
+- rerank pool 20: média 754 ms/consulta no último turno (547-1050) e 766 ms no primeiro (474-1088)
+- rerank pool 30: média 1105 ms/consulta no último turno (768-1500) e 1112 ms no primeiro (742-1530)
+- embed da consulta no bge-m3: cerca de 30 ms (rodada anterior)
+- carga do reranker: 52 s na primeira vez (inclui o download de cerca de 2,2 GB); cerca de 10 s depois,
+  com o cache. O "tempo total da execução" de cada rodada abaixo inclui essa carga quando há --rerank.
+
+VRAM (RTX 4060, 8188 MiB)
+- em uso antes do reranker (desktop + Ollamas): 1416 MiB
+- com o reranker carregado: 3684 MiB (cerca de +2,3 GB)
+- pico alocado pelo torch durante o rerank: 2534 MiB (reservado: 3912 MiB)
+- em uso ao fim das consultas (inclui o bge-m3 carregado no Ollama 11435): 6217 MiB
+ATENÇÃO: o qwen3:8b Q4_K_M ocupa cerca de 5-6 GB. Ele não cabe junto com o reranker em fp32 (cerca de 4 GB
+reservados) e o bge-m3 nos 8 GB, então em produção o Ollama descarregaria ou dividiria modelos com a CPU.
+Opções a testar: reranker em fp16 (cerca de metade da VRAM e mais rápido), max_length menor, ou rerank na CPU.
+
+Saídas completas abaixo.
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 30   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
+
+método: denso (bge-m3), turno: ultimo
+
+caso  cobertura   R@5    R@10   R@20   R@30   necessidades perdidas no top-30
+D01   sustentado  1/3   1/3   2/3   2/3   n1
+D02   sustentado  3/3   3/3   3/3   3/3   
+D03   parcial     1/3   2/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   3/3   
+D05   sustentado  0/3   1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   3/3   
+D07   sustentado  1/3   3/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   
+D09   parcial     0/3   0/3   1/3   1/3   n1,n2
+D10   parcial     0/3   0/3   2/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   3/3   
+D13   lacuna      1/2   1/2   1/2   2/2   
+D14   lacuna      1/3   2/3   2/3   3/3   
+D15   lacuna      0/3   2/3   3/3   3/3   
+D16   sustentado  1/3   3/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   
+D20   sustentado  1/2   1/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   3/3   
+D22   sustentado  3/5   4/5   4/5   5/5   
+D23   parcial     2/3   3/3   3/3   3/3   
+D24   parcial     2/3   2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 38/71 = 54%
+Recall@10: 53/71 = 75%
+Recall@20: 62/71 = 87%
+Recall@30: 66/71 = 93%
+(tempo total da execução: 1,3 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --rerank 20   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
+
+método: denso (bge-m3), turno: ultimo, rerank top-20
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 44/71 = 62%
+Recall@10: 56/71 = 79%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 30,6 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --rerank 30   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
+
+método: denso (bge-m3), turno: ultimo, rerank top-30
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   3/3   3/3   
+D03   parcial     2/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   1/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   3/3   
+D15   lacuna      1/3   3/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   3/5   n3,n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 44/71 = 62%
+Recall@10: 54/71 = 76%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 38,7 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo hibrido --modelo bge-m3 --k 5 10 20 --rerank 30   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
+
+método: hibrido (bge-m3), turno: ultimo, rerank top-30
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     1/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   3/3   3/3   
+D10   parcial     1/3   2/3   2/3   n3
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   3/3   
+D15   lacuna      1/3   1/3   2/3   n3
+D16   sustentado  1/3   2/3   2/3   n3
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   1/2   1/2   n1
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     1/3   2/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 53/71 = 75%
+Recall@20: 61/71 = 86%
+(tempo total da execução: 43,3 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 30 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
+
+método: denso (bge-m3), turno: primeiro
+
+caso  cobertura   R@5    R@10   R@20   R@30   necessidades perdidas no top-30
+D01   sustentado  1/3   1/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   2/3   n2
+D03   parcial     1/3   3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   3/3   
+D05   sustentado  0/3   2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   2/3   n3
+D07   sustentado  1/3   3/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   2/2   
+D09   parcial     1/3   1/3   3/3   3/3   
+D10   parcial     0/3   0/3   2/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   3/3   
+D13   lacuna      1/2   1/2   1/2   2/2   
+D14   lacuna      2/3   2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   3/3   
+D16   sustentado  1/3   3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   3/3   
+D22   sustentado  3/5   4/5   4/5   5/5   
+D23   parcial     2/3   3/3   3/3   3/3   
+D24   parcial     2/3   2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 41/71 = 58%
+Recall@10: 55/71 = 77%
+Recall@20: 63/71 = 89%
+Recall@30: 65/71 = 92%
+(tempo total da execução: 1,1 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --rerank 20 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
+
+método: denso (bge-m3), turno: primeiro, rerank top-20
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     1/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 54/71 = 76%
+Recall@20: 63/71 = 89%
+(tempo total da execução: 30,7 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --k 5 10 20 --rerank 30 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
+
+método: denso (bge-m3), turno: primeiro, rerank top-30
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     1/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   3/5   n3,n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     1/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 45/71 = 63%
+Recall@10: 53/71 = 75%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 38,9 s)
+
+======================================================================
+$ python v2\eval\retrieval_eval.py --metodo hibrido --modelo bge-m3 --k 5 10 20 --rerank 30 --turno primeiro   (OLLAMA_URL=http://127.0.0.1:11435, Python do venv)
+
+método: hibrido (bge-m3), turno: primeiro, rerank top-30
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     1/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   2/3   2/3   n3
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   0/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      1/3   2/3   2/3   n2
+D16   sustentado  1/3   2/3   2/3   n3
+D17   parcial     2/3   2/3   2/3   n2
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   2/3   n2
+D24   parcial     1/3   1/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 43/71 = 61%
+Recall@10: 51/71 = 72%
+Recall@20: 60/71 = 85%
+(tempo total da execução: 43,2 s)
+
