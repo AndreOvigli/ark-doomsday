@@ -1,9 +1,9 @@
-FONTE OFICIAL: US Environmental Protection Agency (EPA). Protect Your Home's Water
-URL: https://www.epa.gov/privatewells/protect-your-homes-water
-DATA NA PÁGINA: 2026-02-26 (last_updated). Sem edição numerada.
-LIMITAÇÕES: Decisão de não uso e inspeção/testagem; não inclui procedimento de bombeamento, desinfecção, eletricidade ou doses. Estrutura institucional dos EUA precisa contextualização para o Brasil; ausência de serviço não comprova segurança.
-
-TEXTO ORIGINAL SELECIONADO:
-Flooding, earth quakes, landslides, and other natural disasters can impact the safety of your drinking water by allowing contaminants to enter your private well system.
-If you suspect your drinking water well may be contaminated after a flood or another natural disaster, contact your local or state health department or environmental agency for advice on inspecting and testing your well.
-Do not drink or wash from the flooded well to avoid becoming sick.
+FONTE OFICIAL: US Environmental Protection Agency (EPA). Protect Your Home's Water
+URL: https://www.epa.gov/privatewells/protect-your-homes-water
+DATA NA PÁGINA: 2026-02-26 (last_updated). Sem edição numerada.
+LIMITAÇÕES: Decisão de não uso e inspeção/testagem; não inclui procedimento de bombeamento, desinfecção, eletricidade ou doses. Estrutura institucional dos EUA precisa contextualização para o Brasil; ausência de serviço não comprova segurança.
+
+TEXTO ORIGINAL SELECIONADO:
+Flooding, earth quakes, landslides, and other natural disasters can impact the safety of your drinking water by allowing contaminants to enter your private well system.
+If you suspect your drinking water well may be contaminated after a flood or another natural disaster, contact your local or state health department or environmental agency for advice on inspecting and testing your well.
+Do not drink or wash from the flooded well to avoid becoming sick.

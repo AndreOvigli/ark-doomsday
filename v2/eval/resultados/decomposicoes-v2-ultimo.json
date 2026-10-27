@@ -1,281 +1,281 @@
-{
-  "D01": {
-    "situacao": "A pessoa está sem água e tem acesso a água de um rio barrento e água da chuva coletada no telhado. Ainda não decidiu qual usar.",
-    "risco": "A água do rio pode conter microrganismos e impurezas que causam doenças.",
-    "consultas": [
-      "Riscos de consumir água de fontes naturais sem tratamento",
-      "Como coletar e tratar água da chuva para consumo seguro"
-    ],
-    "mensagens": [
-      "Faltou água aqui. Tenho um rio perto de casa com a água meio barrenta e também consigo pegar a água da chuva que cai do telhado. Qual das duas é melhor pra beber?"
-    ]
-  },
-  "D02": {
-    "situacao": "A pessoa encontrou um galão grande no galpão e quer usá-lo para coletar água do poço para beber. Suspeita que o galão tenha sido usado para óleo diesel e ainda tem um cheiro fraco.",
-    "risco": "O uso de um galão que pode ter contido óleo diesel pode contaminar a água e causar riscos à saúde.",
-    "consultas": [
-      "Como identificar e remover contaminantes de um recipiente antes de usá-lo para armazenar água potável?"
-    ],
-    "mensagens": [
-      "Achei um galão grande no galpão. Dá pra usar pra pegar água no poço pra gente beber?",
-      "Acho que era de óleo diesel, ainda tem um cheiro fraco."
-    ]
-  },
-  "D03": {
-    "situacao": "A pessoa tem garrafas de água mineral, duas estão com lacre rompido e as outras estão fechadas. A pessoa quer usar as garrafas para beber.",
-    "risco": "Água com lacre rompido pode estar contaminada, o que pode causar doenças gastrointestinais.",
-    "consultas": [
-      "Como identificar e evitar a ingestão de água contaminada por lacre rompido?"
-    ],
-    "mensagens": [
-      "Tenho umas garrafas de água mineral guardadas, vou usar essas pra beber, né?",
-      "Reparei agora que duas estão com o lacre rompido. As outras estão fechadas."
-    ]
-  },
-  "D04": {
-    "situacao": "A pessoa tem água de poço, pano de prato limpo, panela e fogão a gás funcionando e quer deixar a água potável para beber.",
-    "risco": "A água de poço pode conter microrganismos que causam doenças como cólera e febre tifóide.",
-    "consultas": [
-      "Como verificar a qualidade da água de poço",
-      "Como ferver água para torná-la potável",
-      "Como usar o fogão a gás para aquecer a água"
-    ],
-    "mensagens": [
-      "Tenho água de poço, um pano de prato limpo, panela e o fogão a gás funcionando. Como deixo essa água boa pra beber?"
-    ]
-  },
-  "D05": {
-    "situacao": "A pessoa quer tratar água de um açude turva e possui água sanitária. Faltam informações sobre o método de tratamento e a quantidade necessária.",
-    "risco": "A água turva pode conter partículas que, se não forem removidas, podem reduzir a eficácia do cloro e não garantir a segurança da água.",
-    "consultas": [
-      "Como tratar água turva antes de usar cloro?",
-      "Como usar água sanitária para desinfetar água potável?"
-    ],
-    "mensagens": [
-      "Como eu trato água?",
-      "É de um açude, meio turva. Tenho água sanitária em casa."
-    ]
-  },
-  "D06": {
-    "situacao": "A pessoa quer ferver água do rio para beber, já coei a água num pano. A ferveração não foi concluída devido ao fim do gás, e ela tem um saco de carvão, mas não tem água sanitária.",
-    "risco": "A água não fervida pode conter microrganismos que causam doenças como cólera e febre tifóide.",
-    "consultas": [
-      "Como ferver água corretamente para eliminação de microrganismos",
-      "Como utilizar carvão para purificação de água",
-      "Como preparar água potável sem uso de produtos químicos"
-    ],
-    "mensagens": [
-      "Vou ferver a água do rio pra beber, já coei num pano.",
-      "O gás acabou no meio, a água nem chegou a ferver direito. Tenho um saco de carvão. Não tenho água sanitária."
-    ]
-  },
-  "D07": {
-    "situacao": "A pessoa tratou 20 litros de água com hipoclorito e quer saber como armazená-la e por quanto tempo ela é segura para consumo.",
-    "risco": "A água clorada pode perder eficácia ou tornar-se tóxica se não for armazenada corretamente ou se ficar exposta por muito tempo.",
-    "consultas": [
-      "Como armazenar água clorada para consumo seguro",
-      "Duração da eficácia do cloro em água tratada",
-      "Condições ideais para armazenamento de água clorada"
-    ],
-    "mensagens": [
-      "Já tratei 20 litros de água com hipoclorito. Como guardo e por quanto tempo ela dura?"
-    ]
-  },
-  "D08": {
-    "situacao": "A pessoa tem um balde e quer guardar água tratada nele, mas não sabe se ele estava limpo antes.",
-    "risco": "O balde pode conter microrganismos ou impurezas que contaminem a água tratada.",
-    "consultas": [
-      "Como verificar a higiene de um balde antes de usá-lo?",
-      "Como armazenar água tratada em recipientes?"
-    ],
-    "mensagens": [
-      "Tenho um balde que achei aqui. Posso guardar a água tratada nele?",
-      "Não sei o que tinha antes. Tem tampa e parece limpo."
-    ]
-  },
-  "D09": {
-    "situacao": "A pessoa deixou água fervida em um pote tampado, mas a tampa ficou aberta durante a noite, permitindo a entrada de insetos.",
-    "risco": "A água pode ter sido contaminada por insetos, tornando-a potencialmente perigosa para consumo.",
-    "consultas": [
-      "Contaminação da água por insetos",
-      "Como armazenar água fervida corretamente",
-      "Riscos de consumir água contaminada por insetos"
-    ],
-    "mensagens": [
-      "Deixei a água fervida num pote tampado ontem à tarde pra beber hoje.",
-      "Agora de manhã vi que a tampa ficou aberta a noite toda e tinha uns insetos em volta."
-    ]
-  },
-  "D10": {
-    "situacao": "A pessoa está sem luz há 2 dias e tem alimentos em conserva e secos, mas pouca água tratada. Precisa priorizar o que comer para garantir nutrição e segurança.",
-    "risco": "Consumir alimentos sem água adequada pode levar à desidratação e dificultar a digestão.",
-    "consultas": [
-      "Como garantir a ingestão adequada de água em situações de escassez?",
-      "Qual a ordem de prioridade para consumo de alimentos em emergências?"
-    ],
-    "mensagens": [
-      "Estamos sem luz faz 2 dias. Na despensa tem arroz, feijão cru, macarrão, sardinha em lata, biscoito e leite em pó. Água tratada é pouca. O que eu priorizo comer?"
-    ]
-  },
-  "D11": {
-    "situacao": "A pessoa encontrou latas sem rótulo no fundo do armário, que parecem intactas, mas não sabe o conteúdo nem a validade.",
-    "risco": "Consumir alimentos de latas sem rótulo pode ser perigoso devido à possibilidade de contaminação ou deterioração não visível.",
-    "consultas": [
-      "Como identificar alimentos em latas sem rótulo para verificar segurança",
-      "Como verificar a validade de alimentos em latas sem data de fabricação",
-      "Como proceder para descartar alimentos em latas com risco de contaminação"
-    ],
-    "mensagens": [
-      "Achei umas latas sem rótulo no fundo do armário. Dá pra comer?",
-      "Parecem inteiras, nenhuma estufada ou enferrujada. Não sei o que tem dentro nem a validade."
-    ]
-  },
-  "D12": {
-    "situacao": "A pessoa tem três latas de milho, ervilha e atum, mas a de atum está estufada e a de milho tem um amassado. A pessoa quer saber se pode comer as latas.",
-    "risco": "Latas estufadas ou com danos na embalagem podem indicar contaminação por bactérias ou deterioração do conteúdo, o que pode causar doenças.",
-    "consultas": [
-      "Como identificar se uma lata estufada é segura para consumo?",
-      "Como verificar a integridade de uma lata de conserva antes de abri-la?"
-    ],
-    "mensagens": [
-      "Tenho três latas: milho, ervilha e atum. Posso comer?",
-      "A de atum está um pouco estufada. As outras parecem normais.",
-      "Olhando melhor, a de milho tem um amassado na lateral, mas não está vazando."
-    ]
-  },
-  "D13": {
-    "situacao": "A pessoa tem arroz, água tratada e fogão a gás e quer saber como cozinhar o arroz.",
-    "risco": "A não higienização adequada dos utensílios pode contaminar o arroz.",
-    "consultas": [
-      "Como cozinhar arroz com segurança",
-      "Como higienizar utensílios de cozinha antes de usar"
-    ],
-    "mensagens": [
-      "Tenho arroz, água tratada e fogão a gás. Como faço o arroz?"
-    ]
-  },
-  "D14": {
-    "situacao": "A pessoa quer cozinhar arroz e feijão, mas tem pouco gás e pouca água. O feijão está cru e há 5 litros de água tratada para 2 dias, para 2 pessoas.",
-    "risco": "Cozinhar feijão sem suficiente água pode resultar em alimentos duros e difíceis de digerir, além de aumentar o risco de intoxicação alimentar.",
-    "consultas": [
-      "Como cozinhar feijão com quantidade adequada de água para evitar risco de intoxicação alimentar?",
-      "Como cozinhar arroz com pouca água e gás disponível?"
-    ],
-    "mensagens": [
-      "Quero fazer arroz e feijão mas tenho pouco gás e pouca água.",
-      "O feijão é cru. Tenho uns 5 litros de água tratada pra 2 dias, somos 2 pessoas."
-    ]
-  },
-  "D15": {
-    "situacao": "A pessoa cozinhava feijão e o gás acabou, deixando-o meio cozido. O feijão ficou na panela tampada em cima do fogão por cerca de 3 horas.",
-    "risco": "O feijão pode ter se contaminado com bactérias como a botulínica, especialmente se a temperatura não foi mantida adequada durante o tempo de espera.",
-    "consultas": [
-      "Risco de contaminação por bactérias em alimentos deixados em temperatura ambiente por longo tempo",
-      "Como armazenar feijão cozido de forma segura para evitar contaminação bacteriana"
-    ],
-    "mensagens": [
-      "Estava cozinhando feijão e o gás acabou. Ficou meio cozido.",
-      "Isso foi há umas 3 horas. Ficou na panela tampada em cima do fogão."
-    ]
-  },
-  "D16": {
-    "situacao": "A pessoa quer armazenar arroz, feijão e farinha de forma segura. Ela tem esses produtos e quer evitar que estraguem e sejam atacados por bichos ou ratos.",
-    "risco": "A falta de armazenamento adequado pode atrair pragas e causar a deterioração dos alimentos.",
-    "consultas": [
-      "Como armazenar grãos e farinha para evitar pragas e deterioração?"
-    ],
-    "mensagens": [
-      "Como eu guardo arroz, feijão e farinha pra não estragar e não dar bicho nem rato?"
-    ]
-  },
-  "D17": {
-    "situacao": "A pessoa tem bananas maduras que vão estragar e quer conservá-las. Tem forno a gás, mas não tem termômetro e não sabe se ele alcança temperatura baixa.",
-    "risco": "A temperatura inadequada no forno pode queimar as bananas ou não ser eficaz para conservá-las.",
-    "consultas": [
-      "Como assar bananas sem termômetro para conservá-las?",
-      "Como conservar bananas maduras sem refrigerador?"
-    ],
-    "mensagens": [
-      "Tenho muitas bananas que vão estragar. Como eu conservo?",
-      "Estão maduras. Tenho forno a gás, mas não sei se ele chega numa temperatura baixa e não tenho termômetro."
-    ]
-  },
-  "D18": {
-    "situacao": "A pessoa tem tomates maduros, uma abóbora inteira e batatas, mas está sem geladeira. Cortou metade da abóbora e deixou a outra metade na bancada.",
-    "risco": "A abóbora deixada na bancada pode se deteriorar rapidamente, aumentando o risco de contaminação e desperdício.",
-    "consultas": [
-      "Como armazenar abóbora cortada para evitar contaminação e desperdício?"
-    ],
-    "mensagens": [
-      "Tenho tomates maduros, uma abóbora inteira e batatas. Estou sem geladeira. O que uso primeiro?",
-      "Ah, esqueci: cortei metade da abóbora ontem e a outra metade ficou na bancada."
-    ]
-  },
-  "D19": {
-    "situacao": "A pessoa deseja reutilizar garrafas PET e um galão de água mineral para armazenar água tratada. Ela já possui os recipientes, mas precisa saber como limpá-los corretamente.",
-    "risco": "Resíduos de produtos químicos ou impurezas não removidas podem contaminar a água tratada.",
-    "consultas": [
-      "Como limpar recipientes plásticos e metálicos para armazenamento de água potável?"
-    ],
-    "mensagens": [
-      "Vou reaproveitar umas garrafas PET de refrigerante e um galão de água mineral pra guardar a água tratada. Como eu limpo antes?"
-    ]
-  },
-  "D20": {
-    "situacao": "A pessoa quer lavar as mãos para cozinhar, mas não tem água na torneira. Ela tem um galão de água tratada e sabão.",
-    "risco": "A água do galão pode não ser suficientemente limpa para remover bactérias e impurezas adequadamente.",
-    "consultas": [
-      "Como lavar as mãos com água tratada e sabão de forma eficaz?"
-    ],
-    "mensagens": [
-      "Como lavo as mãos pra cozinhar se não tem água na torneira?",
-      "Tenho um galão de água tratada e sabão."
-    ]
-  },
-  "D21": {
-    "situacao": "A pessoa colheu alface e couve e quer higienizá-los para comer cru. Tem água sanitária perfumada de lavanda, mas não tem outra opção.",
-    "risco": "A água sanitária pode deixar resíduos químicos que são prejudiciais à saúde se não for diluída corretamente.",
-    "consultas": [
-      "Como diluir a água sanitária para higienizar hortaliças de forma segura?"
-    ],
-    "mensagens": [
-      "Colhi alface e couve da horta. Como eu higienizo pra comer cru? Tenho água sanitária.",
-      "Olhei o rótulo: a água sanitária é perfumada, de lavanda. Não tenho outra."
-    ]
-  },
-  "D22": {
-    "situacao": "A pessoa tem água de poço turva e precisa usá-la para beber, cozinhar e guardar. Faltam métodos seguros para tratar a água.",
-    "risco": "A água turva pode conter partículas e microrganismos que causam doenças quando ingeridas ou usadas para cozinhar.",
-    "consultas": [
-      "Como tratar água de poço turva para consumo seguro?",
-      "Como cozinhar macarrão com água tratada para evitar contaminação?"
-    ],
-    "mensagens": [
-      "Só tenho água de poço, meio turva, uns 20 litros. Hoje preciso beber, fazer um macarrão e guardar o resto pra amanhã. Tenho hipoclorito 2,5% e um pano limpo. Como organizo isso?"
-    ]
-  },
-  "D23": {
-    "situacao": "A pessoa está sem luz e água potável, mas tem água da caixa d'água e fogão a gás. A geladeira ficou fechada há 6 horas, então a comida pode estar em risco.",
-    "risco": "A comida na geladeira pode ter se deteriorado, causando intoxicação alimentar.",
-    "consultas": [
-      "Como identificar alimentos estragados e evitar intoxicação alimentar?",
-      "Como cozinhar alimentos que podem estar em risco de contaminação?"
-    ],
-    "mensagens": [
-      "Faltou luz e água. Preciso resolver a água pra beber, o que fazer com a comida da geladeira e como cozinhar.",
-      "Faz umas 6 horas. A geladeira ficou fechada. Tenho a água da caixa d'água e fogão a gás."
-    ]
-  },
-  "D24": {
-    "situacao": "A pessoa está sem luz e gás e pretende cozinhar na churrasqueira a carvão na garagem, deixando o portão meio aberto.",
-    "risco": "A combustão incompleta do carvão pode gerar monóxido de carbono, um gás inodoro e letal em altas concentrações.",
-    "consultas": [
-      "Monóxido de carbono: como reconhecer e prevenir a intoxicação?",
-      "Como usar churrasqueira a carvão de forma segura em ambientes fechados ou semi-abertos?"
-    ],
-    "mensagens": [
-      "Estamos sem luz desde ontem e o gás acabou. Pensei em fazer a janta na churrasqueira a carvão.",
-      "Vou fazer na garagem porque está chovendo, deixo o portão meio aberto."
-    ]
-  }
+{
+  "D01": {
+    "situacao": "A pessoa está sem água e tem acesso a água de um rio barrento e água da chuva coletada no telhado. Ainda não decidiu qual usar.",
+    "risco": "A água do rio pode conter microrganismos e impurezas que causam doenças.",
+    "consultas": [
+      "Riscos de consumir água de fontes naturais sem tratamento",
+      "Como coletar e tratar água da chuva para consumo seguro"
+    ],
+    "mensagens": [
+      "Faltou água aqui. Tenho um rio perto de casa com a água meio barrenta e também consigo pegar a água da chuva que cai do telhado. Qual das duas é melhor pra beber?"
+    ]
+  },
+  "D02": {
+    "situacao": "A pessoa encontrou um galão grande no galpão e quer usá-lo para coletar água do poço para beber. Suspeita que o galão tenha sido usado para óleo diesel e ainda tem um cheiro fraco.",
+    "risco": "O uso de um galão que pode ter contido óleo diesel pode contaminar a água e causar riscos à saúde.",
+    "consultas": [
+      "Como identificar e remover contaminantes de um recipiente antes de usá-lo para armazenar água potável?"
+    ],
+    "mensagens": [
+      "Achei um galão grande no galpão. Dá pra usar pra pegar água no poço pra gente beber?",
+      "Acho que era de óleo diesel, ainda tem um cheiro fraco."
+    ]
+  },
+  "D03": {
+    "situacao": "A pessoa tem garrafas de água mineral, duas estão com lacre rompido e as outras estão fechadas. A pessoa quer usar as garrafas para beber.",
+    "risco": "Água com lacre rompido pode estar contaminada, o que pode causar doenças gastrointestinais.",
+    "consultas": [
+      "Como identificar e evitar a ingestão de água contaminada por lacre rompido?"
+    ],
+    "mensagens": [
+      "Tenho umas garrafas de água mineral guardadas, vou usar essas pra beber, né?",
+      "Reparei agora que duas estão com o lacre rompido. As outras estão fechadas."
+    ]
+  },
+  "D04": {
+    "situacao": "A pessoa tem água de poço, pano de prato limpo, panela e fogão a gás funcionando e quer deixar a água potável para beber.",
+    "risco": "A água de poço pode conter microrganismos que causam doenças como cólera e febre tifóide.",
+    "consultas": [
+      "Como verificar a qualidade da água de poço",
+      "Como ferver água para torná-la potável",
+      "Como usar o fogão a gás para aquecer a água"
+    ],
+    "mensagens": [
+      "Tenho água de poço, um pano de prato limpo, panela e o fogão a gás funcionando. Como deixo essa água boa pra beber?"
+    ]
+  },
+  "D05": {
+    "situacao": "A pessoa quer tratar água de um açude turva e possui água sanitária. Faltam informações sobre o método de tratamento e a quantidade necessária.",
+    "risco": "A água turva pode conter partículas que, se não forem removidas, podem reduzir a eficácia do cloro e não garantir a segurança da água.",
+    "consultas": [
+      "Como tratar água turva antes de usar cloro?",
+      "Como usar água sanitária para desinfetar água potável?"
+    ],
+    "mensagens": [
+      "Como eu trato água?",
+      "É de um açude, meio turva. Tenho água sanitária em casa."
+    ]
+  },
+  "D06": {
+    "situacao": "A pessoa quer ferver água do rio para beber, já coei a água num pano. A ferveração não foi concluída devido ao fim do gás, e ela tem um saco de carvão, mas não tem água sanitária.",
+    "risco": "A água não fervida pode conter microrganismos que causam doenças como cólera e febre tifóide.",
+    "consultas": [
+      "Como ferver água corretamente para eliminação de microrganismos",
+      "Como utilizar carvão para purificação de água",
+      "Como preparar água potável sem uso de produtos químicos"
+    ],
+    "mensagens": [
+      "Vou ferver a água do rio pra beber, já coei num pano.",
+      "O gás acabou no meio, a água nem chegou a ferver direito. Tenho um saco de carvão. Não tenho água sanitária."
+    ]
+  },
+  "D07": {
+    "situacao": "A pessoa tratou 20 litros de água com hipoclorito e quer saber como armazená-la e por quanto tempo ela é segura para consumo.",
+    "risco": "A água clorada pode perder eficácia ou tornar-se tóxica se não for armazenada corretamente ou se ficar exposta por muito tempo.",
+    "consultas": [
+      "Como armazenar água clorada para consumo seguro",
+      "Duração da eficácia do cloro em água tratada",
+      "Condições ideais para armazenamento de água clorada"
+    ],
+    "mensagens": [
+      "Já tratei 20 litros de água com hipoclorito. Como guardo e por quanto tempo ela dura?"
+    ]
+  },
+  "D08": {
+    "situacao": "A pessoa tem um balde e quer guardar água tratada nele, mas não sabe se ele estava limpo antes.",
+    "risco": "O balde pode conter microrganismos ou impurezas que contaminem a água tratada.",
+    "consultas": [
+      "Como verificar a higiene de um balde antes de usá-lo?",
+      "Como armazenar água tratada em recipientes?"
+    ],
+    "mensagens": [
+      "Tenho um balde que achei aqui. Posso guardar a água tratada nele?",
+      "Não sei o que tinha antes. Tem tampa e parece limpo."
+    ]
+  },
+  "D09": {
+    "situacao": "A pessoa deixou água fervida em um pote tampado, mas a tampa ficou aberta durante a noite, permitindo a entrada de insetos.",
+    "risco": "A água pode ter sido contaminada por insetos, tornando-a potencialmente perigosa para consumo.",
+    "consultas": [
+      "Contaminação da água por insetos",
+      "Como armazenar água fervida corretamente",
+      "Riscos de consumir água contaminada por insetos"
+    ],
+    "mensagens": [
+      "Deixei a água fervida num pote tampado ontem à tarde pra beber hoje.",
+      "Agora de manhã vi que a tampa ficou aberta a noite toda e tinha uns insetos em volta."
+    ]
+  },
+  "D10": {
+    "situacao": "A pessoa está sem luz há 2 dias e tem alimentos em conserva e secos, mas pouca água tratada. Precisa priorizar o que comer para garantir nutrição e segurança.",
+    "risco": "Consumir alimentos sem água adequada pode levar à desidratação e dificultar a digestão.",
+    "consultas": [
+      "Como garantir a ingestão adequada de água em situações de escassez?",
+      "Qual a ordem de prioridade para consumo de alimentos em emergências?"
+    ],
+    "mensagens": [
+      "Estamos sem luz faz 2 dias. Na despensa tem arroz, feijão cru, macarrão, sardinha em lata, biscoito e leite em pó. Água tratada é pouca. O que eu priorizo comer?"
+    ]
+  },
+  "D11": {
+    "situacao": "A pessoa encontrou latas sem rótulo no fundo do armário, que parecem intactas, mas não sabe o conteúdo nem a validade.",
+    "risco": "Consumir alimentos de latas sem rótulo pode ser perigoso devido à possibilidade de contaminação ou deterioração não visível.",
+    "consultas": [
+      "Como identificar alimentos em latas sem rótulo para verificar segurança",
+      "Como verificar a validade de alimentos em latas sem data de fabricação",
+      "Como proceder para descartar alimentos em latas com risco de contaminação"
+    ],
+    "mensagens": [
+      "Achei umas latas sem rótulo no fundo do armário. Dá pra comer?",
+      "Parecem inteiras, nenhuma estufada ou enferrujada. Não sei o que tem dentro nem a validade."
+    ]
+  },
+  "D12": {
+    "situacao": "A pessoa tem três latas de milho, ervilha e atum, mas a de atum está estufada e a de milho tem um amassado. A pessoa quer saber se pode comer as latas.",
+    "risco": "Latas estufadas ou com danos na embalagem podem indicar contaminação por bactérias ou deterioração do conteúdo, o que pode causar doenças.",
+    "consultas": [
+      "Como identificar se uma lata estufada é segura para consumo?",
+      "Como verificar a integridade de uma lata de conserva antes de abri-la?"
+    ],
+    "mensagens": [
+      "Tenho três latas: milho, ervilha e atum. Posso comer?",
+      "A de atum está um pouco estufada. As outras parecem normais.",
+      "Olhando melhor, a de milho tem um amassado na lateral, mas não está vazando."
+    ]
+  },
+  "D13": {
+    "situacao": "A pessoa tem arroz, água tratada e fogão a gás e quer saber como cozinhar o arroz.",
+    "risco": "A não higienização adequada dos utensílios pode contaminar o arroz.",
+    "consultas": [
+      "Como cozinhar arroz com segurança",
+      "Como higienizar utensílios de cozinha antes de usar"
+    ],
+    "mensagens": [
+      "Tenho arroz, água tratada e fogão a gás. Como faço o arroz?"
+    ]
+  },
+  "D14": {
+    "situacao": "A pessoa quer cozinhar arroz e feijão, mas tem pouco gás e pouca água. O feijão está cru e há 5 litros de água tratada para 2 dias, para 2 pessoas.",
+    "risco": "Cozinhar feijão sem suficiente água pode resultar em alimentos duros e difíceis de digerir, além de aumentar o risco de intoxicação alimentar.",
+    "consultas": [
+      "Como cozinhar feijão com quantidade adequada de água para evitar risco de intoxicação alimentar?",
+      "Como cozinhar arroz com pouca água e gás disponível?"
+    ],
+    "mensagens": [
+      "Quero fazer arroz e feijão mas tenho pouco gás e pouca água.",
+      "O feijão é cru. Tenho uns 5 litros de água tratada pra 2 dias, somos 2 pessoas."
+    ]
+  },
+  "D15": {
+    "situacao": "A pessoa cozinhava feijão e o gás acabou, deixando-o meio cozido. O feijão ficou na panela tampada em cima do fogão por cerca de 3 horas.",
+    "risco": "O feijão pode ter se contaminado com bactérias como a botulínica, especialmente se a temperatura não foi mantida adequada durante o tempo de espera.",
+    "consultas": [
+      "Risco de contaminação por bactérias em alimentos deixados em temperatura ambiente por longo tempo",
+      "Como armazenar feijão cozido de forma segura para evitar contaminação bacteriana"
+    ],
+    "mensagens": [
+      "Estava cozinhando feijão e o gás acabou. Ficou meio cozido.",
+      "Isso foi há umas 3 horas. Ficou na panela tampada em cima do fogão."
+    ]
+  },
+  "D16": {
+    "situacao": "A pessoa quer armazenar arroz, feijão e farinha de forma segura. Ela tem esses produtos e quer evitar que estraguem e sejam atacados por bichos ou ratos.",
+    "risco": "A falta de armazenamento adequado pode atrair pragas e causar a deterioração dos alimentos.",
+    "consultas": [
+      "Como armazenar grãos e farinha para evitar pragas e deterioração?"
+    ],
+    "mensagens": [
+      "Como eu guardo arroz, feijão e farinha pra não estragar e não dar bicho nem rato?"
+    ]
+  },
+  "D17": {
+    "situacao": "A pessoa tem bananas maduras que vão estragar e quer conservá-las. Tem forno a gás, mas não tem termômetro e não sabe se ele alcança temperatura baixa.",
+    "risco": "A temperatura inadequada no forno pode queimar as bananas ou não ser eficaz para conservá-las.",
+    "consultas": [
+      "Como assar bananas sem termômetro para conservá-las?",
+      "Como conservar bananas maduras sem refrigerador?"
+    ],
+    "mensagens": [
+      "Tenho muitas bananas que vão estragar. Como eu conservo?",
+      "Estão maduras. Tenho forno a gás, mas não sei se ele chega numa temperatura baixa e não tenho termômetro."
+    ]
+  },
+  "D18": {
+    "situacao": "A pessoa tem tomates maduros, uma abóbora inteira e batatas, mas está sem geladeira. Cortou metade da abóbora e deixou a outra metade na bancada.",
+    "risco": "A abóbora deixada na bancada pode se deteriorar rapidamente, aumentando o risco de contaminação e desperdício.",
+    "consultas": [
+      "Como armazenar abóbora cortada para evitar contaminação e desperdício?"
+    ],
+    "mensagens": [
+      "Tenho tomates maduros, uma abóbora inteira e batatas. Estou sem geladeira. O que uso primeiro?",
+      "Ah, esqueci: cortei metade da abóbora ontem e a outra metade ficou na bancada."
+    ]
+  },
+  "D19": {
+    "situacao": "A pessoa deseja reutilizar garrafas PET e um galão de água mineral para armazenar água tratada. Ela já possui os recipientes, mas precisa saber como limpá-los corretamente.",
+    "risco": "Resíduos de produtos químicos ou impurezas não removidas podem contaminar a água tratada.",
+    "consultas": [
+      "Como limpar recipientes plásticos e metálicos para armazenamento de água potável?"
+    ],
+    "mensagens": [
+      "Vou reaproveitar umas garrafas PET de refrigerante e um galão de água mineral pra guardar a água tratada. Como eu limpo antes?"
+    ]
+  },
+  "D20": {
+    "situacao": "A pessoa quer lavar as mãos para cozinhar, mas não tem água na torneira. Ela tem um galão de água tratada e sabão.",
+    "risco": "A água do galão pode não ser suficientemente limpa para remover bactérias e impurezas adequadamente.",
+    "consultas": [
+      "Como lavar as mãos com água tratada e sabão de forma eficaz?"
+    ],
+    "mensagens": [
+      "Como lavo as mãos pra cozinhar se não tem água na torneira?",
+      "Tenho um galão de água tratada e sabão."
+    ]
+  },
+  "D21": {
+    "situacao": "A pessoa colheu alface e couve e quer higienizá-los para comer cru. Tem água sanitária perfumada de lavanda, mas não tem outra opção.",
+    "risco": "A água sanitária pode deixar resíduos químicos que são prejudiciais à saúde se não for diluída corretamente.",
+    "consultas": [
+      "Como diluir a água sanitária para higienizar hortaliças de forma segura?"
+    ],
+    "mensagens": [
+      "Colhi alface e couve da horta. Como eu higienizo pra comer cru? Tenho água sanitária.",
+      "Olhei o rótulo: a água sanitária é perfumada, de lavanda. Não tenho outra."
+    ]
+  },
+  "D22": {
+    "situacao": "A pessoa tem água de poço turva e precisa usá-la para beber, cozinhar e guardar. Faltam métodos seguros para tratar a água.",
+    "risco": "A água turva pode conter partículas e microrganismos que causam doenças quando ingeridas ou usadas para cozinhar.",
+    "consultas": [
+      "Como tratar água de poço turva para consumo seguro?",
+      "Como cozinhar macarrão com água tratada para evitar contaminação?"
+    ],
+    "mensagens": [
+      "Só tenho água de poço, meio turva, uns 20 litros. Hoje preciso beber, fazer um macarrão e guardar o resto pra amanhã. Tenho hipoclorito 2,5% e um pano limpo. Como organizo isso?"
+    ]
+  },
+  "D23": {
+    "situacao": "A pessoa está sem luz e água potável, mas tem água da caixa d'água e fogão a gás. A geladeira ficou fechada há 6 horas, então a comida pode estar em risco.",
+    "risco": "A comida na geladeira pode ter se deteriorado, causando intoxicação alimentar.",
+    "consultas": [
+      "Como identificar alimentos estragados e evitar intoxicação alimentar?",
+      "Como cozinhar alimentos que podem estar em risco de contaminação?"
+    ],
+    "mensagens": [
+      "Faltou luz e água. Preciso resolver a água pra beber, o que fazer com a comida da geladeira e como cozinhar.",
+      "Faz umas 6 horas. A geladeira ficou fechada. Tenho a água da caixa d'água e fogão a gás."
+    ]
+  },
+  "D24": {
+    "situacao": "A pessoa está sem luz e gás e pretende cozinhar na churrasqueira a carvão na garagem, deixando o portão meio aberto.",
+    "risco": "A combustão incompleta do carvão pode gerar monóxido de carbono, um gás inodoro e letal em altas concentrações.",
+    "consultas": [
+      "Monóxido de carbono: como reconhecer e prevenir a intoxicação?",
+      "Como usar churrasqueira a carvão de forma segura em ambientes fechados ou semi-abertos?"
+    ],
+    "mensagens": [
+      "Estamos sem luz desde ontem e o gás acabou. Pensei em fazer a janta na churrasqueira a carvão.",
+      "Vou fazer na garagem porque está chovendo, deixo o portão meio aberto."
+    ]
+  }
 }

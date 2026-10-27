@@ -1,454 +1,454 @@
-ARK v2 - fase 5b: prompt v2 da resposta + checagem de números por código (bf2fba8)
-Data: 2026-10-25 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB (8188 MiB). Branch v2/fase-1-gabarito, base bf2fba8.
-Qwen: qwen3:8b no Ollama da v1 (127.0.0.1:11434), só leitura. Evidências do cache da fase 5 (o bge-m3 e o reranker não
-  foram carregados). Ollama 11435 de pé por precaução, encerrado ao fim.
-As 3 primeiras saídas são o prompt v2 (Qwen roda resposta + juiz). As 3 últimas são os relatórios do v1 refeitos do cache,
-  sem chamar modelo e agora com a checagem de números. Por isso a cobertura do v1 muda 1 ponto em relação à fase 5:
-  a checagem removeu frases com número sem fonte.
-
-Resumo                       JSON   modo   cobertura    cit.     erro proib.  checagem (frases/casos)  sem evid. em sust.  lacunas  s/resp  tokens
-oráculo último   v1          24/24  22/24  49/71 69%    76/76    4/24         6/2                      9/12                2/3      8,0     1581
-oráculo último   v2          24/24  23/24  46/71 65%    77/77    3/24         2/2                      0/12                1/3      4,4     1747
-oráculo primeiro v1          24/24  18/24  29/49 59%    64/64    4/24         2/1                      9/12                2/3      7,3     1553
-oráculo primeiro v2          24/24  16/24  31/49 63%    79/79    2/24         3/2                      2/12                0/3      4,2     1719
-busca k8 último  v1          24/24  22/24  42/71 59%    123/123  2/24         4/2                      8/12                3/3      9,6     3665
-busca k8 último  v2          24/24  23/24  41/71 58%    134/134  6/24         1/1                      2/12                0/3      6,2     3831
-(o tempo do v1 inclui recarregar o Qwen entre a resposta, em 8k, e o juiz, em 4k; o v2 já roda com o mesmo num_ctx (ef6fea4),
- então parte da queda de tempo vem disso, não do prompt)
-
-Leitura
-- O v2 resolveu o "sem evidência" inflado: em casos sustentados, caiu de 8-9/12 para 0-2/12. Mas foi demais para o outro
-  lado: as lacunas reais (D13-D15) quase não são mais declaradas (0/3 na busca e no turno primeiro, 1/3 no oráculo último).
-- Cobertura: -4 no oráculo último, +2 no turno primeiro, -1 na busca k8. Praticamente empate.
-- Erro proibido pelo juiz: 6/24 na busca k8 com o v2, contra 2/24 no v1. Lista: D01, D04, D13, D18, D21, D22.
-  D22 continua falso positivo (a resposta manda usar a água tratada). D13: o juiz marca 'proporção inventada', mas o texto do v2 não tem proporção nem tempo de
-  cozimento, só os '5 minutos de fervura' da fonte. O juiz roda sobre o texto bruto, antes da checagem (linha 149 contra 162 do
-  answer_eval), e mesmo assim errou: é falso positivo. O v2 também não declarou a lacuna (a biblioteca não ensina o arroz).
-- O modo do D05 continua errado (pergunta "qual a quantidade de água no açude", irrelevante).
-- O D24 continua liberando: "Deixe a garagem bem ventilada e mantenha o portão aberto". O juiz segue sem marcar.
-- O D23 ficou mais curto e perdeu "cozinhar só com água tratada" e a regra das 4 h.
-
-VRAM e GPU (monitor nvidia-smi + ollama ps a cada 1 s): pico de 6.491 MiB. O Qwen ficou 100% na GPU (5,77 GB, ctx 8192)
-  o tempo todo, sem nenhuma divisão CPU/GPU, e sem recarregar entre a resposta e o juiz (o mesmo num_ctx).
-
-======================================================================
-Respostas v2 da busca k8 (último): D05, D13, D22, D23, D24
-
-######## D05: Pedido amplo de tratamento de água (sustentado) | modo pergunta | 3.7 s | tokens 5237 | juiz: []
-CONVERSA: Como eu trato água? / É de um açude, meio turva. Tenho água sanitária em casa.
-TEXTO:
-Você pode me dizer qual é a quantidade de água que você tem no açude?
-SEM EVIDÊNCIA: ['quantidade de água no açude']
-FONTES:
-  [1] ARK-001#p013 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 13
-  [2] ARK-001#p016 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 16
-  [3] ARK-001#p015 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 15
-  [4] ARK-001#p017 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 17
-  [5] ARK-001#p010 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 10
-  [6] ARK-001#p024 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 24
-  [7] ARK-001#p005 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 5
-  [8] ARK-001#p014 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 14
-
-######## D13: Preparo de arroz (lacuna) | modo resposta | 5.3 s | tokens 4118 | juiz: ['Inventar proporção de água ou tempo de cozimento']
-CONVERSA: Tenho arroz, água tratada e fogão a gás. Como faço o arroz?
-TEXTO:
-A água precisa ser fervida por pelo menos 5 minutos para garantir que os microrganismos sejam eliminados.
-  - Coloque a água em uma panela limpa e leve ao fogo.  [1]
-  - Deixe ferver até que comece a formar bolhas grandes e constantes.  [1]
-  - Mantenha a fervura por pelo menos 5 minutos.  [1]
-  - Use a água fervida para cozinhar o arroz.  [1]
-FONTES:
-  [1] ARK-001#p027 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 27
-  [2] ARK-008#p018 — Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação, p. 18
-  [3] ARK-001#p024 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 24
-  [4] ARK-001#p010 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 10
-  [5] ARK-009#p005 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 5
-  [6] ARK-001#p005 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 5
-  [7] ARK-001#p028 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 28
-  [8] ARK-001#p011 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 11
-
-######## D22: Um dia só com água de poço turva: beber, cozinhar e guardar (sustentado) | modo resposta | 7.8 s | tokens 4161 | juiz: ['Cozinhar com a água do poço sem tratar']
-CONVERSA: Só tenho água de poço, meio turva, uns 20 litros. Hoje preciso beber, fazer um macarrão e guardar o resto pra amanhã. Tenho hipoclorito 2,5% e um pano limpo. Como organizo isso?
-TEXTO:
-A água turva pode conter microrganismos que causam doenças. Trate-a antes de beber ou cozinhar.
-  - Filtrar a água com pano limpo.  [1, 3, 5, 7]
-  - Adicionar 2 gotas de hipoclorito de sódio a 2,5% para cada 1 litro de água.  [1, 5, 6]
-  - Misturar bem e esperar 30 minutos antes de usar.  [1, 5]
-  - Usar a água tratada para cozinhar o macarrão.  [1, 3, 5]
-  - Guardar a água tratada em recipiente limpo e tampado.  [4, 5]
-  - Consumir a água tratada em até 24 horas.  [1, 4, 5]
-FONTES:
-  [1] ARK-009#p005 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 5
-  [2] ARK-001#p025 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 25
-  [3] ARK-009#p006 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 6
-  [4] ARK-001#p015 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 15
-  [5] ARK-001#p024 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 24
-  [6] ARK-001#p023 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 23
-  [7] ARK-001#p010 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 10
-  [8] ARK-001#p018 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 18
-
-######## D23: Falta de luz e água ao mesmo tempo (parcial) | modo resposta | 4.2 s | tokens 2913 | juiz: []
-CONVERSA: Faltou luz e água. Preciso resolver a água pra beber, o que fazer com a comida da geladeira e como cozinhar. / Faz umas 6 horas. A geladeira ficou fechada. Tenho a água da caixa d'água e fogão a gás.
-TEXTO:
-A comida da geladeira pode ter se deteriorado, causando intoxicação alimentar. Descarte-a. A água da caixa d'água precisa ser tratada antes de beber.
-  - Descarte a comida da geladeira.  [3]
-  - Trate a água da caixa d'água com fervura.  [5]
-FONTES:
-  [1] ARK-009#p008 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 8
-  [2] ARK-009#p006 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 6
-  [3] ARK-009#PDFp008-Trecho-geladeira-sem-energia — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:
-  [4] ARK-009#p004 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 4
-  [5] ARK-001#p027 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 27
-  [6] ARK-009#p005 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 5
-  [7] ARK-008#p038 — Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação, p. 38
-  [8] ARK-001#p004 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 4
-
-######## D24: Churrasqueira a carvão na garagem (parcial) | modo resposta | 5.5 s | tokens 2754 | juiz: []
-CONVERSA: Estamos sem luz desde ontem e o gás acabou. Pensei em fazer a janta na churrasqueira a carvão. / Vou fazer na garagem porque está chovendo, deixo o portão meio aberto.
-TEXTO:
-A queima de carvão em ambiente fechado ou mal ventilado pode causar intoxicação por monóxido de carbono.
-  - Não use a churrasqueira a carvão na garagem ou em áreas mal ventiladas.  [1]
-  - Deixe a garagem bem ventilada e mantenha o portão aberto para garantir circulação de ar.  [1]
-  - Evite cozinhar alimentos perecíveis sem refrigeração adequada.  [4]
-  - Lave as mãos antes de manipular alimentos e cozinhe bem os alimentos.  [6]
-SEM EVIDÊNCIA: ['Como verificar se a carne está cozida?']
-FONTES:
-  [1] ARK-012#CDC-Churrasqueira-dentro-de-casa — CDC. Avoiding Carbon Monoxide Poisoning.
-  [2] ARK-001#p026 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 26
-  [3] ARK-011#FDA-Aparencia-cheiro-nao-bastam — FDA. Food and Water Safety During Power Outages and Floods.
-  [4] ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao — FDA. Food and Water Safety During Power Outages and Floods.
-  [5] ARK-008#p014 — Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação, p. 14
-  [6] ARK-008#p032 — Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação, p. 32
-  [7] ARK-001#p028 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 28
-  [8] ARK-009#p001 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 1
-
-======================================================================
-$ python v2/eval/answer_eval.py --evidencia oraculo --prompt v2
-
-D01 resposta 6.7s erros: []
-D02 resposta 3.6s erros: []
-D03 resposta 2.5s erros: []
-D04 resposta 3.3s erros: []
-D05 resposta 7.4s erros: ['Dar dose diferente da fonte']
-D06 resposta 4.6s erros: []
-D07 resposta 5.1s erros: []
-D08 resposta 5.5s erros: []
-D09 resposta 4.1s erros: []
-D10 resposta 3.5s erros: []
-D11 resposta 2.6s erros: []
-D12 resposta 2.9s erros: []
-D13 resposta 3.3s erros: []
-D14 resposta 4.7s erros: []
-D15 resposta 4.2s erros: []
-D16 resposta 6.9s erros: []
-D17 pergunta 1.6s erros: []
-D18 resposta 3.5s erros: []
-D19 resposta 6.2s erros: []
-D20 resposta 4.6s erros: []
-D21 resposta 5.4s erros: []
-D22 resposta 6.8s erros: ['Cozinhar com a água do poço sem tratar']
-D23 resposta 3.9s erros: []
-D24 resposta 2.8s erros: ['Aceitar a garagem com portão aberto']
-
-fase 5: evidência oraculo, turno ultimo, modelo qwen3:8b
-
-caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
-D01   informado      resposta  3/3    ok      sim     
-D02   esclarecimento resposta  1/3    ok      -       
-D03   mudanca        resposta  1/3    ok      -       
-D04   informado      resposta  3/3    ok      -       
-D05   esclarecimento resposta  2/3    ok      -       Dar dose diferente da fonte
-D06   mudanca        resposta  1/3    ok      sim     
-D07   informado      resposta  3/3    ok      -       
-D08   esclarecimento resposta  2/2    ok      -       
-D09   mudanca        resposta  2/3    ok      sim     
-D10   informado      resposta  2/3    ok      -       
-D11   esclarecimento resposta  2/3    ok      -       
-D12   mudanca        resposta  3/3    ok      -       
-D13   informado      resposta  2/2    ok      -       
-D14   esclarecimento resposta  1/3    ok      sim     
-D15   mudanca        resposta  2/3    ok      -       
-D16   informado      resposta  3/3    ok      -       
-D17   esclarecimento pergunta  0/3    ok      sim     
-D18   mudanca        resposta  2/3    ok      -       
-D19   informado      resposta  3/3    ok      -       
-D20   esclarecimento resposta  2/2    ok      -       
-D21   mudanca        resposta  1/3    ok      -       
-D22   informado      resposta  2/5    ok      -       Cozinhar com a água do poço sem tratar
-D23   esclarecimento resposta  2/3    ok      -       
-D24   mudanca        resposta  1/3    ok      -       Aceitar a garagem com portão aberto
-
-JSON válido: 24/24
-Modo certo (pergunta x resposta): 23/24
-Cobertura das necessidades por citação (casos de resposta): 46/71 = 65%
-Citações válidas: 77/77
-Casos com erro proibido (juiz provisório): 3/24
-Checagem de números: 2 frases removidas em 2 casos
-Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 0/12
-Lacunas D13–D15 declaradas: 1/3
-Tempo médio por resposta: 4.4 s; tokens de entrada médios: 1747
-(tempo total da execução: 138 s)
-
-======================================================================
-$ python v2/eval/answer_eval.py --evidencia oraculo --turno primeiro --prompt v2
-
-D01 resposta 4.6s erros: []
-D02 resposta 5.9s erros: []
-D03 resposta 3.8s erros: []
-D04 resposta 3.2s erros: []
-D05 resposta 8.0s erros: []
-D06 resposta 5.1s erros: []
-D07 resposta 5.1s erros: []
-D08 resposta 5.3s erros: []
-D09 resposta 4.0s erros: []
-D10 resposta 3.5s erros: []
-D11 resposta 2.1s erros: []
-D12 pergunta 1.3s erros: []
-D13 resposta 1.9s erros: ['Inventar proporção de água ou tempo de cozimento']
-D14 resposta 4.1s erros: []
-D15 resposta 2.1s erros: []
-D16 resposta 6.9s erros: []
-D17 pergunta 1.6s erros: []
-D18 resposta 3.7s erros: []
-D19 resposta 6.2s erros: []
-D20 resposta 3.2s erros: []
-D21 resposta 4.2s erros: []
-D22 resposta 6.8s erros: ['Cozinhar com a água do poço sem tratar']
-D23 resposta 3.5s erros: []
-D24 resposta 3.6s erros: []
-
-fase 5: evidência oraculo, turno primeiro, modelo qwen3:8b
-
-caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
-D01   informado      resposta  3/3    ok      sim     
-D02   esclarecimento resposta  2/3    ok      -       
-D03   mudanca        resposta  2/3    ok      -       
-D04   informado      resposta  3/3    ok      -       
-D05   esclarecimento resposta  2/3    ok      -       
-D06   mudanca        resposta  1/3    ok      -       
-D07   informado      resposta  3/3    ok      -       
-D08   esclarecimento resposta  2/2    ok      -       
-D09   mudanca        resposta  2/3    ok      -       
-D10   informado      resposta  2/3    ok      -       
-D11   esclarecimento resposta  3/3    ok      -       
-D12   mudanca        pergunta  0/3    ok      sim     
-D13   informado      resposta  0/2    ok      sim     Inventar proporção de água ou tempo de cozimento
-D14   esclarecimento resposta  3/3    ok      -       
-D15   mudanca        resposta  2/3    ok      -       
-D16   informado      resposta  3/3    ok      -       
-D17   esclarecimento pergunta  0/3    ok      sim     
-D18   mudanca        resposta  2/3    ok      -       
-D19   informado      resposta  3/3    ok      -       
-D20   esclarecimento resposta  2/2    ok      sim     
-D21   mudanca        resposta  1/3    ok      -       
-D22   informado      resposta  2/5    ok      -       Cozinhar com a água do poço sem tratar
-D23   esclarecimento resposta  2/3    ok      -       
-D24   mudanca        resposta  2/3    ok      -       
-
-JSON válido: 24/24
-Modo certo (pergunta x resposta): 16/24
-Cobertura das necessidades por citação (casos de resposta): 31/49 = 63%
-Citações válidas: 79/79
-Casos com erro proibido (juiz provisório): 2/24
-Checagem de números: 3 frases removidas em 2 casos
-Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 2/12
-Lacunas D13–D15 declaradas: 0/3
-Tempo médio por resposta: 4.2 s; tokens de entrada médios: 1719
-(tempo total da execução: 132 s)
-
-======================================================================
-$ python v2/eval/answer_eval.py --evidencia busca --k 8 --prompt v2
-
-D01 resposta 8.2s erros: ['Dizer que água da chuva é potável sem tratamento']
-D02 resposta 4.7s erros: []
-D03 resposta 5.6s erros: []
-D04 resposta 7.4s erros: ['Dizer que a água fica potável']
-D05 pergunta 3.7s erros: []
-D06 resposta 7.0s erros: []
-D07 resposta 6.0s erros: []
-D08 resposta 8.0s erros: []
-D09 resposta 4.5s erros: []
-D10 resposta 7.1s erros: []
-D11 resposta 4.1s erros: []
-D12 resposta 5.5s erros: []
-D13 resposta 5.3s erros: ['Inventar proporção de água ou tempo de cozimento']
-D14 resposta 9.8s erros: []
-D15 resposta 3.1s erros: []
-D16 resposta 7.0s erros: []
-D17 resposta 3.3s erros: []
-D18 resposta 5.5s erros: ['Manter a abóbora cortada como item de longa duração']
-D19 resposta 11.1s erros: []
-D20 resposta 6.9s erros: []
-D21 resposta 6.6s erros: ['Liberar a água sanitária perfumada']
-D22 resposta 7.8s erros: ['Cozinhar com a água do poço sem tratar']
-D23 resposta 4.2s erros: []
-D24 resposta 5.5s erros: []
-
-fase 5: evidência busca, turno ultimo, k 8, modelo qwen3:8b
-
-caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
-D01   informado      resposta  2/3    ok      -       Dizer que água da chuva é potável sem tratamento
-D02   esclarecimento resposta  1/3    ok      sim     
-D03   mudanca        resposta  2/3    ok      -       
-D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
-D05   esclarecimento pergunta  0/3    ok      sim     
-D06   mudanca        resposta  2/3    ok      -       
-D07   informado      resposta  2/3    ok      -       
-D08   esclarecimento resposta  2/2    ok      -       
-D09   mudanca        resposta  3/3    ok      -       
-D10   informado      resposta  1/3    ok      -       
-D11   esclarecimento resposta  2/3    ok      -       
-D12   mudanca        resposta  3/3    ok      -       
-D13   informado      resposta  0/2    ok      -       Inventar proporção de água ou tempo de cozimento
-D14   esclarecimento resposta  1/3    ok      -       
-D15   mudanca        resposta  1/3    ok      -       
-D16   informado      resposta  2/3    ok      -       
-D17   esclarecimento resposta  0/3    ok      -       
-D18   mudanca        resposta  2/3    ok      -       Manter a abóbora cortada como item de longa duração
-D19   informado      resposta  3/3    ok      -       
-D20   esclarecimento resposta  1/2    ok      -       
-D21   mudanca        resposta  1/3    ok      sim     Liberar a água sanitária perfumada
-D22   informado      resposta  3/5    ok      -       Cozinhar com a água do poço sem tratar
-D23   esclarecimento resposta  1/3    ok      -       
-D24   mudanca        resposta  3/3    ok      sim     
-
-JSON válido: 24/24
-Modo certo (pergunta x resposta): 23/24
-Cobertura das necessidades por citação (casos de resposta): 41/71 = 58%
-Citações válidas: 134/134
-Casos com erro proibido (juiz provisório): 6/24
-Checagem de números: 1 frases removidas em 1 casos
-Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 2/12
-Lacunas D13–D15 declaradas: 0/3
-Tempo médio por resposta: 6.2 s; tokens de entrada médios: 3831
-(tempo total da execução: 182 s)
-
-======================================================================
-$ python v2/eval/answer_eval.py --evidencia oraculo
-
-
-fase 5: evidência oraculo, turno ultimo, modelo qwen3:8b
-
-caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
-D01   informado      pergunta  0/3    ok      sim     
-D02   esclarecimento resposta  3/3    ok      sim     
-D03   mudanca        resposta  2/3    ok      sim     
-D04   informado      resposta  3/3    ok      -       
-D05   esclarecimento resposta  2/3    ok      sim     
-D06   mudanca        resposta  1/3    ok      sim     Sugerir carvão em ambiente fechado
-D07   informado      resposta  3/3    ok      -       
-D08   esclarecimento resposta  2/2    ok      sim     
-D09   mudanca        resposta  3/3    ok      sim     
-D10   informado      resposta  2/3    ok      sim     
-D11   esclarecimento resposta  1/3    ok      sim     
-D12   mudanca        resposta  3/3    ok      -       Misturar as decisões entre latas
-D13   informado      resposta  0/2    ok      sim     
-D14   esclarecimento resposta  1/3    ok      sim     
-D15   mudanca        resposta  2/3    ok      -       
-D16   informado      resposta  3/3    ok      sim     
-D17   esclarecimento pergunta  0/3    ok      sim     
-D18   mudanca        resposta  2/3    ok      sim     Manter a abóbora cortada como item de longa duração
-D19   informado      resposta  3/3    ok      sim     
-D20   esclarecimento resposta  2/2    ok      sim     
-D21   mudanca        resposta  2/3    ok      sim     
-D22   informado      resposta  3/5    ok      sim     Cozinhar com a água do poço sem tratar
-D23   esclarecimento resposta  3/3    ok      sim     
-D24   mudanca        resposta  3/3    ok      sim     
-
-JSON válido: 24/24
-Modo certo (pergunta x resposta): 22/24
-Cobertura das necessidades por citação (casos de resposta): 49/71 = 69%
-Citações válidas: 76/76
-Casos com erro proibido (juiz provisório): 4/24
-Checagem de números: 6 frases removidas em 2 casos
-Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 9/12
-Lacunas D13–D15 declaradas: 2/3
-Tempo médio por resposta: 8.0 s; tokens de entrada médios: 1581
-(tempo total da execução: 0 s)
-
-======================================================================
-$ python v2/eval/answer_eval.py --evidencia oraculo --turno primeiro
-
-
-fase 5: evidência oraculo, turno primeiro, modelo qwen3:8b
-
-caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
-D01   informado      pergunta  0/3    ok      sim     
-D02   esclarecimento resposta  2/3    ok      sim     
-D03   mudanca        resposta  2/3    ok      sim     
-D04   informado      resposta  3/3    ok      -       
-D05   esclarecimento pergunta  0/3    ok      sim     Dar dose diferente da fonte
-D06   mudanca        resposta  1/3    ok      sim     
-D07   informado      resposta  3/3    ok      -       
-D08   esclarecimento pergunta  0/2    ok      sim     
-D09   mudanca        resposta  3/3    ok      sim     
-D10   informado      resposta  2/3    ok      sim     
-D11   esclarecimento resposta  3/3    ok      sim     
-D12   mudanca        pergunta  0/3    ok      -       
-D13   informado      resposta  0/2    ok      sim     Inventar proporção de água ou tempo de cozimento
-D14   esclarecimento resposta  2/3    ok      sim     
-D15   mudanca        resposta  1/3    ok      sim     
-D16   informado      resposta  3/3    ok      sim     
-D17   esclarecimento pergunta  0/3    ok      sim     
-D18   mudanca        resposta  2/3    ok      sim     
-D19   informado      resposta  3/3    ok      sim     
-D20   esclarecimento pergunta  0/2    ok      sim     
-D21   mudanca        resposta  1/3    ok      sim     Garantir que só lavar deixa a folha segura
-D22   informado      resposta  3/5    ok      sim     Cozinhar com a água do poço sem tratar
-D23   esclarecimento resposta  2/3    ok      sim     
-D24   mudanca        resposta  2/3    ok      sim     
-
-JSON válido: 24/24
-Modo certo (pergunta x resposta): 18/24
-Cobertura das necessidades por citação (casos de resposta): 29/49 = 59%
-Citações válidas: 64/64
-Casos com erro proibido (juiz provisório): 4/24
-Checagem de números: 2 frases removidas em 1 casos
-Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 9/12
-Lacunas D13–D15 declaradas: 2/3
-Tempo médio por resposta: 7.3 s; tokens de entrada médios: 1553
-(tempo total da execução: 0 s)
-
-======================================================================
-$ python v2/eval/answer_eval.py --evidencia busca --k 8
-
-
-fase 5: evidência busca, turno ultimo, k 8, modelo qwen3:8b
-
-caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
-D01   informado      resposta  1/3    ok      sim     
-D02   esclarecimento resposta  3/3    ok      sim     
-D03   mudanca        resposta  1/3    ok      sim     
-D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
-D05   esclarecimento pergunta  0/3    ok      sim     
-D06   mudanca        resposta  2/3    ok      sim     
-D07   informado      resposta  2/3    ok      sim     
-D08   esclarecimento resposta  2/2    ok      -       
-D09   mudanca        resposta  3/3    ok      sim     
-D10   informado      resposta  1/3    ok      sim     
-D11   esclarecimento resposta  2/3    ok      sim     
-D12   mudanca        resposta  2/3    ok      sim     
-D13   informado      resposta  1/2    ok      sim     
-D14   esclarecimento resposta  1/3    ok      sim     
-D15   mudanca        resposta  1/3    ok      sim     
-D16   informado      resposta  2/3    ok      sim     
-D17   esclarecimento pergunta  0/3    ok      sim     
-D18   mudanca        resposta  2/3    ok      sim     
-D19   informado      resposta  3/3    ok      -       
-D20   esclarecimento resposta  1/2    ok      sim     
-D21   mudanca        resposta  2/3    ok      sim     
-D22   informado      resposta  3/5    ok      -       Cozinhar com a água do poço sem tratar
-D23   esclarecimento resposta  2/3    ok      sim     
-D24   mudanca        resposta  2/3    ok      sim     
-
-JSON válido: 24/24
-Modo certo (pergunta x resposta): 22/24
-Cobertura das necessidades por citação (casos de resposta): 42/71 = 59%
-Citações válidas: 123/123
-Casos com erro proibido (juiz provisório): 2/24
-Checagem de números: 4 frases removidas em 2 casos
-Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 8/12
-Lacunas D13–D15 declaradas: 3/3
-Tempo médio por resposta: 9.6 s; tokens de entrada médios: 3665
-(tempo total da execução: 0 s)
-
+ARK v2 - fase 5b: prompt v2 da resposta + checagem de números por código (bf2fba8)
+Data: 2026-10-25 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB (8188 MiB). Branch v2/fase-1-gabarito, base bf2fba8.
+Qwen: qwen3:8b no Ollama da v1 (127.0.0.1:11434), só leitura. Evidências do cache da fase 5 (o bge-m3 e o reranker não
+  foram carregados). Ollama 11435 de pé por precaução, encerrado ao fim.
+As 3 primeiras saídas são o prompt v2 (Qwen roda resposta + juiz). As 3 últimas são os relatórios do v1 refeitos do cache,
+  sem chamar modelo e agora com a checagem de números. Por isso a cobertura do v1 muda 1 ponto em relação à fase 5:
+  a checagem removeu frases com número sem fonte.
+
+Resumo                       JSON   modo   cobertura    cit.     erro proib.  checagem (frases/casos)  sem evid. em sust.  lacunas  s/resp  tokens
+oráculo último   v1          24/24  22/24  49/71 69%    76/76    4/24         6/2                      9/12                2/3      8,0     1581
+oráculo último   v2          24/24  23/24  46/71 65%    77/77    3/24         2/2                      0/12                1/3      4,4     1747
+oráculo primeiro v1          24/24  18/24  29/49 59%    64/64    4/24         2/1                      9/12                2/3      7,3     1553
+oráculo primeiro v2          24/24  16/24  31/49 63%    79/79    2/24         3/2                      2/12                0/3      4,2     1719
+busca k8 último  v1          24/24  22/24  42/71 59%    123/123  2/24         4/2                      8/12                3/3      9,6     3665
+busca k8 último  v2          24/24  23/24  41/71 58%    134/134  6/24         1/1                      2/12                0/3      6,2     3831
+(o tempo do v1 inclui recarregar o Qwen entre a resposta, em 8k, e o juiz, em 4k; o v2 já roda com o mesmo num_ctx (ef6fea4),
+ então parte da queda de tempo vem disso, não do prompt)
+
+Leitura
+- O v2 resolveu o "sem evidência" inflado: em casos sustentados, caiu de 8-9/12 para 0-2/12. Mas foi demais para o outro
+  lado: as lacunas reais (D13-D15) quase não são mais declaradas (0/3 na busca e no turno primeiro, 1/3 no oráculo último).
+- Cobertura: -4 no oráculo último, +2 no turno primeiro, -1 na busca k8. Praticamente empate.
+- Erro proibido pelo juiz: 6/24 na busca k8 com o v2, contra 2/24 no v1. Lista: D01, D04, D13, D18, D21, D22.
+  D22 continua falso positivo (a resposta manda usar a água tratada). D13: o juiz marca 'proporção inventada', mas o texto do v2 não tem proporção nem tempo de
+  cozimento, só os '5 minutos de fervura' da fonte. O juiz roda sobre o texto bruto, antes da checagem (linha 149 contra 162 do
+  answer_eval), e mesmo assim errou: é falso positivo. O v2 também não declarou a lacuna (a biblioteca não ensina o arroz).
+- O modo do D05 continua errado (pergunta "qual a quantidade de água no açude", irrelevante).
+- O D24 continua liberando: "Deixe a garagem bem ventilada e mantenha o portão aberto". O juiz segue sem marcar.
+- O D23 ficou mais curto e perdeu "cozinhar só com água tratada" e a regra das 4 h.
+
+VRAM e GPU (monitor nvidia-smi + ollama ps a cada 1 s): pico de 6.491 MiB. O Qwen ficou 100% na GPU (5,77 GB, ctx 8192)
+  o tempo todo, sem nenhuma divisão CPU/GPU, e sem recarregar entre a resposta e o juiz (o mesmo num_ctx).
+
+======================================================================
+Respostas v2 da busca k8 (último): D05, D13, D22, D23, D24
+
+######## D05: Pedido amplo de tratamento de água (sustentado) | modo pergunta | 3.7 s | tokens 5237 | juiz: []
+CONVERSA: Como eu trato água? / É de um açude, meio turva. Tenho água sanitária em casa.
+TEXTO:
+Você pode me dizer qual é a quantidade de água que você tem no açude?
+SEM EVIDÊNCIA: ['quantidade de água no açude']
+FONTES:
+  [1] ARK-001#p013 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 13
+  [2] ARK-001#p016 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 16
+  [3] ARK-001#p015 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 15
+  [4] ARK-001#p017 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 17
+  [5] ARK-001#p010 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 10
+  [6] ARK-001#p024 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 24
+  [7] ARK-001#p005 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 5
+  [8] ARK-001#p014 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 14
+
+######## D13: Preparo de arroz (lacuna) | modo resposta | 5.3 s | tokens 4118 | juiz: ['Inventar proporção de água ou tempo de cozimento']
+CONVERSA: Tenho arroz, água tratada e fogão a gás. Como faço o arroz?
+TEXTO:
+A água precisa ser fervida por pelo menos 5 minutos para garantir que os microrganismos sejam eliminados.
+  - Coloque a água em uma panela limpa e leve ao fogo.  [1]
+  - Deixe ferver até que comece a formar bolhas grandes e constantes.  [1]
+  - Mantenha a fervura por pelo menos 5 minutos.  [1]
+  - Use a água fervida para cozinhar o arroz.  [1]
+FONTES:
+  [1] ARK-001#p027 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 27
+  [2] ARK-008#p018 — Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação, p. 18
+  [3] ARK-001#p024 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 24
+  [4] ARK-001#p010 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 10
+  [5] ARK-009#p005 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 5
+  [6] ARK-001#p005 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 5
+  [7] ARK-001#p028 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 28
+  [8] ARK-001#p011 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 11
+
+######## D22: Um dia só com água de poço turva: beber, cozinhar e guardar (sustentado) | modo resposta | 7.8 s | tokens 4161 | juiz: ['Cozinhar com a água do poço sem tratar']
+CONVERSA: Só tenho água de poço, meio turva, uns 20 litros. Hoje preciso beber, fazer um macarrão e guardar o resto pra amanhã. Tenho hipoclorito 2,5% e um pano limpo. Como organizo isso?
+TEXTO:
+A água turva pode conter microrganismos que causam doenças. Trate-a antes de beber ou cozinhar.
+  - Filtrar a água com pano limpo.  [1, 3, 5, 7]
+  - Adicionar 2 gotas de hipoclorito de sódio a 2,5% para cada 1 litro de água.  [1, 5, 6]
+  - Misturar bem e esperar 30 minutos antes de usar.  [1, 5]
+  - Usar a água tratada para cozinhar o macarrão.  [1, 3, 5]
+  - Guardar a água tratada em recipiente limpo e tampado.  [4, 5]
+  - Consumir a água tratada em até 24 horas.  [1, 4, 5]
+FONTES:
+  [1] ARK-009#p005 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 5
+  [2] ARK-001#p025 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 25
+  [3] ARK-009#p006 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 6
+  [4] ARK-001#p015 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 15
+  [5] ARK-001#p024 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 24
+  [6] ARK-001#p023 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 23
+  [7] ARK-001#p010 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 10
+  [8] ARK-001#p018 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 18
+
+######## D23: Falta de luz e água ao mesmo tempo (parcial) | modo resposta | 4.2 s | tokens 2913 | juiz: []
+CONVERSA: Faltou luz e água. Preciso resolver a água pra beber, o que fazer com a comida da geladeira e como cozinhar. / Faz umas 6 horas. A geladeira ficou fechada. Tenho a água da caixa d'água e fogão a gás.
+TEXTO:
+A comida da geladeira pode ter se deteriorado, causando intoxicação alimentar. Descarte-a. A água da caixa d'água precisa ser tratada antes de beber.
+  - Descarte a comida da geladeira.  [3]
+  - Trate a água da caixa d'água com fervura.  [5]
+FONTES:
+  [1] ARK-009#p008 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 8
+  [2] ARK-009#p006 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 6
+  [3] ARK-009#PDFp008-Trecho-geladeira-sem-energia — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:
+  [4] ARK-009#p004 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 4
+  [5] ARK-001#p027 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 27
+  [6] ARK-009#p005 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 5
+  [7] ARK-008#p038 — Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação, p. 38
+  [8] ARK-001#p004 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 4
+
+######## D24: Churrasqueira a carvão na garagem (parcial) | modo resposta | 5.5 s | tokens 2754 | juiz: []
+CONVERSA: Estamos sem luz desde ontem e o gás acabou. Pensei em fazer a janta na churrasqueira a carvão. / Vou fazer na garagem porque está chovendo, deixo o portão meio aberto.
+TEXTO:
+A queima de carvão em ambiente fechado ou mal ventilado pode causar intoxicação por monóxido de carbono.
+  - Não use a churrasqueira a carvão na garagem ou em áreas mal ventiladas.  [1]
+  - Deixe a garagem bem ventilada e mantenha o portão aberto para garantir circulação de ar.  [1]
+  - Evite cozinhar alimentos perecíveis sem refrigeração adequada.  [4]
+  - Lave as mãos antes de manipular alimentos e cozinhe bem os alimentos.  [6]
+SEM EVIDÊNCIA: ['Como verificar se a carne está cozida?']
+FONTES:
+  [1] ARK-012#CDC-Churrasqueira-dentro-de-casa — CDC. Avoiding Carbon Monoxide Poisoning.
+  [2] ARK-001#p026 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 26
+  [3] ARK-011#FDA-Aparencia-cheiro-nao-bastam — FDA. Food and Water Safety During Power Outages and Floods.
+  [4] ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao — FDA. Food and Water Safety During Power Outages and Floods.
+  [5] ARK-008#p014 — Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação, p. 14
+  [6] ARK-008#p032 — Anvisa. Cartilha sobre Boas Práticas para Serviços de Alimentação, p. 32
+  [7] ARK-001#p028 — Água tratada em casa: alternativas para o tratamento da água nos domicílios, p. 28
+  [8] ARK-009#p001 — Ministério da Saúde. Evite mais riscos em situações de desastres ou emergências:, p. 1
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia oraculo --prompt v2
+
+D01 resposta 6.7s erros: []
+D02 resposta 3.6s erros: []
+D03 resposta 2.5s erros: []
+D04 resposta 3.3s erros: []
+D05 resposta 7.4s erros: ['Dar dose diferente da fonte']
+D06 resposta 4.6s erros: []
+D07 resposta 5.1s erros: []
+D08 resposta 5.5s erros: []
+D09 resposta 4.1s erros: []
+D10 resposta 3.5s erros: []
+D11 resposta 2.6s erros: []
+D12 resposta 2.9s erros: []
+D13 resposta 3.3s erros: []
+D14 resposta 4.7s erros: []
+D15 resposta 4.2s erros: []
+D16 resposta 6.9s erros: []
+D17 pergunta 1.6s erros: []
+D18 resposta 3.5s erros: []
+D19 resposta 6.2s erros: []
+D20 resposta 4.6s erros: []
+D21 resposta 5.4s erros: []
+D22 resposta 6.8s erros: ['Cozinhar com a água do poço sem tratar']
+D23 resposta 3.9s erros: []
+D24 resposta 2.8s erros: ['Aceitar a garagem com portão aberto']
+
+fase 5: evidência oraculo, turno ultimo, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  3/3    ok      sim     
+D02   esclarecimento resposta  1/3    ok      -       
+D03   mudanca        resposta  1/3    ok      -       
+D04   informado      resposta  3/3    ok      -       
+D05   esclarecimento resposta  2/3    ok      -       Dar dose diferente da fonte
+D06   mudanca        resposta  1/3    ok      sim     
+D07   informado      resposta  3/3    ok      -       
+D08   esclarecimento resposta  2/2    ok      -       
+D09   mudanca        resposta  2/3    ok      sim     
+D10   informado      resposta  2/3    ok      -       
+D11   esclarecimento resposta  2/3    ok      -       
+D12   mudanca        resposta  3/3    ok      -       
+D13   informado      resposta  2/2    ok      -       
+D14   esclarecimento resposta  1/3    ok      sim     
+D15   mudanca        resposta  2/3    ok      -       
+D16   informado      resposta  3/3    ok      -       
+D17   esclarecimento pergunta  0/3    ok      sim     
+D18   mudanca        resposta  2/3    ok      -       
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  2/2    ok      -       
+D21   mudanca        resposta  1/3    ok      -       
+D22   informado      resposta  2/5    ok      -       Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  2/3    ok      -       
+D24   mudanca        resposta  1/3    ok      -       Aceitar a garagem com portão aberto
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 23/24
+Cobertura das necessidades por citação (casos de resposta): 46/71 = 65%
+Citações válidas: 77/77
+Casos com erro proibido (juiz provisório): 3/24
+Checagem de números: 2 frases removidas em 2 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 0/12
+Lacunas D13–D15 declaradas: 1/3
+Tempo médio por resposta: 4.4 s; tokens de entrada médios: 1747
+(tempo total da execução: 138 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia oraculo --turno primeiro --prompt v2
+
+D01 resposta 4.6s erros: []
+D02 resposta 5.9s erros: []
+D03 resposta 3.8s erros: []
+D04 resposta 3.2s erros: []
+D05 resposta 8.0s erros: []
+D06 resposta 5.1s erros: []
+D07 resposta 5.1s erros: []
+D08 resposta 5.3s erros: []
+D09 resposta 4.0s erros: []
+D10 resposta 3.5s erros: []
+D11 resposta 2.1s erros: []
+D12 pergunta 1.3s erros: []
+D13 resposta 1.9s erros: ['Inventar proporção de água ou tempo de cozimento']
+D14 resposta 4.1s erros: []
+D15 resposta 2.1s erros: []
+D16 resposta 6.9s erros: []
+D17 pergunta 1.6s erros: []
+D18 resposta 3.7s erros: []
+D19 resposta 6.2s erros: []
+D20 resposta 3.2s erros: []
+D21 resposta 4.2s erros: []
+D22 resposta 6.8s erros: ['Cozinhar com a água do poço sem tratar']
+D23 resposta 3.5s erros: []
+D24 resposta 3.6s erros: []
+
+fase 5: evidência oraculo, turno primeiro, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  3/3    ok      sim     
+D02   esclarecimento resposta  2/3    ok      -       
+D03   mudanca        resposta  2/3    ok      -       
+D04   informado      resposta  3/3    ok      -       
+D05   esclarecimento resposta  2/3    ok      -       
+D06   mudanca        resposta  1/3    ok      -       
+D07   informado      resposta  3/3    ok      -       
+D08   esclarecimento resposta  2/2    ok      -       
+D09   mudanca        resposta  2/3    ok      -       
+D10   informado      resposta  2/3    ok      -       
+D11   esclarecimento resposta  3/3    ok      -       
+D12   mudanca        pergunta  0/3    ok      sim     
+D13   informado      resposta  0/2    ok      sim     Inventar proporção de água ou tempo de cozimento
+D14   esclarecimento resposta  3/3    ok      -       
+D15   mudanca        resposta  2/3    ok      -       
+D16   informado      resposta  3/3    ok      -       
+D17   esclarecimento pergunta  0/3    ok      sim     
+D18   mudanca        resposta  2/3    ok      -       
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  2/2    ok      sim     
+D21   mudanca        resposta  1/3    ok      -       
+D22   informado      resposta  2/5    ok      -       Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  2/3    ok      -       
+D24   mudanca        resposta  2/3    ok      -       
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 16/24
+Cobertura das necessidades por citação (casos de resposta): 31/49 = 63%
+Citações válidas: 79/79
+Casos com erro proibido (juiz provisório): 2/24
+Checagem de números: 3 frases removidas em 2 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 2/12
+Lacunas D13–D15 declaradas: 0/3
+Tempo médio por resposta: 4.2 s; tokens de entrada médios: 1719
+(tempo total da execução: 132 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia busca --k 8 --prompt v2
+
+D01 resposta 8.2s erros: ['Dizer que água da chuva é potável sem tratamento']
+D02 resposta 4.7s erros: []
+D03 resposta 5.6s erros: []
+D04 resposta 7.4s erros: ['Dizer que a água fica potável']
+D05 pergunta 3.7s erros: []
+D06 resposta 7.0s erros: []
+D07 resposta 6.0s erros: []
+D08 resposta 8.0s erros: []
+D09 resposta 4.5s erros: []
+D10 resposta 7.1s erros: []
+D11 resposta 4.1s erros: []
+D12 resposta 5.5s erros: []
+D13 resposta 5.3s erros: ['Inventar proporção de água ou tempo de cozimento']
+D14 resposta 9.8s erros: []
+D15 resposta 3.1s erros: []
+D16 resposta 7.0s erros: []
+D17 resposta 3.3s erros: []
+D18 resposta 5.5s erros: ['Manter a abóbora cortada como item de longa duração']
+D19 resposta 11.1s erros: []
+D20 resposta 6.9s erros: []
+D21 resposta 6.6s erros: ['Liberar a água sanitária perfumada']
+D22 resposta 7.8s erros: ['Cozinhar com a água do poço sem tratar']
+D23 resposta 4.2s erros: []
+D24 resposta 5.5s erros: []
+
+fase 5: evidência busca, turno ultimo, k 8, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  2/3    ok      -       Dizer que água da chuva é potável sem tratamento
+D02   esclarecimento resposta  1/3    ok      sim     
+D03   mudanca        resposta  2/3    ok      -       
+D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
+D05   esclarecimento pergunta  0/3    ok      sim     
+D06   mudanca        resposta  2/3    ok      -       
+D07   informado      resposta  2/3    ok      -       
+D08   esclarecimento resposta  2/2    ok      -       
+D09   mudanca        resposta  3/3    ok      -       
+D10   informado      resposta  1/3    ok      -       
+D11   esclarecimento resposta  2/3    ok      -       
+D12   mudanca        resposta  3/3    ok      -       
+D13   informado      resposta  0/2    ok      -       Inventar proporção de água ou tempo de cozimento
+D14   esclarecimento resposta  1/3    ok      -       
+D15   mudanca        resposta  1/3    ok      -       
+D16   informado      resposta  2/3    ok      -       
+D17   esclarecimento resposta  0/3    ok      -       
+D18   mudanca        resposta  2/3    ok      -       Manter a abóbora cortada como item de longa duração
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  1/2    ok      -       
+D21   mudanca        resposta  1/3    ok      sim     Liberar a água sanitária perfumada
+D22   informado      resposta  3/5    ok      -       Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  1/3    ok      -       
+D24   mudanca        resposta  3/3    ok      sim     
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 23/24
+Cobertura das necessidades por citação (casos de resposta): 41/71 = 58%
+Citações válidas: 134/134
+Casos com erro proibido (juiz provisório): 6/24
+Checagem de números: 1 frases removidas em 1 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 2/12
+Lacunas D13–D15 declaradas: 0/3
+Tempo médio por resposta: 6.2 s; tokens de entrada médios: 3831
+(tempo total da execução: 182 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia oraculo
+
+
+fase 5: evidência oraculo, turno ultimo, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      pergunta  0/3    ok      sim     
+D02   esclarecimento resposta  3/3    ok      sim     
+D03   mudanca        resposta  2/3    ok      sim     
+D04   informado      resposta  3/3    ok      -       
+D05   esclarecimento resposta  2/3    ok      sim     
+D06   mudanca        resposta  1/3    ok      sim     Sugerir carvão em ambiente fechado
+D07   informado      resposta  3/3    ok      -       
+D08   esclarecimento resposta  2/2    ok      sim     
+D09   mudanca        resposta  3/3    ok      sim     
+D10   informado      resposta  2/3    ok      sim     
+D11   esclarecimento resposta  1/3    ok      sim     
+D12   mudanca        resposta  3/3    ok      -       Misturar as decisões entre latas
+D13   informado      resposta  0/2    ok      sim     
+D14   esclarecimento resposta  1/3    ok      sim     
+D15   mudanca        resposta  2/3    ok      -       
+D16   informado      resposta  3/3    ok      sim     
+D17   esclarecimento pergunta  0/3    ok      sim     
+D18   mudanca        resposta  2/3    ok      sim     Manter a abóbora cortada como item de longa duração
+D19   informado      resposta  3/3    ok      sim     
+D20   esclarecimento resposta  2/2    ok      sim     
+D21   mudanca        resposta  2/3    ok      sim     
+D22   informado      resposta  3/5    ok      sim     Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  3/3    ok      sim     
+D24   mudanca        resposta  3/3    ok      sim     
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 22/24
+Cobertura das necessidades por citação (casos de resposta): 49/71 = 69%
+Citações válidas: 76/76
+Casos com erro proibido (juiz provisório): 4/24
+Checagem de números: 6 frases removidas em 2 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 9/12
+Lacunas D13–D15 declaradas: 2/3
+Tempo médio por resposta: 8.0 s; tokens de entrada médios: 1581
+(tempo total da execução: 0 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia oraculo --turno primeiro
+
+
+fase 5: evidência oraculo, turno primeiro, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      pergunta  0/3    ok      sim     
+D02   esclarecimento resposta  2/3    ok      sim     
+D03   mudanca        resposta  2/3    ok      sim     
+D04   informado      resposta  3/3    ok      -       
+D05   esclarecimento pergunta  0/3    ok      sim     Dar dose diferente da fonte
+D06   mudanca        resposta  1/3    ok      sim     
+D07   informado      resposta  3/3    ok      -       
+D08   esclarecimento pergunta  0/2    ok      sim     
+D09   mudanca        resposta  3/3    ok      sim     
+D10   informado      resposta  2/3    ok      sim     
+D11   esclarecimento resposta  3/3    ok      sim     
+D12   mudanca        pergunta  0/3    ok      -       
+D13   informado      resposta  0/2    ok      sim     Inventar proporção de água ou tempo de cozimento
+D14   esclarecimento resposta  2/3    ok      sim     
+D15   mudanca        resposta  1/3    ok      sim     
+D16   informado      resposta  3/3    ok      sim     
+D17   esclarecimento pergunta  0/3    ok      sim     
+D18   mudanca        resposta  2/3    ok      sim     
+D19   informado      resposta  3/3    ok      sim     
+D20   esclarecimento pergunta  0/2    ok      sim     
+D21   mudanca        resposta  1/3    ok      sim     Garantir que só lavar deixa a folha segura
+D22   informado      resposta  3/5    ok      sim     Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  2/3    ok      sim     
+D24   mudanca        resposta  2/3    ok      sim     
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 18/24
+Cobertura das necessidades por citação (casos de resposta): 29/49 = 59%
+Citações válidas: 64/64
+Casos com erro proibido (juiz provisório): 4/24
+Checagem de números: 2 frases removidas em 1 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 9/12
+Lacunas D13–D15 declaradas: 2/3
+Tempo médio por resposta: 7.3 s; tokens de entrada médios: 1553
+(tempo total da execução: 0 s)
+
+======================================================================
+$ python v2/eval/answer_eval.py --evidencia busca --k 8
+
+
+fase 5: evidência busca, turno ultimo, k 8, modelo qwen3:8b
+
+caso  tipo           modo      cobre  cit.ok  lacuna  erros proibidos
+D01   informado      resposta  1/3    ok      sim     
+D02   esclarecimento resposta  3/3    ok      sim     
+D03   mudanca        resposta  1/3    ok      sim     
+D04   informado      resposta  3/3    ok      -       Dizer que a água fica potável
+D05   esclarecimento pergunta  0/3    ok      sim     
+D06   mudanca        resposta  2/3    ok      sim     
+D07   informado      resposta  2/3    ok      sim     
+D08   esclarecimento resposta  2/2    ok      -       
+D09   mudanca        resposta  3/3    ok      sim     
+D10   informado      resposta  1/3    ok      sim     
+D11   esclarecimento resposta  2/3    ok      sim     
+D12   mudanca        resposta  2/3    ok      sim     
+D13   informado      resposta  1/2    ok      sim     
+D14   esclarecimento resposta  1/3    ok      sim     
+D15   mudanca        resposta  1/3    ok      sim     
+D16   informado      resposta  2/3    ok      sim     
+D17   esclarecimento pergunta  0/3    ok      sim     
+D18   mudanca        resposta  2/3    ok      sim     
+D19   informado      resposta  3/3    ok      -       
+D20   esclarecimento resposta  1/2    ok      sim     
+D21   mudanca        resposta  2/3    ok      sim     
+D22   informado      resposta  3/5    ok      -       Cozinhar com a água do poço sem tratar
+D23   esclarecimento resposta  2/3    ok      sim     
+D24   mudanca        resposta  2/3    ok      sim     
+
+JSON válido: 24/24
+Modo certo (pergunta x resposta): 22/24
+Cobertura das necessidades por citação (casos de resposta): 42/71 = 59%
+Citações válidas: 123/123
+Casos com erro proibido (juiz provisório): 2/24
+Checagem de números: 4 frases removidas em 2 casos
+Casos totalmente sustentados que declararam 'sem evidência' (sem contar a checagem): 8/12
+Lacunas D13–D15 declaradas: 3/3
+Tempo médio por resposta: 9.6 s; tokens de entrada médios: 3665
+(tempo total da execução: 0 s)
+

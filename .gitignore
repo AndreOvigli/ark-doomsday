@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Corpus e vetores gerados localmente (derivados do acervo de cada um)
+v2/corpus/build/
+v2/app/conversas.jsonl
+
+# Acervo local: os documentos não vão para o repositório
+biblioteca/
+minha-biblioteca/
+relatorio-acervo.json
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

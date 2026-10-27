@@ -1,602 +1,602 @@
-ARK v2 - fase 4: decomposição da conversa pelo Qwen (consultas por necessidade, intercaladas)
-Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB. Branch v2/fase-1-gabarito, base 09ce265.
-Corpus: o da 3c (345 passagens, 967 trechos). Busca: bge-m3 denso (Ollama 127.0.0.1:11435, encerrado ao fim).
-Reranker: bge-reranker-v2-m3 fp16. Qwen: qwen3:8b do Ollama da v1 (127.0.0.1:11434), só leitura
-  (nenhum pull, create nem config), com think=false e temperature 0.
-Ordem por causa da VRAM: as decomposições foram geradas antes, com só o Qwen na GPU (script à parte, mesmo formato do
-  cache do eval). Depois o Qwen foi descarregado com keep_alive 0, e as rodadas usaram o cache.
-
-Resumo: R@5 / R@10 / R@20 (necessidades de 71)
-                                                       turno último     turno primeiro   soma R@5
-s) conversa (= p da 3c)                                46 / 53 / 62     47 / 53 / 62     93
-t) qwen                                                42 / 52 / 60     42 / 52 / 60     84
-u) qwen + sub-conversa                                 46 / 57 / 65     44 / 54 / 65     90
-v) oráculo (teto inflado, só referência)               67 / 69 / 70     67 / 69 / 70     134
-w) trecho, limpar, rerank 40, qwen                     40 / 52 / 58     39 / 51 / 59     79
-(todas: passagem, rerank 20, +título, fp16, exceto w)
-
-Leitura
-- s) bate exatamente com o p) da 3c (46/47).
-- Decompor com o Qwen, do jeito atual, piora o top-5: t) perde 4 no último turno e 5 no primeiro.
-  Juntar a conversa a cada subconsulta (u) recupera o R@5 do último turno (46) e melhora o R@10/R@20 (57/65 contra
-  53/62), mas ainda fica 3 abaixo no primeiro. Com trechos (w) é o pior resultado.
-- O oráculo (67/71) mostra que a estratégia "uma busca por necessidade" funciona quando as subconsultas estão certas:
-  o gargalo agora é a qualidade das consultas do Qwen, não a busca nem o reranker.
-- Por que as consultas do Qwen falham (ver as decomposições abaixo):
-  1. Ele sempre gera 4 consultas (média 4,0 nos 48 casos) e completa as vagas com moldes genéricos: "como armazenar…",
-     "como descartar…", "como verificar…". Isso parece eco do exemplo do prompt ("como guardar, por quanto tempo,
-     quando descartar"). As consultas genéricas puxam passagens de armazenamento para casos que não pedem isso.
-  2. Ele perde o risco central do caso. No D24 (churrasqueira a carvão na garagem), nenhuma consulta fala de monóxido de
-     carbono, e uma delas pede "Como cozinhar com churrasqueira a carvão em ambiente fechado". No D02 (galão que
-     cheirava a diesel), nenhuma fala de contaminação por combustível. No D23, nenhuma fala da regra das 4 h de
-     geladeira.
-  3. Ele reformula a meta em vez da necessidade de segurança. D13 (arroz): "quantidade de água para cozinhar arroz",
-     sem "água potável" nem "consumo imediato".
-- O turno primeiro tem cache próprio (decomposicoes-primeiro.json). As consultas mudam, mas os totais de t) coincidem
-  com os do último turno (42/52/60).
-
-Latência
-- decomposição, qwen3:8b no Ollama da v1: 2,5 s/conversa no último turno (1,8-3,3) e 2,4 s no primeiro (1,7-3,3);
-  carga + 1ª chamada: 6,0 s
-- busca + rerank com 4 subconsultas: cerca de 1,0 s por caso, contra cerca de 0,2 s com uma consulta (estimado pelo tempo
-  total das rodadas menos cerca de 15 s de carga do reranker, dividido por 24 casos)
-- total estimado por pergunta com decomposição: cerca de 3,5 s, com os modelos já carregados
-
-VRAM (nvidia-smi, total da GPU)
-- base com o desktop: cerca de 1,4 GB; com o Qwen carregado: 6,9 GB (o qwen3:8b ocupa cerca de 5,5 GB)
-- bge-m3 (cerca de 0,8-1,2 GB) + reranker fp16 (cerca de 1,2 GB, pico cerca de 1,6 GB) somados ao Qwen: cerca de 8,5-9 GB,
-  acima dos 8 GB da RTX 4060. Na aplicação inteira, o Ollama vai alternar modelos (com latência de carga) ou jogar
-  camadas para a CPU. Opções: reranker na CPU, Qwen com contexto menor, ou descarregar o Qwen entre a decomposição e a resposta.
-
-Decomposições do turno último (decomposicoes-ultimo.json; o do primeiro turno está no mesmo diretório)
-(R@5 por caso nas rodadas s/t/u/v, necessidades do gabarito, situação e consultas do Qwen)
-
-D01 R@5 s=1/3 t=2/3 u=2/3 v=3/3 | Escolha entre rio barrento e água da chuva
-   necessidades: Chuva costuma ser mais límpida e pode ser desinfetada com filtração pr | Toda água fora da rede precisa de tratamento mínimo: filtrar e desinfe | Água barrenta: deixar em repouso para decantar antes de filtrar
-   situação: A pessoa está sem água potável e tem acesso a água de um rio barrento e água da chuva coletada do telhado. Precisa decidir qual é a melhor opção para consumo.
-   - como tratar água de rio para beber
-   - como armazenar água da chuva
-   - como verificar se a água da chuva é potável
-   - como descartar água contaminada
-D02 R@5 s=3/3 t=2/3 u=2/3 v=3/3 | Galão com histórico químico para buscar água
-   necessidades: Não usar recipientes que já guardaram produtos químicos, combustíveis  | Água com combustível não fica segura com fervura ou desinfecção | Que recipiente usar no lugar: limpo, com tampa, separado para água bru
-   situação: A pessoa encontrou um galão grande no galpão e quer usá-lo para pegar água do poço para beber, mas suspeita que ainda tenha o cheiro de óleo diesel.
-   - Como limpar um galão para uso com água potável?
-   - Como verificar se a água do poço é potável para consumo humano?
-   - Como armazenar água potável em galões para evitar contaminação?
-   - Como descartar galões contaminados ou impróprios para uso?
-D03 R@5 s=3/3 t=2/3 u=3/3 v=3/3 | Água mineral com lacre rompido
-   necessidades: Água mineral de fonte confiável dispensa tratamento, com atenção a pro | Embalagens PET abertas ou danificadas: descarte (regra escrita para al | Se for usar água de qualidade incerta, tratamento mínimo
-   situação: A pessoa tem garrafas de água mineral, mas duas estão com lacre rompido. Precisa decidir se usa as que estão fechadas ou descarta as com lacre rompido.
-   - Como identificar se a água mineral está contaminada após romper o lacre?
-   - Como armazenar água mineral para consumo seguro?
-   - Por quanto tempo a água mineral pode ser consumida após romper o lacre?
-   - Como descartar corretamente garrafas com lacre rompido?
-D04 R@5 s=3/3 t=3/3 u=3/3 v=3/3 | Tratar água de poço com pano, panela e gás
-   necessidades: Coar em pano limpo é forma de filtração e vem antes da desinfecção | Fervura: conferir combustível, ferver com bolhas grandes por pelo meno | Guardar em recipiente limpo com tampa e consumir em até 24 h
-   situação: A pessoa tem água de poço, pano de prato limpo, panela e fogão a gás funcionando e quer deixar a água potável.
-   - como filtrar água de poço
-   - como ferver água para consumo humano
-   - como armazenar água filtrada
-   - como verificar se a água está limpa
-D05 R@5 s=1/3 t=3/3 u=2/3 v=3/3 | Pedido amplo de tratamento de água
-   necessidades: Água turva: repouso para decantar e filtrar antes de desinfetar | Água de superfície precisa ser filtrada antes da cloração; água sanitá | Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em
-   situação: A pessoa tem água de um açude turva e possui água sanitária. Precisa tratar a água para consumo seguro.
-   - Tratamento de água de açude turva
-   - Como usar água sanitária para tratar água
-   - Como armazenar água tratada
-   - Prazo de validade da água tratada com cloro
-D06 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Gás acaba no meio da fervura
-   necessidades: Fervura só conta com bolhas grandes por pelo menos 5 min; conferir com | Fonte de calor alternativa e combustível limitado: priorizar pequenas  | Nunca usar carvão ou churrasqueira dentro de casa ou perto de portas e
-   situação: A pessoa quer ferver água do rio para beber, mas o gás acabou e a água não chegou a ferver. Tem carvão e não tem água sanitária.
-   - Como ferver água com carvão
-   - Como verificar se a água foi fervida adequadamente
-   - Como purificar água sem água sanitária
-   - Como armazenar água fervida
-D07 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Guardar água já tratada
-   necessidades: Consumir em até 24 h; tratar só a quantidade do dia | Recipiente limpo, tampado, de preferência com torneira; separar recipi | Manter fechado, em lugar limpo, longe de sol, poeira e animais
-   situação: A pessoa tratou 20 litros de água com hipoclorito e quer saber como guardar e por quanto tempo a água tratada dura.
-   - Como armazenar água tratada com hipoclorito de sódio em recipientes fechados
-   - Prazo de validade da água tratada com hipoclorito de sódio
-   - Como verificar a eficácia do tratamento da água com hipoclorito de sódio
-   - Como descartar água tratada com hipoclorito de sódio após o prazo de validade
-D08 R@5 s=2/2 t=2/2 u=2/2 v=2/2 | Balde de origem desconhecida
-   necessidades: Não usar recipientes que armazenaram químicos, combustíveis ou agrotóx | Como higienizar um recipiente adequado: lavar com escova e sabão, desi
-   situação: A pessoa tem um balde que pode ser usado para guardar água tratada, mas não sabe se estava em contato com contaminantes. Ainda não sabe se é seguro usar o balde.
-   - Como limpar e preparar um balde para armazenar água tratada
-   - Como verificar se um balde está limpo e seguro para uso
-   - Como armazenar água tratada em recipientes
-   - Como descartar ou reutilizar um balde que pode ter sido contaminado
-D09 R@5 s=1/3 t=2/3 u=1/3 v=3/3 | Água fervida que ficou destampada
-   necessidades: Armazenamento correto existe para evitar recontaminação por insetos e  | Se perceber sujeira, não usar para beber ou cozinhar | Fervura e prazo de 24 h para refazer o tratamento
-   situação: A pessoa deixou água fervida em um pote tampado, mas a tampa ficou aberta durante a noite, permitindo a entrada de insetos. A água está em risco de contaminação.
-   - Como armazenar água fervida para consumo posterior
-   - Como identificar se a água está contaminada
-   - Como eliminar insetos e impurezas da água
-   - Como evitar a entrada de insetos em recipientes de água
-D10 R@5 s=1/3 t=1/3 u=1/3 v=2/3 | Escolher o que comer com pouca água
-   necessidades: Preferir alimentos de pouco preparo e evitar os que precisam de água o | Alimentos secos (arroz cru, biscoito, farinha) se conservam em tempera | Latas só se íntegras, sem estufamento, ferrugem ou vazamento
-   situação: A pessoa está sem luz há 2 dias e tem alimentos em conserva, mas pouca água tratada. Precisa priorizar o que comer com base na durabilidade, nutrição e uso da água.
-   - Como armazenar alimentos em conserva por mais tempo
-   - Qual é a ordem de prioridade para consumo de alimentos em emergência
-   - Como preparar sardinha em lata sem água tratada
-   - Como prolongar a vida da água tratada em condições de emergência
-D11 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Latas sem rótulo
-   necessidades: Latas com sinais de alteração devem ser descartadas | Validade vencida: descartar | Nunca provar para testar; aparência e cheiro não bastam; na dúvida, de
-   situação: A pessoa encontrou latas sem rótulo, inteiras, mas não sabe o conteúdo nem a validade. Precisa verificar segurança e como proceder.
-   - Como identificar se uma lata sem rótulo está segura para consumo?
-   - Como verificar a data de validade de uma lata sem rótulo?
-   - Como armazenar latas para preservar sua segurança e qualidade?
-   - Como descartar latas que não são seguras para consumo?
-D12 R@5 s=3/3 t=2/3 u=3/3 v=3/3 | Três latas com situações diferentes
-   necessidades: Lata estufada: descartar | Embalagem amassada, esmagada, enferrujada ou com outro dano: não usar, | Lata íntegra: conferir a validade e limpar a embalagem antes de abrir
-   situação: A pessoa tem três latas de conserva, mas uma está estufada e outra tem amassado. A pessoa quer saber se pode comer as latas.
-   - Como identificar latas de conserva estragadas?
-   - Como armazenar latas de conserva para preservar seu conteúdo?
-   - Quando descartar latas de conserva por segurança alimentar?
-   - Como verificar a integridade física de uma lata de conserva?
-D13 R@5 s=0/2 t=0/2 u=0/2 v=2/2 | Preparo de arroz
-   necessidades: Sem refrigeração, preparar só a quantidade para consumo imediato | Usar só água potável no preparo dos alimentos
-   situação: A pessoa tem arroz, água tratada e fogão a gás e quer saber como cozinhar o arroz.
-   - Como cozinhar arroz com fogão a gás
-   - Quantidade de água para cozinhar arroz
-   - Como armazenar arroz após cozimento
-   - Como descartar arroz vencido ou com impurezas
-D14 R@5 s=1/3 t=1/3 u=1/3 v=2/3 | Arroz e feijão com pouca água e pouco gás
-   necessidades: Em emergência, o mínimo é 15 L por pessoa por dia | Com combustível limitado, priorizar pequenas quantidades de água para  | Preferir alimentos de pouco preparo, sem água ou cozimento
-   situação: A pessoa quer preparar arroz e feijão, mas tem pouco gás e pouca água. O feijão é cru e há 5 litros de água tratada para 2 dias, para 2 pessoas.
-   - Como cozinhar feijão sem gás
-   - Como economizar água ao cozinhar arroz e feijão
-   - Como armazenar feijão cru para uso futuro
-   - Como saber quando o feijão está pronto
-D15 R@5 s=1/3 t=0/3 u=1/3 v=2/3 | Cozimento de feijão interrompido
-   necessidades: Alimentos cozidos que ficaram mais de 1 hora fora da geladeira: descar | Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo) | Cozinhar não resgata alimento mal conservado
-   situação: A pessoa cozinhou feijão e o gás acabou há 3 horas. O feijão ficou meio cozido e está na panela tampada em cima do fogão.
-   - Como armazenar feijão cozido para consumo posterior
-   - Como verificar a segurança do feijão cozido após longo tempo em repouso
-   - Como identificar se o feijão está ainda comestível após ficar meio cozido
-   - Como evitar que o feijão se estrague ao deixar em repouso
-D16 R@5 s=3/3 t=3/3 u=3/3 v=2/3 | Guardar mantimentos secos
-   necessidades: Prateleiras afastadas do piso, embalagens fechadas e identificadas, pr | Recipientes de plástico espesso, metal ou vidro com tampa firme contra | Local limpo, ventilado e protegido de insetos; restos em recipientes l
-   situação: A pessoa quer armazenar arroz, feijão e farinha de forma segura, evitando que estraguem e sejam atacados por bichos ou ratos. Ela tem esses alimentos, mas não sabe como guardá-los corretamente.
-   - Como armazenar arroz em casa para preservar sua qualidade e evitar pragas?
-   - Como guardar feijão em recipientes adequados para evitar infestação de insetos?
-   - Qual é a melhor forma de armazenar farinha para evitar a atração de ratos?
-   - Como identificar e descartar alimentos que já estragaram ou foram contaminados?
-D17 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Conservar bananas maduras
-   necessidades: Receita de banana seca em forno a 175–200 °F, só com medição e control | Secagem exige forno em temperatura baixa e termômetro junto ao aliment | Descartar fruta com mofo, mau cheiro ou mudança de textura
-   situação: A pessoa tem bananas maduras que estão a ponto de estragar e deseja conservá-las. Possui forno a gás, mas não tem termômetro e não sabe se ele alcança temperaturas baixas.
-   - Como conservar bananas maduras sem refrigerador
-   - Como usar forno a gás para conservar alimentos sem termômetro
-   - Como identificar quando as bananas estão maduras demais
-   - Como armazenar bananas para prolongar sua vida útil
-D18 R@5 s=2/3 t=3/3 u=2/3 v=3/3 | Ordem de uso de tomate, abóbora e batata
-   necessidades: Tomates duram bem menos que abóbora inteira; priorizar tomates | Batatas em local fresco, seco, ventilado e escuro; vegetal cortado pre | Sem refrigeração, preparar só para consumo imediato
-   situação: A pessoa tem tomates maduros, uma abóbora inteira e batatas, mas está sem geladeira. Cortou metade da abóbora e a outra metade ficou na bancada.
-   - como conservar abóbora cortada sem geladeira
-   - como armazenar batatas sem geladeira
-   - como conservar tomates maduros sem geladeira
-   - como identificar abóbora estragada
-D19 R@5 s=3/3 t=3/3 u=3/3 v=3/3 | Higienizar garrafas reaproveitadas para guardar água
-   necessidades: Lavar por dentro e por fora com escova ou esponja macia, desinfetar co | Recipientes que guardaram produtos químicos não servem; preferir os se | Separar recipiente de água bruta e de água tratada; manter fechado
-   situação: A pessoa quer reutilizar garrafas PET e um galão de água mineral para armazenar água tratada. Ela tem garrafas PET e um galão, mas precisa saber como limpar antes de usar.
-   - como limpar garrafas PET antes de reutilizá-las
-   - procedimento para higienizar galões de água mineral
-   - como armazenar água tratada em garrafas reutilizadas
-   - tempo de validade da água armazenada em recipientes reutilizados
-D20 R@5 s=1/2 t=1/2 u=1/2 v=2/2 | Lavar as mãos sem torneira
-   necessidades: Sem torneira, montar estação temporária com galão; lavar por pelo meno | Os cinco passos com água limpa corrente, sabão, esfregar, enxaguar e s
-   situação: A pessoa quer lavar as mãos para cozinhar, mas não tem água na torneira. Ela tem um galão de água tratada e sabão.
-   - Como lavar as mãos com água tratada e sabão sem torneira
-   - Como armazenar água tratada para uso em lavagem das mãos
-   - Como descartar água usada para lavar as mãos
-   - Como garantir que a água tratada é segura para uso em higiene
-D21 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Verduras da horta com água sanitária perfumada
-   necessidades: Higienização de folhosos: retirar partes deterioradas, lavar folha a f | Água sanitária com alvejante ou perfume não serve (regra escrita para  | Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou d
-   situação: A pessoa tem alface e couve da horta e deseja higienizá-los para comer cru. Possui água sanitária perfumada com lavanda, mas não tem outra opção.
-   - higienização de hortaliças para consumo crudo
-   - uso de água sanitária para lavagem de alimentos
-   - como lavar alface e couve com água sanitária
-   - tempo de contato da água sanitária com hortaliças
-D22 R@5 s=3/5 t=1/5 u=3/5 v=5/5 | Um dia só com água de poço turva: beber, cozinhar e guardar
-   necessidades: Água turva: deixar descansar para a sujeira descer e/ou coar em pano l | 2 gotas de hipoclorito 2,5% por litro (40 gotas para 20 L), misturar e | Usar só água potável/tratada no preparo dos alimentos | Lavar as mãos antes de preparar os alimentos | Guardar em recipiente limpo e tampado; água com hipoclorito consumir e
-   situação: A pessoa tem água de poço turva e 20 litros, precisa beber, cozinhar macarrão e guardar o resto. Possui hipoclorito 2,5% e um pano limpo. Faltam métodos para tratar a água e garantir segurança higiênica.
-   - como tratar água de poço turva para consumo
-   - como cozinhar macarrão com água de poço
-   - como armazenar água tratada por longo tempo
-   - como limpar e manter utensílios para cozinhar
-D23 R@5 s=2/3 t=0/3 u=1/3 v=3/3 | Falta de luz e água ao mesmo tempo
-   necessidades: Geladeira fechada mais de 4 horas sem energia: descartar carnes, sobra | Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não | Na dúvida sobre a água, tratamento mínimo antes de beber
-   situação: A pessoa está sem luz e água potável, mas tem água da caixa d'água e fogão a gás. A geladeira ficou fechada por 6 horas, o que pode ter comprometido a segurança dos alimentos.
-   - Como garantir que a água da caixa d'água é segura para beber
-   - Como identificar alimentos ainda seguros para consumo após 6 horas sem refrigeração
-   - Como cozinhar alimentos que ficaram fora da geladeira
-   - Como armazenar alimentos após cozinhar para evitar contaminação
-D24 R@5 s=2/3 t=1/3 u=2/3 v=3/3 | Churrasqueira a carvão na garagem
-   necessidades: Nunca usar churrasqueira ou aparelho a carvão dentro de casa, na garag | Perecível sem refrigeração adequada pode causar doença mesmo bem cozid | Cozinhar bem, todas as partes a pelo menos 70 °C
-   situação: A pessoa está sem luz e gás, mas planeja usar a churrasqueira a carvão na garagem durante a chuva. O portão estará meio aberto.
-   - Como preparar carvão para churrasqueira
-   - Como cozinhar com churrasqueira a carvão em ambiente fechado
-   - Como evitar acidentes com fogo em ambientes fechados
-   - Como armazenar carvão de forma segura
-
-Saídas completas abaixo.
-
-======================================================================
-[s] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas conversa
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  1/3   1/3   1/3   n1,n3
-D02   sustentado  3/3   3/3   3/3   
-D03   parcial     3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   1/3   3/3   
-D06   parcial     2/3   2/3   3/3   
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   1/3   1/3   n1,n2
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   
-D13   lacuna      0/2   1/2   1/2   n1
-D14   lacuna      1/3   1/3   2/3   n3
-D15   lacuna      1/3   2/3   3/3   
-D16   sustentado  3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  2/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  1/2   2/2   2/2   
-D21   parcial     2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 46/71 = 65%
-Recall@10: 53/71 = 75%
-Recall@20: 62/71 = 87%
-(tempo total da execução: 20,1 s)
-
-======================================================================
-[t] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), cache em decomposicoes-ultimo.json
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   3/3   3/3   
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     2/3   2/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  3/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     2/3   3/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  2/3   3/3   3/3   
-D13   lacuna      0/2   0/2   0/2   n1,n2
-D14   lacuna      1/3   1/3   2/3   n1
-D15   lacuna      0/3   1/3   2/3   n2
-D16   sustentado  3/3   3/3   3/3   
-D17   parcial     2/3   2/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  1/2   2/2   2/2   
-D21   parcial     2/3   2/3   3/3   
-D22   sustentado  1/5   3/5   4/5   n4
-D23   parcial     0/3   1/3   1/3   n2,n3
-D24   parcial     1/3   1/3   2/3   n2
-
-Total de necessidades: 71
-Recall@5: 42/71 = 59%
-Recall@10: 52/71 = 73%
-Recall@20: 60/71 = 85%
-(tempo total da execução: 39,7 s)
-
-======================================================================
-[u] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --sub-conversa
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), cache em decomposicoes-ultimo.json
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   3/3   
-D03   parcial     3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  2/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   2/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   
-D13   lacuna      0/2   0/2   2/2   
-D14   lacuna      1/3   2/3   2/3   n3
-D15   lacuna      1/3   1/3   3/3   
-D16   sustentado  3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  2/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  1/2   1/2   1/2   n1
-D21   parcial     2/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     1/3   3/3   3/3   
-D24   parcial     2/3   3/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 46/71 = 65%
-Recall@10: 57/71 = 80%
-Recall@20: 65/71 = 92%
-(tempo total da execução: 36,5 s)
-
-======================================================================
-[v] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas oraculo
-
-método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: oráculo (uma por necessidade do gabarito; é um teto, não um resultado)
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  3/3   3/3   3/3   
-D02   sustentado  3/3   3/3   3/3   
-D03   parcial     3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  3/3   3/3   3/3   
-D06   parcial     3/3   3/3   3/3   
-D07   sustentado  3/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   
-D10   parcial     2/3   3/3   3/3   
-D11   parcial     3/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   
-D13   lacuna      2/2   2/2   2/2   
-D14   lacuna      2/3   2/3   2/3   n1
-D15   lacuna      2/3   2/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     3/3   3/3   3/3   
-D22   sustentado  5/5   5/5   5/5   
-D23   parcial     3/3   3/3   3/3   
-D24   parcial     3/3   3/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 67/71 = 94%
-Recall@10: 69/71 = 97%
-Recall@20: 70/71 = 99%
-(tempo total da execução: 30,2 s)
-
-======================================================================
-[w] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --consultas qwen
-
-método: denso (bge-m3), turno: ultimo, unidade: trecho-limpo, rerank top-40 fp16 +título
-
-consultas: Qwen (qwen3:8b), cache em decomposicoes-ultimo.json
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  3/3   3/3   3/3   
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     0/3   2/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  3/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     2/3   3/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     1/3   2/3   3/3   
-D12   sustentado  2/3   3/3   3/3   
-D13   lacuna      0/2   0/2   0/2   n1,n2
-D14   lacuna      1/3   1/3   1/3   n1,n2
-D15   lacuna      0/3   1/3   1/3   n2,n3
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  1/2   1/2   2/2   
-D21   parcial     2/3   3/3   3/3   
-D22   sustentado  0/5   3/5   3/5   n3,n4
-D23   parcial     1/3   1/3   2/3   n2
-D24   parcial     1/3   1/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 40/71 = 56%
-Recall@10: 52/71 = 73%
-Recall@20: 58/71 = 82%
-(tempo total da execução: 40,4 s)
-
-======================================================================
-[s] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas conversa --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  1/3   1/3   1/3   n1,n3
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     2/3   2/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   2/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   2/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   2/3   3/3   
-D12   sustentado  1/3   2/3   3/3   
-D13   lacuna      0/2   1/2   1/2   n1
-D14   lacuna      2/3   2/3   2/3   n1
-D15   lacuna      2/3   2/3   3/3   
-D16   sustentado  3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     1/3   3/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     2/3   2/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 47/71 = 66%
-Recall@10: 53/71 = 75%
-Recall@20: 62/71 = 87%
-(tempo total da execução: 17,6 s)
-
-======================================================================
-[t] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), cache em decomposicoes-primeiro.json
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   3/3   3/3   
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     1/3   2/3   2/3   n2
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     2/3   2/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  2/3   2/3   3/3   
-D13   lacuna      0/2   0/2   0/2   n1,n2
-D14   lacuna      1/3   2/3   2/3   n1
-D15   lacuna      0/3   0/3   2/3   n2
-D16   sustentado  3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     2/3   2/3   3/3   
-D22   sustentado  1/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     1/3   1/3   1/3   n2,n3
-
-Total de necessidades: 71
-Recall@5: 42/71 = 59%
-Recall@10: 52/71 = 73%
-Recall@20: 60/71 = 85%
-(tempo total da execução: 39,4 s)
-
-======================================================================
-[u] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --sub-conversa --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: Qwen (qwen3:8b), cache em decomposicoes-primeiro.json
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  2/3   2/3   2/3   n1
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     2/3   2/3   2/3   n2
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   2/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  2/3   3/3   3/3   
-D13   lacuna      0/2   0/2   2/2   
-D14   lacuna      1/3   3/3   3/3   
-D15   lacuna      0/3   0/3   3/3   
-D16   sustentado  3/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     2/3   2/3   3/3   
-D22   sustentado  3/5   3/5   4/5   n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     1/3   2/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 44/71 = 62%
-Recall@10: 54/71 = 76%
-Recall@20: 65/71 = 92%
-(tempo total da execução: 35,9 s)
-
-======================================================================
-[v] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas oraculo --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
-
-consultas: oráculo (uma por necessidade do gabarito; é um teto, não um resultado)
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  3/3   3/3   3/3   
-D02   sustentado  3/3   3/3   3/3   
-D03   parcial     3/3   3/3   3/3   
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  3/3   3/3   3/3   
-D06   parcial     3/3   3/3   3/3   
-D07   sustentado  3/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     3/3   3/3   3/3   
-D10   parcial     2/3   3/3   3/3   
-D11   parcial     3/3   3/3   3/3   
-D12   sustentado  3/3   3/3   3/3   
-D13   lacuna      2/2   2/2   2/2   
-D14   lacuna      2/3   2/3   2/3   n1
-D15   lacuna      2/3   2/3   3/3   
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     3/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     3/3   3/3   3/3   
-D22   sustentado  5/5   5/5   5/5   
-D23   parcial     3/3   3/3   3/3   
-D24   parcial     3/3   3/3   3/3   
-
-Total de necessidades: 71
-Recall@5: 67/71 = 94%
-Recall@10: 69/71 = 97%
-Recall@20: 70/71 = 99%
-(tempo total da execução: 30,2 s)
-
-======================================================================
-[w] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --consultas qwen --turno primeiro
-
-método: denso (bge-m3), turno: primeiro, unidade: trecho-limpo, rerank top-40 fp16 +título
-
-consultas: Qwen (qwen3:8b), cache em decomposicoes-primeiro.json
-caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
-D01   sustentado  3/3   3/3   3/3   
-D02   sustentado  2/3   2/3   2/3   n2
-D03   parcial     0/3   0/3   2/3   n2
-D04   sustentado  3/3   3/3   3/3   
-D05   sustentado  1/3   3/3   3/3   
-D06   parcial     2/3   2/3   2/3   n3
-D07   sustentado  2/3   3/3   3/3   
-D08   sustentado  2/2   2/2   2/2   
-D09   parcial     1/3   2/3   3/3   
-D10   parcial     1/3   1/3   2/3   n2
-D11   parcial     2/3   3/3   3/3   
-D12   sustentado  2/3   2/3   3/3   
-D13   lacuna      0/2   0/2   0/2   n1,n2
-D14   lacuna      1/3   2/3   2/3   n1
-D15   lacuna      0/3   1/3   1/3   n2,n3
-D16   sustentado  2/3   3/3   3/3   
-D17   parcial     2/3   3/3   3/3   
-D18   sustentado  3/3   3/3   3/3   
-D19   sustentado  3/3   3/3   3/3   
-D20   sustentado  2/2   2/2   2/2   
-D21   parcial     2/3   2/3   3/3   
-D22   sustentado  0/5   3/5   3/5   n3,n4
-D23   parcial     2/3   2/3   3/3   
-D24   parcial     1/3   1/3   2/3   n3
-
-Total de necessidades: 71
-Recall@5: 39/71 = 55%
-Recall@10: 51/71 = 72%
-Recall@20: 59/71 = 83%
-(tempo total da execução: 40,1 s)
-
+ARK v2 - fase 4: decomposição da conversa pelo Qwen (consultas por necessidade, intercaladas)
+Data: 2026-10-24 (local, UTC-3). PC: Windows 11, RTX 4060 8 GB. Branch v2/fase-1-gabarito, base 09ce265.
+Corpus: o da 3c (345 passagens, 967 trechos). Busca: bge-m3 denso (Ollama 127.0.0.1:11435, encerrado ao fim).
+Reranker: bge-reranker-v2-m3 fp16. Qwen: qwen3:8b do Ollama da v1 (127.0.0.1:11434), só leitura
+  (nenhum pull, create nem config), com think=false e temperature 0.
+Ordem por causa da VRAM: as decomposições foram geradas antes, com só o Qwen na GPU (script à parte, mesmo formato do
+  cache do eval). Depois o Qwen foi descarregado com keep_alive 0, e as rodadas usaram o cache.
+
+Resumo: R@5 / R@10 / R@20 (necessidades de 71)
+                                                       turno último     turno primeiro   soma R@5
+s) conversa (= p da 3c)                                46 / 53 / 62     47 / 53 / 62     93
+t) qwen                                                42 / 52 / 60     42 / 52 / 60     84
+u) qwen + sub-conversa                                 46 / 57 / 65     44 / 54 / 65     90
+v) oráculo (teto inflado, só referência)               67 / 69 / 70     67 / 69 / 70     134
+w) trecho, limpar, rerank 40, qwen                     40 / 52 / 58     39 / 51 / 59     79
+(todas: passagem, rerank 20, +título, fp16, exceto w)
+
+Leitura
+- s) bate exatamente com o p) da 3c (46/47).
+- Decompor com o Qwen, do jeito atual, piora o top-5: t) perde 4 no último turno e 5 no primeiro.
+  Juntar a conversa a cada subconsulta (u) recupera o R@5 do último turno (46) e melhora o R@10/R@20 (57/65 contra
+  53/62), mas ainda fica 3 abaixo no primeiro. Com trechos (w) é o pior resultado.
+- O oráculo (67/71) mostra que a estratégia "uma busca por necessidade" funciona quando as subconsultas estão certas:
+  o gargalo agora é a qualidade das consultas do Qwen, não a busca nem o reranker.
+- Por que as consultas do Qwen falham (ver as decomposições abaixo):
+  1. Ele sempre gera 4 consultas (média 4,0 nos 48 casos) e completa as vagas com moldes genéricos: "como armazenar…",
+     "como descartar…", "como verificar…". Isso parece eco do exemplo do prompt ("como guardar, por quanto tempo,
+     quando descartar"). As consultas genéricas puxam passagens de armazenamento para casos que não pedem isso.
+  2. Ele perde o risco central do caso. No D24 (churrasqueira a carvão na garagem), nenhuma consulta fala de monóxido de
+     carbono, e uma delas pede "Como cozinhar com churrasqueira a carvão em ambiente fechado". No D02 (galão que
+     cheirava a diesel), nenhuma fala de contaminação por combustível. No D23, nenhuma fala da regra das 4 h de
+     geladeira.
+  3. Ele reformula a meta em vez da necessidade de segurança. D13 (arroz): "quantidade de água para cozinhar arroz",
+     sem "água potável" nem "consumo imediato".
+- O turno primeiro tem cache próprio (decomposicoes-primeiro.json). As consultas mudam, mas os totais de t) coincidem
+  com os do último turno (42/52/60).
+
+Latência
+- decomposição, qwen3:8b no Ollama da v1: 2,5 s/conversa no último turno (1,8-3,3) e 2,4 s no primeiro (1,7-3,3);
+  carga + 1ª chamada: 6,0 s
+- busca + rerank com 4 subconsultas: cerca de 1,0 s por caso, contra cerca de 0,2 s com uma consulta (estimado pelo tempo
+  total das rodadas menos cerca de 15 s de carga do reranker, dividido por 24 casos)
+- total estimado por pergunta com decomposição: cerca de 3,5 s, com os modelos já carregados
+
+VRAM (nvidia-smi, total da GPU)
+- base com o desktop: cerca de 1,4 GB; com o Qwen carregado: 6,9 GB (o qwen3:8b ocupa cerca de 5,5 GB)
+- bge-m3 (cerca de 0,8-1,2 GB) + reranker fp16 (cerca de 1,2 GB, pico cerca de 1,6 GB) somados ao Qwen: cerca de 8,5-9 GB,
+  acima dos 8 GB da RTX 4060. Na aplicação inteira, o Ollama vai alternar modelos (com latência de carga) ou jogar
+  camadas para a CPU. Opções: reranker na CPU, Qwen com contexto menor, ou descarregar o Qwen entre a decomposição e a resposta.
+
+Decomposições do turno último (decomposicoes-ultimo.json; o do primeiro turno está no mesmo diretório)
+(R@5 por caso nas rodadas s/t/u/v, necessidades do gabarito, situação e consultas do Qwen)
+
+D01 R@5 s=1/3 t=2/3 u=2/3 v=3/3 | Escolha entre rio barrento e água da chuva
+   necessidades: Chuva costuma ser mais límpida e pode ser desinfetada com filtração pr | Toda água fora da rede precisa de tratamento mínimo: filtrar e desinfe | Água barrenta: deixar em repouso para decantar antes de filtrar
+   situação: A pessoa está sem água potável e tem acesso a água de um rio barrento e água da chuva coletada do telhado. Precisa decidir qual é a melhor opção para consumo.
+   - como tratar água de rio para beber
+   - como armazenar água da chuva
+   - como verificar se a água da chuva é potável
+   - como descartar água contaminada
+D02 R@5 s=3/3 t=2/3 u=2/3 v=3/3 | Galão com histórico químico para buscar água
+   necessidades: Não usar recipientes que já guardaram produtos químicos, combustíveis  | Água com combustível não fica segura com fervura ou desinfecção | Que recipiente usar no lugar: limpo, com tampa, separado para água bru
+   situação: A pessoa encontrou um galão grande no galpão e quer usá-lo para pegar água do poço para beber, mas suspeita que ainda tenha o cheiro de óleo diesel.
+   - Como limpar um galão para uso com água potável?
+   - Como verificar se a água do poço é potável para consumo humano?
+   - Como armazenar água potável em galões para evitar contaminação?
+   - Como descartar galões contaminados ou impróprios para uso?
+D03 R@5 s=3/3 t=2/3 u=3/3 v=3/3 | Água mineral com lacre rompido
+   necessidades: Água mineral de fonte confiável dispensa tratamento, com atenção a pro | Embalagens PET abertas ou danificadas: descarte (regra escrita para al | Se for usar água de qualidade incerta, tratamento mínimo
+   situação: A pessoa tem garrafas de água mineral, mas duas estão com lacre rompido. Precisa decidir se usa as que estão fechadas ou descarta as com lacre rompido.
+   - Como identificar se a água mineral está contaminada após romper o lacre?
+   - Como armazenar água mineral para consumo seguro?
+   - Por quanto tempo a água mineral pode ser consumida após romper o lacre?
+   - Como descartar corretamente garrafas com lacre rompido?
+D04 R@5 s=3/3 t=3/3 u=3/3 v=3/3 | Tratar água de poço com pano, panela e gás
+   necessidades: Coar em pano limpo é forma de filtração e vem antes da desinfecção | Fervura: conferir combustível, ferver com bolhas grandes por pelo meno | Guardar em recipiente limpo com tampa e consumir em até 24 h
+   situação: A pessoa tem água de poço, pano de prato limpo, panela e fogão a gás funcionando e quer deixar a água potável.
+   - como filtrar água de poço
+   - como ferver água para consumo humano
+   - como armazenar água filtrada
+   - como verificar se a água está limpa
+D05 R@5 s=1/3 t=3/3 u=2/3 v=3/3 | Pedido amplo de tratamento de água
+   necessidades: Água turva: repouso para decantar e filtrar antes de desinfetar | Água de superfície precisa ser filtrada antes da cloração; água sanitá | Dose e tempo: 2 gotas por litro, misturar, esperar 30 min, consumir em
+   situação: A pessoa tem água de um açude turva e possui água sanitária. Precisa tratar a água para consumo seguro.
+   - Tratamento de água de açude turva
+   - Como usar água sanitária para tratar água
+   - Como armazenar água tratada
+   - Prazo de validade da água tratada com cloro
+D06 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Gás acaba no meio da fervura
+   necessidades: Fervura só conta com bolhas grandes por pelo menos 5 min; conferir com | Fonte de calor alternativa e combustível limitado: priorizar pequenas  | Nunca usar carvão ou churrasqueira dentro de casa ou perto de portas e
+   situação: A pessoa quer ferver água do rio para beber, mas o gás acabou e a água não chegou a ferver. Tem carvão e não tem água sanitária.
+   - Como ferver água com carvão
+   - Como verificar se a água foi fervida adequadamente
+   - Como purificar água sem água sanitária
+   - Como armazenar água fervida
+D07 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Guardar água já tratada
+   necessidades: Consumir em até 24 h; tratar só a quantidade do dia | Recipiente limpo, tampado, de preferência com torneira; separar recipi | Manter fechado, em lugar limpo, longe de sol, poeira e animais
+   situação: A pessoa tratou 20 litros de água com hipoclorito e quer saber como guardar e por quanto tempo a água tratada dura.
+   - Como armazenar água tratada com hipoclorito de sódio em recipientes fechados
+   - Prazo de validade da água tratada com hipoclorito de sódio
+   - Como verificar a eficácia do tratamento da água com hipoclorito de sódio
+   - Como descartar água tratada com hipoclorito de sódio após o prazo de validade
+D08 R@5 s=2/2 t=2/2 u=2/2 v=2/2 | Balde de origem desconhecida
+   necessidades: Não usar recipientes que armazenaram químicos, combustíveis ou agrotóx | Como higienizar um recipiente adequado: lavar com escova e sabão, desi
+   situação: A pessoa tem um balde que pode ser usado para guardar água tratada, mas não sabe se estava em contato com contaminantes. Ainda não sabe se é seguro usar o balde.
+   - Como limpar e preparar um balde para armazenar água tratada
+   - Como verificar se um balde está limpo e seguro para uso
+   - Como armazenar água tratada em recipientes
+   - Como descartar ou reutilizar um balde que pode ter sido contaminado
+D09 R@5 s=1/3 t=2/3 u=1/3 v=3/3 | Água fervida que ficou destampada
+   necessidades: Armazenamento correto existe para evitar recontaminação por insetos e  | Se perceber sujeira, não usar para beber ou cozinhar | Fervura e prazo de 24 h para refazer o tratamento
+   situação: A pessoa deixou água fervida em um pote tampado, mas a tampa ficou aberta durante a noite, permitindo a entrada de insetos. A água está em risco de contaminação.
+   - Como armazenar água fervida para consumo posterior
+   - Como identificar se a água está contaminada
+   - Como eliminar insetos e impurezas da água
+   - Como evitar a entrada de insetos em recipientes de água
+D10 R@5 s=1/3 t=1/3 u=1/3 v=2/3 | Escolher o que comer com pouca água
+   necessidades: Preferir alimentos de pouco preparo e evitar os que precisam de água o | Alimentos secos (arroz cru, biscoito, farinha) se conservam em tempera | Latas só se íntegras, sem estufamento, ferrugem ou vazamento
+   situação: A pessoa está sem luz há 2 dias e tem alimentos em conserva, mas pouca água tratada. Precisa priorizar o que comer com base na durabilidade, nutrição e uso da água.
+   - Como armazenar alimentos em conserva por mais tempo
+   - Qual é a ordem de prioridade para consumo de alimentos em emergência
+   - Como preparar sardinha em lata sem água tratada
+   - Como prolongar a vida da água tratada em condições de emergência
+D11 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Latas sem rótulo
+   necessidades: Latas com sinais de alteração devem ser descartadas | Validade vencida: descartar | Nunca provar para testar; aparência e cheiro não bastam; na dúvida, de
+   situação: A pessoa encontrou latas sem rótulo, inteiras, mas não sabe o conteúdo nem a validade. Precisa verificar segurança e como proceder.
+   - Como identificar se uma lata sem rótulo está segura para consumo?
+   - Como verificar a data de validade de uma lata sem rótulo?
+   - Como armazenar latas para preservar sua segurança e qualidade?
+   - Como descartar latas que não são seguras para consumo?
+D12 R@5 s=3/3 t=2/3 u=3/3 v=3/3 | Três latas com situações diferentes
+   necessidades: Lata estufada: descartar | Embalagem amassada, esmagada, enferrujada ou com outro dano: não usar, | Lata íntegra: conferir a validade e limpar a embalagem antes de abrir
+   situação: A pessoa tem três latas de conserva, mas uma está estufada e outra tem amassado. A pessoa quer saber se pode comer as latas.
+   - Como identificar latas de conserva estragadas?
+   - Como armazenar latas de conserva para preservar seu conteúdo?
+   - Quando descartar latas de conserva por segurança alimentar?
+   - Como verificar a integridade física de uma lata de conserva?
+D13 R@5 s=0/2 t=0/2 u=0/2 v=2/2 | Preparo de arroz
+   necessidades: Sem refrigeração, preparar só a quantidade para consumo imediato | Usar só água potável no preparo dos alimentos
+   situação: A pessoa tem arroz, água tratada e fogão a gás e quer saber como cozinhar o arroz.
+   - Como cozinhar arroz com fogão a gás
+   - Quantidade de água para cozinhar arroz
+   - Como armazenar arroz após cozimento
+   - Como descartar arroz vencido ou com impurezas
+D14 R@5 s=1/3 t=1/3 u=1/3 v=2/3 | Arroz e feijão com pouca água e pouco gás
+   necessidades: Em emergência, o mínimo é 15 L por pessoa por dia | Com combustível limitado, priorizar pequenas quantidades de água para  | Preferir alimentos de pouco preparo, sem água ou cozimento
+   situação: A pessoa quer preparar arroz e feijão, mas tem pouco gás e pouca água. O feijão é cru e há 5 litros de água tratada para 2 dias, para 2 pessoas.
+   - Como cozinhar feijão sem gás
+   - Como economizar água ao cozinhar arroz e feijão
+   - Como armazenar feijão cru para uso futuro
+   - Como saber quando o feijão está pronto
+D15 R@5 s=1/3 t=0/3 u=1/3 v=2/3 | Cozimento de feijão interrompido
+   necessidades: Alimentos cozidos que ficaram mais de 1 hora fora da geladeira: descar | Micróbios se multiplicam entre 5 °C e 60 °C (zona de perigo) | Cozinhar não resgata alimento mal conservado
+   situação: A pessoa cozinhou feijão e o gás acabou há 3 horas. O feijão ficou meio cozido e está na panela tampada em cima do fogão.
+   - Como armazenar feijão cozido para consumo posterior
+   - Como verificar a segurança do feijão cozido após longo tempo em repouso
+   - Como identificar se o feijão está ainda comestível após ficar meio cozido
+   - Como evitar que o feijão se estrague ao deixar em repouso
+D16 R@5 s=3/3 t=3/3 u=3/3 v=2/3 | Guardar mantimentos secos
+   necessidades: Prateleiras afastadas do piso, embalagens fechadas e identificadas, pr | Recipientes de plástico espesso, metal ou vidro com tampa firme contra | Local limpo, ventilado e protegido de insetos; restos em recipientes l
+   situação: A pessoa quer armazenar arroz, feijão e farinha de forma segura, evitando que estraguem e sejam atacados por bichos ou ratos. Ela tem esses alimentos, mas não sabe como guardá-los corretamente.
+   - Como armazenar arroz em casa para preservar sua qualidade e evitar pragas?
+   - Como guardar feijão em recipientes adequados para evitar infestação de insetos?
+   - Qual é a melhor forma de armazenar farinha para evitar a atração de ratos?
+   - Como identificar e descartar alimentos que já estragaram ou foram contaminados?
+D17 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Conservar bananas maduras
+   necessidades: Receita de banana seca em forno a 175–200 °F, só com medição e control | Secagem exige forno em temperatura baixa e termômetro junto ao aliment | Descartar fruta com mofo, mau cheiro ou mudança de textura
+   situação: A pessoa tem bananas maduras que estão a ponto de estragar e deseja conservá-las. Possui forno a gás, mas não tem termômetro e não sabe se ele alcança temperaturas baixas.
+   - Como conservar bananas maduras sem refrigerador
+   - Como usar forno a gás para conservar alimentos sem termômetro
+   - Como identificar quando as bananas estão maduras demais
+   - Como armazenar bananas para prolongar sua vida útil
+D18 R@5 s=2/3 t=3/3 u=2/3 v=3/3 | Ordem de uso de tomate, abóbora e batata
+   necessidades: Tomates duram bem menos que abóbora inteira; priorizar tomates | Batatas em local fresco, seco, ventilado e escuro; vegetal cortado pre | Sem refrigeração, preparar só para consumo imediato
+   situação: A pessoa tem tomates maduros, uma abóbora inteira e batatas, mas está sem geladeira. Cortou metade da abóbora e a outra metade ficou na bancada.
+   - como conservar abóbora cortada sem geladeira
+   - como armazenar batatas sem geladeira
+   - como conservar tomates maduros sem geladeira
+   - como identificar abóbora estragada
+D19 R@5 s=3/3 t=3/3 u=3/3 v=3/3 | Higienizar garrafas reaproveitadas para guardar água
+   necessidades: Lavar por dentro e por fora com escova ou esponja macia, desinfetar co | Recipientes que guardaram produtos químicos não servem; preferir os se | Separar recipiente de água bruta e de água tratada; manter fechado
+   situação: A pessoa quer reutilizar garrafas PET e um galão de água mineral para armazenar água tratada. Ela tem garrafas PET e um galão, mas precisa saber como limpar antes de usar.
+   - como limpar garrafas PET antes de reutilizá-las
+   - procedimento para higienizar galões de água mineral
+   - como armazenar água tratada em garrafas reutilizadas
+   - tempo de validade da água armazenada em recipientes reutilizados
+D20 R@5 s=1/2 t=1/2 u=1/2 v=2/2 | Lavar as mãos sem torneira
+   necessidades: Sem torneira, montar estação temporária com galão; lavar por pelo meno | Os cinco passos com água limpa corrente, sabão, esfregar, enxaguar e s
+   situação: A pessoa quer lavar as mãos para cozinhar, mas não tem água na torneira. Ela tem um galão de água tratada e sabão.
+   - Como lavar as mãos com água tratada e sabão sem torneira
+   - Como armazenar água tratada para uso em lavagem das mãos
+   - Como descartar água usada para lavar as mãos
+   - Como garantir que a água tratada é segura para uso em higiene
+D21 R@5 s=2/3 t=2/3 u=2/3 v=3/3 | Verduras da horta com água sanitária perfumada
+   necessidades: Higienização de folhosos: retirar partes deterioradas, lavar folha a f | Água sanitária com alvejante ou perfume não serve (regra escrita para  | Lavar em água corrente reduz bactérias mas não elimina; sem sabão ou d
+   situação: A pessoa tem alface e couve da horta e deseja higienizá-los para comer cru. Possui água sanitária perfumada com lavanda, mas não tem outra opção.
+   - higienização de hortaliças para consumo crudo
+   - uso de água sanitária para lavagem de alimentos
+   - como lavar alface e couve com água sanitária
+   - tempo de contato da água sanitária com hortaliças
+D22 R@5 s=3/5 t=1/5 u=3/5 v=5/5 | Um dia só com água de poço turva: beber, cozinhar e guardar
+   necessidades: Água turva: deixar descansar para a sujeira descer e/ou coar em pano l | 2 gotas de hipoclorito 2,5% por litro (40 gotas para 20 L), misturar e | Usar só água potável/tratada no preparo dos alimentos | Lavar as mãos antes de preparar os alimentos | Guardar em recipiente limpo e tampado; água com hipoclorito consumir e
+   situação: A pessoa tem água de poço turva e 20 litros, precisa beber, cozinhar macarrão e guardar o resto. Possui hipoclorito 2,5% e um pano limpo. Faltam métodos para tratar a água e garantir segurança higiênica.
+   - como tratar água de poço turva para consumo
+   - como cozinhar macarrão com água de poço
+   - como armazenar água tratada por longo tempo
+   - como limpar e manter utensílios para cozinhar
+D23 R@5 s=2/3 t=0/3 u=1/3 v=3/3 | Falta de luz e água ao mesmo tempo
+   necessidades: Geladeira fechada mais de 4 horas sem energia: descartar carnes, sobra | Cozinhar não resgata perecível mal refrigerado; aparência e cheiro não | Na dúvida sobre a água, tratamento mínimo antes de beber
+   situação: A pessoa está sem luz e água potável, mas tem água da caixa d'água e fogão a gás. A geladeira ficou fechada por 6 horas, o que pode ter comprometido a segurança dos alimentos.
+   - Como garantir que a água da caixa d'água é segura para beber
+   - Como identificar alimentos ainda seguros para consumo após 6 horas sem refrigeração
+   - Como cozinhar alimentos que ficaram fora da geladeira
+   - Como armazenar alimentos após cozinhar para evitar contaminação
+D24 R@5 s=2/3 t=1/3 u=2/3 v=3/3 | Churrasqueira a carvão na garagem
+   necessidades: Nunca usar churrasqueira ou aparelho a carvão dentro de casa, na garag | Perecível sem refrigeração adequada pode causar doença mesmo bem cozid | Cozinhar bem, todas as partes a pelo menos 70 °C
+   situação: A pessoa está sem luz e gás, mas planeja usar a churrasqueira a carvão na garagem durante a chuva. O portão estará meio aberto.
+   - Como preparar carvão para churrasqueira
+   - Como cozinhar com churrasqueira a carvão em ambiente fechado
+   - Como evitar acidentes com fogo em ambientes fechados
+   - Como armazenar carvão de forma segura
+
+Saídas completas abaixo.
+
+======================================================================
+[s] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas conversa
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   1/3   1/3   n1,n3
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   1/3   3/3   
+D06   parcial     2/3   2/3   3/3   
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   1/3   1/3   n1,n2
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      1/3   1/3   2/3   n3
+D15   lacuna      1/3   2/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 53/71 = 75%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 20,1 s)
+
+======================================================================
+[t] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), cache em decomposicoes-ultimo.json
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  3/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     2/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   0/2   n1,n2
+D14   lacuna      1/3   1/3   2/3   n1
+D15   lacuna      0/3   1/3   2/3   n2
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   2/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  1/5   3/5   4/5   n4
+D23   parcial     0/3   1/3   1/3   n2,n3
+D24   parcial     1/3   1/3   2/3   n2
+
+Total de necessidades: 71
+Recall@5: 42/71 = 59%
+Recall@10: 52/71 = 73%
+Recall@20: 60/71 = 85%
+(tempo total da execução: 39,7 s)
+
+======================================================================
+[u] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --sub-conversa
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), cache em decomposicoes-ultimo.json
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  2/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   2/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      0/2   0/2   2/2   
+D14   lacuna      1/3   2/3   2/3   n3
+D15   lacuna      1/3   1/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  2/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   1/2   1/2   n1
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     1/3   3/3   3/3   
+D24   parcial     2/3   3/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 46/71 = 65%
+Recall@10: 57/71 = 80%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 36,5 s)
+
+======================================================================
+[v] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas oraculo
+
+método: denso (bge-m3), turno: ultimo, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: oráculo (uma por necessidade do gabarito; é um teto, não um resultado)
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  3/3   3/3   3/3   
+D06   parcial     3/3   3/3   3/3   
+D07   sustentado  3/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     2/3   3/3   3/3   
+D11   parcial     3/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      2/2   2/2   2/2   
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     3/3   3/3   3/3   
+D22   sustentado  5/5   5/5   5/5   
+D23   parcial     3/3   3/3   3/3   
+D24   parcial     3/3   3/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 67/71 = 94%
+Recall@10: 69/71 = 97%
+Recall@20: 70/71 = 99%
+(tempo total da execução: 30,2 s)
+
+======================================================================
+[w] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --consultas qwen
+
+método: denso (bge-m3), turno: ultimo, unidade: trecho-limpo, rerank top-40 fp16 +título
+
+consultas: Qwen (qwen3:8b), cache em decomposicoes-ultimo.json
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     0/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  3/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     2/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     1/3   2/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   0/2   n1,n2
+D14   lacuna      1/3   1/3   1/3   n1,n2
+D15   lacuna      0/3   1/3   1/3   n2,n3
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  1/2   1/2   2/2   
+D21   parcial     2/3   3/3   3/3   
+D22   sustentado  0/5   3/5   3/5   n3,n4
+D23   parcial     1/3   1/3   2/3   n2
+D24   parcial     1/3   1/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 40/71 = 56%
+Recall@10: 52/71 = 73%
+Recall@20: 58/71 = 82%
+(tempo total da execução: 40,4 s)
+
+======================================================================
+[s] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas conversa --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  1/3   1/3   1/3   n1,n3
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   2/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   2/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   2/3   3/3   
+D12   sustentado  1/3   2/3   3/3   
+D13   lacuna      0/2   1/2   1/2   n1
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     1/3   3/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     2/3   2/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 47/71 = 66%
+Recall@10: 53/71 = 75%
+Recall@20: 62/71 = 87%
+(tempo total da execução: 17,6 s)
+
+======================================================================
+[t] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), cache em decomposicoes-primeiro.json
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     1/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     2/3   2/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   2/3   3/3   
+D13   lacuna      0/2   0/2   0/2   n1,n2
+D14   lacuna      1/3   2/3   2/3   n1
+D15   lacuna      0/3   0/3   2/3   n2
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  1/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     1/3   1/3   1/3   n2,n3
+
+Total de necessidades: 71
+Recall@5: 42/71 = 59%
+Recall@10: 52/71 = 73%
+Recall@20: 60/71 = 85%
+(tempo total da execução: 39,4 s)
+
+======================================================================
+[u] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas qwen --sub-conversa --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: Qwen (qwen3:8b), cache em decomposicoes-primeiro.json
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  2/3   2/3   2/3   n1
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     2/3   2/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   2/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   3/3   3/3   
+D13   lacuna      0/2   0/2   2/2   
+D14   lacuna      1/3   3/3   3/3   
+D15   lacuna      0/3   0/3   3/3   
+D16   sustentado  3/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  3/5   3/5   4/5   n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     1/3   2/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 44/71 = 62%
+Recall@10: 54/71 = 76%
+Recall@20: 65/71 = 92%
+(tempo total da execução: 35,9 s)
+
+======================================================================
+[v] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade passagem --rerank 20 --titulo-rerank --consultas oraculo --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: passagem, rerank top-20 fp16 +título
+
+consultas: oráculo (uma por necessidade do gabarito; é um teto, não um resultado)
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  3/3   3/3   3/3   
+D03   parcial     3/3   3/3   3/3   
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  3/3   3/3   3/3   
+D06   parcial     3/3   3/3   3/3   
+D07   sustentado  3/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     3/3   3/3   3/3   
+D10   parcial     2/3   3/3   3/3   
+D11   parcial     3/3   3/3   3/3   
+D12   sustentado  3/3   3/3   3/3   
+D13   lacuna      2/2   2/2   2/2   
+D14   lacuna      2/3   2/3   2/3   n1
+D15   lacuna      2/3   2/3   3/3   
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     3/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     3/3   3/3   3/3   
+D22   sustentado  5/5   5/5   5/5   
+D23   parcial     3/3   3/3   3/3   
+D24   parcial     3/3   3/3   3/3   
+
+Total de necessidades: 71
+Recall@5: 67/71 = 94%
+Recall@10: 69/71 = 97%
+Recall@20: 70/71 = 99%
+(tempo total da execução: 30,2 s)
+
+======================================================================
+[w] $ python v2\eval\retrieval_eval.py --metodo denso --modelo bge-m3 --fp16 --k 5 10 20 --unidade trecho --limpar --rerank 40 --titulo-rerank --consultas qwen --turno primeiro
+
+método: denso (bge-m3), turno: primeiro, unidade: trecho-limpo, rerank top-40 fp16 +título
+
+consultas: Qwen (qwen3:8b), cache em decomposicoes-primeiro.json
+caso  cobertura   R@5    R@10   R@20   necessidades perdidas no top-20
+D01   sustentado  3/3   3/3   3/3   
+D02   sustentado  2/3   2/3   2/3   n2
+D03   parcial     0/3   0/3   2/3   n2
+D04   sustentado  3/3   3/3   3/3   
+D05   sustentado  1/3   3/3   3/3   
+D06   parcial     2/3   2/3   2/3   n3
+D07   sustentado  2/3   3/3   3/3   
+D08   sustentado  2/2   2/2   2/2   
+D09   parcial     1/3   2/3   3/3   
+D10   parcial     1/3   1/3   2/3   n2
+D11   parcial     2/3   3/3   3/3   
+D12   sustentado  2/3   2/3   3/3   
+D13   lacuna      0/2   0/2   0/2   n1,n2
+D14   lacuna      1/3   2/3   2/3   n1
+D15   lacuna      0/3   1/3   1/3   n2,n3
+D16   sustentado  2/3   3/3   3/3   
+D17   parcial     2/3   3/3   3/3   
+D18   sustentado  3/3   3/3   3/3   
+D19   sustentado  3/3   3/3   3/3   
+D20   sustentado  2/2   2/2   2/2   
+D21   parcial     2/3   2/3   3/3   
+D22   sustentado  0/5   3/5   3/5   n3,n4
+D23   parcial     2/3   2/3   3/3   
+D24   parcial     1/3   1/3   2/3   n3
+
+Total de necessidades: 71
+Recall@5: 39/71 = 55%
+Recall@10: 51/71 = 72%
+Recall@20: 59/71 = 83%
+(tempo total da execução: 40,1 s)
+

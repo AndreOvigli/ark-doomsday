@@ -1,100 +1,100 @@
-{
-  "V01": [
-    "ARK-001#p023",
-    "ARK-001#p011",
-    "ARK-001#p024",
-    "ARK-001#p015"
-  ],
-  "V02": [
-    "ARK-010#CDC-2024-Agua-com-combustivel",
-    "ARK-001#p023",
-    "ARK-001#p024"
-  ],
-  "V03": [
-    "ARK-001#p010",
-    "ARK-001#p014",
-    "ARK-001#p015"
-  ],
-  "V04": [
-    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
-    "ARK-001#p013",
-    "ARK-001#p024"
-  ],
-  "V05": [
-    "ARK-001#p017",
-    "ARK-010#CDC-2024-Agua-com-combustivel"
-  ],
-  "V06": [
-    "ARK-001#p014",
-    "ARK-001#p024"
-  ],
-  "V07": [
-    "ARK-001#p011",
-    "ARK-001#p023"
-  ],
-  "V08": [
-    "ARK-001#p028",
-    "ARK-001#p023",
-    "ARK-001#p024",
-    "ARK-009#p006"
-  ],
-  "V09": [
-    "ARK-001#p016",
-    "ARK-001#p015"
-  ],
-  "V10": [
-    "ARK-001#p015",
-    "ARK-001#p016"
-  ],
-  "V11": [
-    "ARK-001#p015",
-    "ARK-001#p028",
-    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
-  ],
-  "V12": [
-    "ARK-009#p008",
-    "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
-    "ARK-009#p010",
-    "ARK-009#p009"
-  ],
-  "V13": [
-    "ARK-009#p008",
-    "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao"
-  ],
-  "V14": [
-    "ARK-017#Argentina-Conservacao-secos",
-    "ARK-023#CDC-Protecao-mantimentos-roedores",
-    "ARK-009#p009"
-  ],
-  "V15": [
-    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
-    "ARK-009#p009",
-    "ARK-008#p035"
-  ],
-  "V16": [
-    "ARK-001#p028",
-    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
-    "ARK-008#p018"
-  ],
-  "V17": [
-    "ARK-009#p009",
-    "ARK-009#p008",
-    "ARK-009#p010"
-  ],
-  "V18": [
-    "ARK-008#p018",
-    "ARK-009#p010",
-    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
-    "ARK-012#CDC-Higiene-emergencias-maos-2024",
-    "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos"
-  ],
-  "V19": [
-    "ARK-001#p011",
-    "ARK-010#CDC-2024-Agua-com-combustivel",
-    "ARK-001#p024"
-  ],
-  "V20": [
-    "ARK-001#p015",
-    "ARK-001#p016"
-  ]
+{
+  "V01": [
+    "ARK-001#p023",
+    "ARK-001#p011",
+    "ARK-001#p024",
+    "ARK-001#p015"
+  ],
+  "V02": [
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p023",
+    "ARK-001#p024"
+  ],
+  "V03": [
+    "ARK-001#p010",
+    "ARK-001#p014",
+    "ARK-001#p015"
+  ],
+  "V04": [
+    "ARK-001#PDFp014-Trecho-Coagem-pano-desinfeccao",
+    "ARK-001#p013",
+    "ARK-001#p024"
+  ],
+  "V05": [
+    "ARK-001#p017",
+    "ARK-010#CDC-2024-Agua-com-combustivel"
+  ],
+  "V06": [
+    "ARK-001#p014",
+    "ARK-001#p024"
+  ],
+  "V07": [
+    "ARK-001#p011",
+    "ARK-001#p023"
+  ],
+  "V08": [
+    "ARK-001#p028",
+    "ARK-001#p023",
+    "ARK-001#p024",
+    "ARK-009#p006"
+  ],
+  "V09": [
+    "ARK-001#p016",
+    "ARK-001#p015"
+  ],
+  "V10": [
+    "ARK-001#p015",
+    "ARK-001#p016"
+  ],
+  "V11": [
+    "ARK-001#p015",
+    "ARK-001#p028",
+    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo"
+  ],
+  "V12": [
+    "ARK-009#p008",
+    "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao",
+    "ARK-009#p010",
+    "ARK-009#p009"
+  ],
+  "V13": [
+    "ARK-009#p008",
+    "ARK-011#FDA-Cozinhar-nao-resgata-refrigeracao"
+  ],
+  "V14": [
+    "ARK-017#Argentina-Conservacao-secos",
+    "ARK-023#CDC-Protecao-mantimentos-roedores",
+    "ARK-009#p009"
+  ],
+  "V15": [
+    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+    "ARK-009#p009",
+    "ARK-008#p035"
+  ],
+  "V16": [
+    "ARK-001#p028",
+    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+    "ARK-008#p018"
+  ],
+  "V17": [
+    "ARK-009#p009",
+    "ARK-009#p008",
+    "ARK-009#p010"
+  ],
+  "V18": [
+    "ARK-008#p018",
+    "ARK-009#p010",
+    "ARK-011#Illinois-Planejamento-alimentos-pouco-preparo",
+    "ARK-012#CDC-Higiene-emergencias-maos-2024",
+    "ARK-008#PDFp033-Trecho-utensilios-crus-cozidos"
+  ],
+  "V19": [
+    "ARK-001#p011",
+    "ARK-010#CDC-2024-Agua-com-combustivel",
+    "ARK-001#p024"
+  ],
+  "V20": [
+    "ARK-001#p015",
+    "ARK-001#p016"
+  ]
 }
